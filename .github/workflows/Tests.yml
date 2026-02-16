@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
     paths:
       - '.github/workflows/Tests.yml'
       - 'src/**'
@@ -12,7 +12,7 @@ on:
       - 'Project.toml'
   pull_request:
     branches:
-      - 'master'
+      - 'main'
     paths:
       - '.github/workflows/Tests.yml'
       - 'src/**'
