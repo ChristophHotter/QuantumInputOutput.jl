@@ -1,0 +1,32 @@
+# TODO:
+# 1. Translate function: 
+##   1.1. Try TimeDependentSums again (after solving the gu(t) mistake/problem) [DONE: ~factor 2 slower!]
+#   1.2. Be careful with other operations for time-dependent functions (power, conj, ...) 
+#   1.3. Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
+##   1.4. Parameter equal to 1.0 [DONE]
+#   1.5. to_numerics Lazy or "normal" kwarg #(afer SQA.jl PR merge)
+#   1.6. Kwarg to provide substitution operators 
+##   1.7. level_map [DONE]
+#   1.8. output_functions name - test if name matters [names matter!]
+#   1.9 translate_static() or translate_dynamic(); depending on kwarg time_dep_param
+
+# 2. conj(gu_t)
+
+# function to_numeric(op::QSym, b::QuantumOpticsBase.CompositeBasis; kwargs...)
+#     check_basis_match(op.hilbert, b; kwargs...)
+#     aon = acts_on(op)
+#     op_num = _to_numeric(op, b.bases[aon]; kwargs...)
+#     # return QuantumOpticsBase.LazyTensor(b, aon, op_num) 
+#     println(111) #TODO: kwarg for Lazy or normal operators
+#     return QuantumOpticsBase.embed(b, aon, op_num)
+# end
+
+
+# rename:
+    - concatenation -> concatenate
+    - SLH: .S, .L, .H (instead of .scattering ...)
+    - ui_to_u_i_im1, vi_to_v_i_im1
+
+# change README.me
+
+# 
