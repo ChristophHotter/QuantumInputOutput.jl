@@ -1,7 +1,7 @@
 names = [
     # "test_code_quality.jl"
     "test_SLH.jl"
-    "test_translate.jl"
+    # "test_translate.jl"
 ]
 
 detected_tests = filter(

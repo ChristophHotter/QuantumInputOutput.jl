@@ -1,6 +1,9 @@
+using QuantumInputOutput
+using QuantumCumulants
+using SymbolicUtils
 using Test
 
-@testset "SLH" begin
+# @testset "SLH" begin
     hu1 = FockSpace(:u1)
     hc1 = FockSpace(:c1)
     hv1 = FockSpace(:v1)
@@ -25,6 +28,7 @@ using Test
     @test G_c_L == G_c.lindblad
     @test G_c_H == G_c.hamiltonian
 
+    SLH(1, [√(γ)*c], Δ*c'c)
     @test isequal(G_c, SLH(1, [√(γ)*c], Δ*c'c))
     @test isequal(G_c, SLH(ones(1,1), [√(γ)*c], Δ*c'c))
 
@@ -50,7 +54,7 @@ using Test
     # end
 
 
-end
+# end
 
     1
 
