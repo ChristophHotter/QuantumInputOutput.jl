@@ -3,7 +3,7 @@ using QuantumCumulants
 using SymbolicUtils
 using Test
 
-# @testset "SLH" begin
+@testset "SLH" begin
     hu1 = FockSpace(:u1)
     hc1 = FockSpace(:c1)
     hv1 = FockSpace(:v1)
@@ -54,7 +54,7 @@ using Test
     # end
 
 
-# end
+end
 
     1
 
