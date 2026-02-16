@@ -39,4 +39,4 @@ QuantumOptics = "6e0679c1-51ea-5a7c-ac74-d61b76210b0c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Aqua", "ExplicitImports", "JET", "CheckConcreteStructs"]
+test = ["Test", "Aqua", "ExplicitImports", "CheckConcreteStructs"]
