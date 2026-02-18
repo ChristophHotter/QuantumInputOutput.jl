@@ -1,0 +1,47 @@
+# MAIN TODO - LIST:
+
+- [ ] clean up code (types, ...)
+- [ ] docu
+  - [ ] examples
+    - [ ] .jl file conversion (see QC.jl, Orjan)
+  - [ ] theory
+  - [ ] introduction
+  - [ ] API
+  - [ ] tutorial
+  - [ ] implementation
+- [ ] create more tests (cov +80%)
+  - [ ] simple full example
+  - [ ] tranlate.jl
+  - [ ] utils.jl
+- [ ] more functionalities
+  - [ ] interaction picture (Johannes)
+  - [ ] pulse delay (Victor paper)
+  - [ ] directly QO.jl objects
+  - [ ] feedback reduction
+- [ ] Formatter/SpellCheck
+- [ ] JET
+- [ ] Aqua
+
+
+## Additional TODOs
+
+- [x] Translate function: 
+    - [x] Try TimeDependentSums again (after solving the gu(t) mistake/problem) [~factor 2 slower!]
+    - [x] Be careful with other operations for time-dependent functions (power, conj, ...) 
+    - [x] Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
+- [x] Parameter equal to 1.0 
+- [ ] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
+- [ ] Kwarg to provide substitution operators 
+- [x] level_map 
+- [x] output_functions name - test if name matters [names matter!]
+
+
+- [ ] rename functions:
+  - [ ] concatenation -> concatenate
+  - [ ] SLH: .S, .L, .H (instead of .scattering ...)
+  - [ ] ui_to_u_i_im1, vi_to_v_i_im1
+- [ ] change README.me
+- [ ] SLH more specific types
+  - [ ] AbstractVector{<:QTerm}
+- [ ] only QO.jl objects
+

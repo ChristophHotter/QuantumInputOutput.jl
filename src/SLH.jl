@@ -4,10 +4,13 @@ struct SLH{S<:AbstractMatrix,L<:AbstractVector,H} # TODO: L[i] and H QTerm or Nu
     scattering::S
     lindblad::L
     hamiltonian::H
-end
-function SLH(scattering::S, lindblad::L, hamiltonian::H) where {S<:AbstractMatrix,L<:AbstractVector,H}
-    @assert size(scattering, 1) == length(lindblad)
-    return SLH{S,L,H}(scattering, lindblad, hamiltonian)
+
+    function SLH(scattering::S, lindblad::L, hamiltonian::H) where
+        {S<:AbstractMatrix,L<:AbstractVector,H}
+        
+        @assert size(scattering, 1) == length(lindblad)
+        new{S,L,H}(scattering, lindblad, hamiltonian)
+    end
 end
 
 # SLH(scattering::S, lindblad::L, hamiltonian::H) where {S,H,L} = SLH{S,H,L}(scattering,lindblad,hamiltonian)
