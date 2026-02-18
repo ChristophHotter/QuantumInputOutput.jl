@@ -1,5 +1,14 @@
 
 # use tuple (x,y) instead of vector [x,y] if the type is important (L?)
+
+"""
+    SLH
+
+SLH triple with scattering matrix ``S``, Lindblad term ``L`` and Hamiltonian ``H``. 
+``S`` and ``L`` can also be vectors of scattering matrices and Linblad terms
+
+See also [`▷`](@ref) and [`⊞`](@ref)
+"""
 struct SLH{S<:AbstractMatrix,L<:AbstractVector,H} # TODO: L[i] and H QTerm or Number
     scattering::S
     lindblad::L
@@ -32,7 +41,13 @@ get_scattering(slh::SLH) = slh.scattering
 get_lindblad(slh::SLH) = slh.lindblad
 get_hamiltonian(slh::SLH) = slh.hamiltonian
 
+"""
+    ▷(G::SLH...)
 
+Creates a new SLH triple by cascading the SLH triples from first to last according to 
+the rule ``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+Unicode `\\triangleright<tab>` alias of [`cascade`](@ref)
+"""
 function ▷(G1::SLH,G2::SLH) #\triangleright
     # function cascade(G1::SLH,G2::SLH) # G1 ▷ G2 = G2 ◁ G1
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
@@ -56,9 +71,26 @@ function ▷(G1::SLH,G2::SLH) #\triangleright
 end
 ▷(a::SLH, b::SLH, c::SLH...) = ▷(a▷b,c...)
 # G's in the order as they are cascaded (from left to right)
+
+# TODO: vectors S, L
+"""
+    cascade(G::SLH...)
+
+Creates a new SLH triple by cascading the SLH triples from first to last according to 
+the rule ``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+See also [`▷`](@ref). 
+"""
 cascade(args...) = ▷(args...)
 # ◁(G1::SLH,G2::SLH) = ▷(G2,G1) # unkwnown unicode character
 
+# TODO: equation for concateneate
+"""
+    ⊞(G::SLH...)
+
+Creates a new SLH triple by concatenating the SLH triples according to 
+the rule ``SLH_1 \\boxplus SLH_2 = TODO``
+Unicode `\\boxplus<tab>` alias of [`concatenation`](@ref)
+"""
 function ⊞(G1::SLH,G2::SLH) #\boxplus
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
     S2 = get_scattering(G2); L2 = get_lindblad(G2); H2 = get_hamiltonian(G2)
@@ -76,6 +108,14 @@ function ⊞(G1::SLH,G2::SLH) #\boxplus
     return SLH(S_t, L_t, H_t)
 end
 ⊞(a::SLH, b::SLH, c::SLH...) = ⊞(a⊞b,c...)
+
+"""
+    concatenation(G::SLH...)
+
+Creates a new SLH triple by concatenating the SLH triples according to 
+the rule ``SLH_1 \\boxplus SLH_2 = TODO``
+See also [`⊞`](@ref).
+"""
 concatenation(args...) = ⊞(args...)
 # function concatenation(G_ls::AbstractVector)
 #     lG = length(G_ls)

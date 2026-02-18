@@ -3,8 +3,8 @@ module QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumCumulants
 using QuantumOpticsBase
-# using QuantumOptics
-using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify
+using QuantumOptics
+using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
 # using Symbolics #?
 # using ModelingToolkit #?
 using SpecialFunctions: erf
@@ -13,7 +13,7 @@ using NumericalIntegration: cumul_integrate
 using LinearAlgebra: LinearAlgebra, I
 using OrdinaryDiffEq # for ui_to_u_i_im1
 
-# import QuantumOpticsBase: expect
+import QuantumOpticsBase: expect
 import QuantumCumulants: numeric_average, QNumber
 const QC = QuantumCumulants
 

@@ -110,7 +110,7 @@ ui_to_u_i_im1(u_fcts, T_ls, i) = ui_to_u_i_im1(u_fcts, [u_to_gu(u_,T_ls) for u_ 
 # TODO: rename, better method (Victor)
 
 # creates matrix of the two time correlation function
-function two_time_corr_matrix(T_ls::Vector, ρt::Vector, f::Function, Ls::Function;) #kwargs...) TODO
+function two_time_corr_matrix(T_ls::Vector, ρt::Vector, f::Function, Ls::Function; abstol=1e-6, reltol=1e-6) #kwargs...) TODO
     l_T_ls = length(T_ls)
     @assert l_T_ls == length(ρt)
     Ls_ls = Ls.(T_ls)
@@ -119,7 +119,7 @@ function two_time_corr_matrix(T_ls::Vector, ρt::Vector, f::Function, Ls::Functi
 
     g1_m = zeros(ComplexF64, l_T_ls, l_T_ls)
     for it = 1:l_T_ls-1
-        τ_, ρ_bar_τ = timeevolution.master_dynamic(T_ls[it:end], ρ0_[it], f; abstol, reltol) #kwargs...) TODO
+        τ_, ρ_bar_τ = timeevolution.master_dynamic(T_ls[it:end], ρ0_[it], f; abstol=abstol, reltol=reltol) #kwargs...) TODO
     
         g1 = [expect(Ls_ls_dag[it+i-1], ρ_bar_τ[i]) for i=1:length(τ_)]
         g1_m[it,it:end] = g1
