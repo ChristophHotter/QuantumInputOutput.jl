@@ -28,7 +28,6 @@ LocalPreferences.toml
 JuliaLocalPreferences.toml
 
 # additional
-/examples/
 /.vscode/
 docs/src/examples/jupyter_notebooks/.ipynb_checkpoints
 docs/Manifest.toml

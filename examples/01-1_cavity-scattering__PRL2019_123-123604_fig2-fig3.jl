@@ -1,7 +1,6 @@
 # # Cavity Scattering of a Single Photon
 
-# In this example, we show the scattering of a single photon in a Gaussian temporal mode on an empty cavity. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). We start by loading the needed packages and specifying the model.
-# TODO: describe system: mode, detuning, cavity decay (one-sided)
+# In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). We start by loading the needed packages and specifying the model. 
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -11,7 +10,7 @@ using LinearAlgebra
 
 #
 
-## Symbolic Hilbert space
+## symbolic Hilbert space
 hu1 = FockSpace(:u1) 
 hc1 = FockSpace(:c1)
 hv1 = FockSpace(:v1)
@@ -64,7 +63,7 @@ T = [0:0.002:1;]*T_end
 
 gu_int = u_to_gu(u1, T) # interpolation
 gu_t(t) = gu_int(t)
-dict_p_t = Dict(gu => gu_t);
+dict_p_t = Dict(gu => gu_t)
 
 ## numeric bases 
 bu1 = FockBasis(1) 
@@ -96,7 +95,7 @@ end;
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1) 
 nothing # hide
 
-# To calculate expectation values we also create the desired numerical operators.
+# To calculate expectation values we create the desired numerical operators.
 
 au_qo = translate(au, b)
 c_qo = translate(c, b)

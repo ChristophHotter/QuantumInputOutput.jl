@@ -12,7 +12,9 @@ pages = [
     "implementation.md",
     "api.md",
     "Examples" => [
-        "examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3.md"
+        "examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3.md",
+        "examples/01-2_stimulated-emission__PRL2019_123-123604_fig4.md",
+        "examples/02-1_cavity-phase-noise__PRA2020_102- 023717_fig2.md"
     ],
 ]
 

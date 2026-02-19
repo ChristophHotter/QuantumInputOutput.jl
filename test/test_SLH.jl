@@ -43,9 +43,12 @@ using Test
         @test isequal(G1.hamiltonian, simplify(G_c_H - 1im/2*( (√(γ)*c)'*(1)*gu*au - (gu*au)'*(1)*(√(γ)*c) )))
         
         G2 = cascade(G_u, G_c, G_v)
+        G3 = G_u ▷ G_c ▷ G_v
         
         @test isequal(G2, G1 ▷ G_v)
         @test isequal(G2, ▷(G1,G_v))
+        @test isequal(G2, G3)
+
         @test iszero(simplify(G2.lindblad[1] - (gu*au + √(γ)*c + gv*av)))
     end
 
