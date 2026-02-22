@@ -7,6 +7,7 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using PyPlot
 using LinearAlgebra
+using DataInterpolations
 
 #
 
@@ -54,7 +55,7 @@ p_sym = [γ , Δ , gu2, gv1]
 p_num = [γ_, Δ_, 0  , 0  ]
 dict_p = Dict(p_sym .=> p_num);
 
-## GAussian input pulse
+## Gaussian input pulse
 τ = 0.38; tp = 4/γ_
 u(t) = 1/(sqrt(τ)*π^(1/4)) * exp( -(t - tp)^2 / (2*τ^2) )
 T = [0:0.002:1;]*20
@@ -67,6 +68,10 @@ gu_c(t) = conj.(gu_int(t))
 dict_p_t = Dict([gu1, conj(gu1)] .=> [gu_, gu_c]);
 
 # We translate the symbolic expressions to numerical operators and solve the time-dependent master equation with QuantumOptics.jl. 
+
+# To obtain the output modes we do not use the second input mode and the output mode cavity. However, to keep the example short we include them already from the beginning since they are needed later. To perform time consumeing parameter scans one should merely use the necessary Hilbert spaces. In this case this would correspond to one input cavity and the two-level system. 
+
+# TODO: use operator dictionary in the translate function to reduce the Hilbert space!
 
 ## numeric bases 
 bu2 = FockBasis(2)
@@ -84,34 +89,32 @@ function input_output(t,ρ)
 end
 nothing # hide
 
-#
+# 
 
 ## time evolution
 ψ0 = fockstate(bu2,0) ⊗ fockstate(bu1,2) ⊗ nlevelstate(bs1,1) ⊗ fockstate(bv1,0) 
-t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output; abstol, reltol)
+t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
 
+# Now we analyze the output modes with two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$. 
 
-###########################################
-################ Hier weiter ! ############
-
-
-# autocorrelation function
-au1_qo = to_numeric(au1,b)
-σ_qo(i,j) = to_numeric(σ(i,j),b)
+au1_qo = translate(au1,b)
+σ_qo(i,j) = translate(σ(i,j),b)
 
 Ls(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1,2)
 g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
 
-close("g1(t1,t2) matrix")
-figure("g1(t1,t2) matrix", figsize=(4,3.5))
+close("g1(t1,t2) matrix") # hide
+figure("g1(t1,t2) matrix", figsize=(4.5,3.5))
 pcolormesh(T, T, real.(g1_m), cmap="inferno")
-xlabel("γ t2")
-ylabel("γ t1")
-colorbar();
+xlabel(L"\gamma t_2")
+ylabel(L"\gamma t_1")
+colorbar(label=L"g^{(1)}(t_1,t_2)")
 tight_layout()
-display(gcf())
-savefig("figures/05-1_PRA2023_g1.png")
+tight_layout()
+gcf()
+
+# The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of around for each. 
 
 F = eigen(g1_m)
 n_avg = real.(F.values)*ΔT
@@ -119,58 +122,68 @@ modes = F.vectors
 v1_mode = (modes[:,end]) / √(ΔT)
 v2_mode = (modes[:,end-1]) / √(ΔT)
 
-v1_p = 1/√(2) * ( v1_mode - v2_mode ) 
-v2_p = 1/√(2) * ( v1_mode + v2_mode );
+@show n_avg[end-1:end]
+nothing # hide
 
-@show sum(abs2.(v1_p))*ΔT;
-@show sum(abs2.(v2_p))*ΔT;
+#
 
-close("modes")
+close("modes") # hide
 figure("modes")
 plot(t_, -real.(v1_mode), color="black")
-plot(t_, -real.(v2_mode), color="red", ls="--")
+plot(t_, real.(v2_mode), color="red", ls="--")
 xlabel("time (1/γ)")
 ylabel("output mode")
-display(gcf())
-savefig("figures/05-1_PRA2023_output-modes_v1-v2.png")
+gcf()
 
-# output mode
+# As described in the paper, we can define a rotated basis in which the two modes are not entangled and equally populated by a single photon Fock-state. In the following, we define these rotated modes and use them to combine two single photons into a two photon Fock state. The temporal output mode of this two photon Fock state needs to be the same as the previous input mode which separated the two single photons before. 
+
+# TODO: analyse state of the output mode with v1 - one more mode - operator dictionary in translate
+
+v1_p = 1/√(2) * ( v1_mode - v2_mode ) 
+v2_p = 1/√(2) * ( v1_mode + v2_mode )
+
+## new output mode = old input mode
 v1_new(t) = (u(T[end]-t))'
 
-# input modes
+## new input modes
 u1_new = conj.(reverse(v1_p))
-u2_new = conj.(reverse(v2_p));
+u2_new = conj.(reverse(v2_p))
 
-# order of the input functions needs to be in ascending order [1, 2, 3, ...]
-# [cascaded from right to left]
+## order of the input functions needs to be in ascending order [1, 2, 3, ...]
+## [cascaded from right to left] # TODO
 u_new_data = [u1_new, u2_new]
-u_new_fct = [LinearInterpolation(u, T) for u in u_new_data];
+u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
 
-# the coupling of the u1 cavity needs no adaptation 
+## the coupling of the $u_1$ cavity needs no adaptation 
 gu1_int = u_to_gu(u1_new, T)
 gu1_(t) = gu1_int(t)
 gu1_c(t) = conj(gu1_(t))
 
-# gu2 needs to take into account to go scatter at the u1 cavity
-# the last argument in ui_to_u_i_im1 (=2) describes the number of the input cavity
-u2_for_gu2 =  ui_to_u_i_im1(u_new_fct, T, 2)
+## TODO: explain more!
+## $g_{u_2} needs to take into account to scatter also at the $u_1$ cavity
+## the last argument in ui_to_u_i_im1 (=2) describes the number of the input cavity
+u2_for_gu2 =  ui_to_u_i_im1(u_new_fct, T, 2) # TODO: name and description
 gu2_int = u_to_gu(u2_for_gu2,T)
 gu2_(t) = gu2_int(t)
 gu2_c(t) = conj(gu2_(t))
-#
+
+## coupling of the output mode
 gv1_int = v_to_gv(v1_new,T)
 gv1_(t) = gv1_int(t)
 gv1_c(t) = conj(gv1_(t))
 
+## dictionary for the time-dependent functions
 g_sym = [gu1, gu2, gv1, conj(gu1), conj(gu2), conj(gv1)]
 g_num = [gu1_, gu2_, gv1_, gu1_c, gu2_c, gv1_c]
+dict_p_t_out = Dict(g_sym .=> g_num)
 
-dict_p_t_out = Dict(g_sym .=> g_num);
-;
-
+## dictionary for the constant paramters
 p_sym_out = [γ , Δ ]
 p_num_out = [γ_, Δ_]
-dict_p_out = Dict(p_sym_out .=> p_num_out);
+dict_p_out = Dict(p_sym_out .=> p_num_out)
+nothing # hide
+
+#
 
 H_QO_2 = translate(H, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
 L_QO_2 = translate(L, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
@@ -178,28 +191,33 @@ function input_output_2(t,ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]
     return H, J, dagger.(J)
-end;
+end
 
-# time evolution
+## time evolution
 ψ0_out = fockstate(bu2,1) ⊗ fockstate(bu1,1) ⊗ nlevelstate(bs1,1) ⊗ fockstate(bv1,0) 
-t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0_out, input_output_2; abstol, reltol);
+t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0_out, input_output_2)
+nothing # hide
+
+#
 
 nu1_t_comb = real(expect(au1'*au1, ρt_2))
 nu2_t_comb = real(expect(au2'*au2, ρt_2))
 nv1_t_comb = real(expect(av1'*av1, ρt_2))
-s22_t_comb = real(expect(σ(2,2), ρt_2));
+s22_t_comb = real(expect(σ(2,2), ρt_2))
+nothing # hide
 
-close("beam combiner")
+# We can see that the two single photons combine to a two photon Fock-state in one temporal mode. 
+
+close("beam combiner") # hide
 figure("beam combiner")
-plot(T, nu2_t_comb, color="red", ls="--", label="⟨a⁺a⟩ u2")
-plot(T, nu1_t_comb, color="blue", ls="-.", label="⟨a⁺a⟩ u1")
-plot(T, s22_t_comb, color="black", ls="dotted", label="⟨σ²²⟩")
-plot(T, nv1_t_comb, color="green", ls="-", label="⟨a⁺a⟩ v1")
+plot(T, nu2_t_comb, color="red", ls="--", label=L"\langle a^\dagger a \rangle_{u_2}")
+plot(T, nu1_t_comb, color="blue", ls="-.", label=L"\langle a^\dagger a \rangle_{u_1}")
+plot(T, s22_t_comb, color="black", ls="dotted", label=L"\langle \sigma^{22} \rangle")
+plot(T, nv1_t_comb, color="green", ls="-", label=L"\langle a^\dagger a \rangle_{v_1}")
 ylim(0,2)
 xlim(10,18)
 xlabel("time (1/γ)")
 ylabel("Mean Excitation")
 legend()
 tight_layout()
-display(gcf())
-savefig("figures/05-1__PRA2023_beam-combiner.png")
+gcf()

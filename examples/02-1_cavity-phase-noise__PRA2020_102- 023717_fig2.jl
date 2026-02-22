@@ -100,8 +100,8 @@ nothing # hide
 close("all") # hide
 figure("g1(t1,t2) matrix", figsize=(4.5,3.5))
 pcolormesh(T, T, real.(g1_m), cmap="inferno")
-xlabel("γ t2")
-ylabel("γ t1")
+xlabel(L"\gamma t_2")
+ylabel(L"\gamma t_1")
 colorbar(label=L"g^{(1)}(t_1,t_2)")
 tight_layout()
 gcf()

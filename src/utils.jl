@@ -82,7 +82,7 @@ function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
     u0 = zeros(ComplexF64, i-1)
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_outputs_α, u0, tspan)
-    sol_α = solve(prob; abstol, reltol)
+    sol_α = solve(prob) #; abstol, reltol) # TODO: kwarg
     v_i_im1(t) = v_fcts[i](t) + sum( (gv_fcts[k](t))'*sol_α(t)[k] for k=1:i-1)
     return v_i_im1
 end
@@ -102,7 +102,7 @@ function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
     u0 = zeros(ComplexF64, i-1)
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_inputs_α, u0, tspan)
-    sol_α = solve(prob, Tsit5(); abstol, reltol)
+    sol_α = solve(prob, Tsit5()) #; abstol, reltol) # TODO: kwarg
     u_i_im1(t) = u_fcts[i](t) - sum( (gu_fcts[k](t))'*sol_α(t)[k] for k=1:i-1)
     return u_i_im1
 end
@@ -158,7 +158,7 @@ function get_Mt(A::Function, T)
     M0 = diagm(ones(ComplexF64, l_A))
     f_M(u, p, t) = A(t) * u
     prob_M = ODEProblem(f_M, M0, (T0, Tend))
-    return solve(prob_M; abstol, reltol, saveat=T) 
+    return solve(prob_M; saveat=T)#, abstol, reltol) # TODO: kwargs
 end
 
 # ### get matrix A(t) (for 2x2, 3x3 and 4x4 matrices)
