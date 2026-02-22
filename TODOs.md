@@ -4,6 +4,8 @@
 - [ ] docu
   - [ ] examples
     - [ ] .jl file conversion (see QC.jl, Orjan)
+    - [ ] interaction picture example
+    - [ ] Multi-mode Dicke state superradiance 
   - [ ] theory
   - [ ] introduction
   - [ ] API
@@ -31,7 +33,7 @@
     - [x] Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
 - [x] Parameter equal to 1.0 
 - [ ] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
-- [ ] Kwarg to provide substitution operators 
+- [x] Kwarg to provide substitution operators 
 - [x] level_map 
 - [x] output_functions name - test if name matters [names matter!]
 
