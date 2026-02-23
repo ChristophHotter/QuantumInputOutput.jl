@@ -3,7 +3,7 @@ module QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumCumulants
 using QuantumOpticsBase
-# using QuantumOptics
+using QuantumOptics
 using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
 # using Symbolics #?
 # using ModelingToolkit #?
