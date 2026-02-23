@@ -14,7 +14,7 @@ using Test
     h = hc ⊗ ha_
 
     a = Destroy(h,:a,1) # cavity 
-    σ(i,j) = Transition(h,"σ",i,j,2) # two-level atom α
+    σ(i,j) = Transition(h,"σ",i,j,2) # two-level atom 
 
     bc1 = FockBasis(4)
     a_QO = destroy(bc1)

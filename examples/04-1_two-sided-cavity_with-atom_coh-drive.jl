@@ -22,6 +22,7 @@ h = hc ⊗ tensor([ha(i) for i in 1:Natoms]...);
 a = Destroy(h,:a,1) # cavity 
 σ(α,i,j) = Transition(h,"σ_$(α)",i,j,1+α) # two-level atom α
 ∑σ(i,j) = sum(σ(α,i,j) for α=1:Natoms) # collective atomic operator
+nothing # hide 
 
 # We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with concatenation, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option. 
 
@@ -33,6 +34,7 @@ G_cav_L_drive = G_d ▷ G_c_L
 G_c_R = SLH(1,[√(κ_R)*a], 0)
 
 G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R
+nothing # hide 
 
 # Note that one needs to be careful to not double-count the Hamiltonian terms with the concatination. 
 
@@ -47,9 +49,12 @@ L1_L = get_lindblad(G_cav_L_R_drive)[1]
 L1_R = get_lindblad(G_cav_L_R_drive)[2]
 
 # The typical cavity drive-term $\sqrt{\kappa_L} \Epsilon (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. Ref SUPER example TODO.
+
 # TODO: simplify $(\sqrt{\kappa})^2 = \kappa$
 
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
+
+# TODO: Latexify?
 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`. 
 
@@ -100,7 +105,7 @@ plot(t_, n_cavity)
 xlabel("t")
 ylabel("cavity photons")
 grid(true)
-#
+
 subplot(2,1,2)
 title("transmission - reflection")
 plot(t_, n_ref; label="reflection")
@@ -122,10 +127,10 @@ n_trans_Δ = zeros(lΔ)
 
 for it=1:lΔ
     Δn_ = Δn_ls[it]
-    t_, ρt_ = timeevolution.master(T, ψ0, H1_QO_Δ_(Δn_), J1_QO)
+    t_it, ρt_it = timeevolution.master(T, ψ0, H1_QO_Δ_(Δn_), J1_QO)
 
-    n_ref_Δ[it] = real(expect(dagger(J1_QO[1])*J1_QO[1], ρt_[end]))
-    n_trans_Δ[it] = real(expect(dagger(J1_QO[2])*J1_QO[2], ρt_[end]))
+    n_ref_Δ[it] = real(expect(dagger(J1_QO[1])*J1_QO[1], ρt_it[end]))
+    n_trans_Δ[it] = real(expect(dagger(J1_QO[2])*J1_QO[2], ρt_it[end]))
 end
 nothing # hide
 
@@ -182,7 +187,7 @@ E_t(t) = Ω1(t)/√(κ_Ln2)
 
 T = [0:0.001:1;]*Tend
 ΔT = T[2] - T[1]
-n_pulse = sum(abs2.(E_t.(T)))*ΔT
+n_pulse = round(sum(abs2.(E_t.(T)))*ΔT, digits=7)
 @show n_pulse 
 
 dict_p2 = Dict(p_sym2 .=> p_num2)
