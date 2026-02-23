@@ -32,15 +32,24 @@ function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
             arg_c_args = arguments(arg_c)
             arg_c_op = operation(arg_c)
 
-            !(arg_c_op == *) && error("The operation of the prefactor is $(arg_c_op). It needs to be a multiplication. 
-                Maybe you need to add a variable to the parameter dictionary or the conjugate coupling function to the time-dependent function dictionary. [REF-example]")
-
-            # TODO: directly use gu(t) without substitution (think about iscall)
+            # TODO: directly use gu(t) without substitution? (think about iscall)            
+            if length(arg_c_args) == 1  # conj(g)*a, sqrt(g)*a # TODO: g^2*a [length(arg_c_args) == 2]
+                if arg_c_op ∈ [conj, sqrt]
+                    arg_c_1 = substitute(arg_c, time_dep_param)
+                    output_QO_num = t -> arg_c_1(t)*prod_args_nc # only one element
+                    return output_QO_num
+                end
+            else
+                !(arg_c_op == *) && error("The operation of the prefactor is $(arg_c_op). 
+                Currently, if you want to use a function like conj() or sqrt() on a time dependent 
+                parameter, you need to include it in the time-dependent function dictionary, see e.g.: [REF-example]
+                At the moment we are also limited to functions with only one argument.") # TODO
+            end
             arg_c_all = [substitute(arg, time_dep_param) for arg ∈ arg_c_args]
             arg_c_numbers = filter(x->isa(x,Number), arg_c_all)
-            arg_c_functions = filter(x->!isa(x,Number), arg_c_all)
-
             prod_c_nc_num = prod(arg_c_numbers)*prod_args_nc
+            arg_c_functions = filter(x->!isa(x,Number), arg_c_all)
+            
             output_op_QMul_QO = t -> prod(arg_c_f(t) for arg_c_f in arg_c_functions)*prod_c_nc_num
             return output_op_QMul_QO
         end 
@@ -95,8 +104,6 @@ function translate(arg_c_, b::QuantumOpticsBase.Basis;
     # should only be needed for numbers and symbolic paramters
 
     arg_c = substitute(arg_c_, parameter)
-    return arg_c
-
     one_b = sparse(one(b))
 
     if isempty(time_dep_param)
@@ -113,20 +120,28 @@ function translate(arg_c_, b::QuantumOpticsBase.Basis;
             output_QO_num = t -> prod_c_nc_num
             return output_QO_num
         end
-    else # more than one expression in arg_c (numeric, symbolic, funcion), e.g. 5*x    
+    else # more than one expression in arg_c (numeric, symbolic, funcion), e.g. 5*x. Or e.g. conj(g)*a
         arg_c_args = arguments(arg_c)
         arg_c_op = operation(arg_c)
 
-        !(arg_c_op == *) && error("The operation of the prefactor is $(arg_c_op). 
-            It needs to be a multiplication. 
-            Maybe you need to add the conjugate coupling function to the time-dependent function dictionary. [REF-example]")
-
-        # TODO: directly use gu(t) without substitution (think about iscall)
+        # TODO: directly use gu(t) without substitution? (think about iscall)
+        if length(arg_c_args) == 1  # e.g. conj(g), sqrt(g) # TODO: g^2 [length(arg_c_args) == 2]
+            if arg_c_op ∈ [conj, sqrt]
+                arg_c_1 = substitute(arg_c, time_dep_param)
+                output_QO_num = t -> arg_c_1(t)*one_b # only one element
+                return output_QO_num
+            end
+        else
+            !(arg_c_op == *) && error("The operation of the prefactor is $(arg_c_op). 
+            Currently, if you want to use a function like conj() or sqrt() on a time dependent 
+            parameter, you need to include it in the time-dependent function dictionary, see e.g.: [REF-example]
+            At the moment we are also limited to functions with only one argument.") # TODO
+        end
         arg_c_all = [substitute(arg, time_dep_param) for arg ∈ arg_c_args]
         arg_c_numbers = filter(x->isa(x,Number), arg_c_all)
         arg_c_functions = filter(x->!isa(x,Number), arg_c_all)
+        prod_c_nc_num = prod(arg_c_numbers)*one_b 
 
-        prod_c_nc_num = prod(arg_c_numbers)*one_b    
         output_QO_num = t -> prod(arg_c_f(t) for arg_c_f in arg_c_functions)*prod_c_nc_num
         return output_QO_num
     end 

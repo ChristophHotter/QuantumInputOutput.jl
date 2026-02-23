@@ -4,7 +4,7 @@ EditURL = "../../../examples/02-1_cavity-phase-noise__PRA2020_102- 023717_fig2.j
 
 # Cavity Scattering with Phase Noise
 
-Cavity phase noise leads to scattering into several orthogonal temporal modes. In this example, we determine the four most populated modes of a single photon scattered on a one-sided cavity. The input pulse is in a Gaussian temporal mode with width $\tau$. The cavity has a decay rate of $\gamma$ and a dephasing rate of $\gamm_p$. This system is described in [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
+Cavity phase noise leads to scattering into several orthogonal temporal modes. In this example, we determine the four most populated modes of a single photon scattered on a one-sided cavity. The input pulse is in a Gaussian temporal mode with width $\tau$. The cavity has a decay rate of $\gamma$ and a dephasing rate of $\gamma_p$. This system is described in [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
 
 We start by loading the packages and defining the symbolic operators and paramters.
 
@@ -112,8 +112,8 @@ nothing # hide
 close("all") # hide
 figure("g1(t1,t2) matrix", figsize=(4.5,3.5))
 pcolormesh(T, T, real.(g1_m), cmap="inferno")
-xlabel("γ t2")
-ylabel("γ t1")
+xlabel(L"\gamma t_2")
+ylabel(L"\gamma t_1")
 colorbar(label=L"g^{(1)}(t_1,t_2)")
 tight_layout()
 gcf()
@@ -141,7 +141,7 @@ tight_layout()
 gcf()
 ````
 
-We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a small mistake in their numerical model.
+We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a mistake in their numerical model.
 
 ---
 

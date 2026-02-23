@@ -50,3 +50,5 @@
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
 - [ ] Import and export all SQA.jl 
 - [ ] time_dep_param allow for (linear) interpolations (not only functions)
+- [ ] Get rid of "using SecondQuantizedAlgebra" in the examples: 
+  - [ ] import and export fcts from SQA
