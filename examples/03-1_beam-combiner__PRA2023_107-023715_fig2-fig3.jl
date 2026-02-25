@@ -111,7 +111,6 @@ xlabel(L"\gamma t_2")
 ylabel(L"\gamma t_1")
 colorbar(label=L"g^{(1)}(t_1,t_2)")
 tight_layout()
-tight_layout()
 gcf()
 
 # The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of around for each. 
