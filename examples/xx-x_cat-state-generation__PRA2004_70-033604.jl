@@ -11,73 +11,79 @@ using PyPlot
 
 #
 
-@rnumbers E κ_L κ_R Δ g γ
+@rnumbers κ g γ Δa Δc
+@cnumbers η gv
 Natoms = 2
 
 hc = FockSpace(:cavity)
-ha(i) = NLevelSpace("a_$i",2)
-h = hc ⊗ tensor([ha(i) for i in 1:Natoms]...);
+ha = NLevelSpace(:atom,2)
+hv = FockSpace(:output)
+h = hc ⊗ ha ⊗ hv
 
 a = Destroy(h,:a,1) # cavity 
-σ(α,i,j) = Transition(h,"σ_$(α)",i,j,1+α) # two-level atom α
-∑σ(i,j) = sum(σ(α,i,j) for α=1:Natoms) # collective atomic operator
+σ(i,j) = Transition(h,"σ",i,j,2) # two-level atom
+av = Destroy(h,:a_v,3) # output cavity
 nothing # hide 
 
 # We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with concatenation, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option. 
 
-G_d = SLH(1, E, 0) # classical drive
-H_cavity = -Δ*a'a
-G_c_L = SLH(1,[√(κ_L)*a], H_cavity)
+H_ac = -Δc*a'a - Δa*σ(2,2) - g*( σ(2,1)*a + σ(1,2)*a' ) + η*σ(2,1) + η'*σ(1,2)
+J = [√(κ)*a, √(γ)*σ(1,2)]
 
-G_cav_L_drive = G_d ▷ G_c_L
-G_c_R = SLH(1,[√(κ_R)*a], 0)
-
-G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R
-nothing # hide 
-
-# Note that one needs to be careful to not double-count the Hamiltonian terms with the concatination. 
-
-H1 = get_hamiltonian(G_cav_L_R_drive)
-
-# 
-
-L1_L = get_lindblad(G_cav_L_R_drive)[1]
-
-# 
-
-L1_R = get_lindblad(G_cav_L_R_drive)[2]
-
-# The typical cavity drive-term $\sqrt{\kappa_L} \Epsilon (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. Ref SUPER example TODO.
-
-# TODO: simplify $(\sqrt{\kappa})^2 = \kappa$
-
-eqs_a = meanfield([a], H1, [L1_L, L1_R])
-
-# TODO: Latexify?
-
-# To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`. 
+# needed later # TODO: move down
+G_ac = SLH(1,[√(κ)*a], H_ac) 
+G_v = SLH(1,[gv*av], 0)
 
 ## numerical parameters
-En = 0.5
-κ_Rn = 1.0
-κ_Ln = 1.0
-Δn = 0.0
-Δn_ls = [-5.0:0.1:5.0;]; lΔ=length(Δn_ls)
+κ_ = γ_ = 1.0
+g_ = 100.0
+Δa_ = 0.0
+Δc_ = 0.0
 
-p_sym = [E, κ_R, κ_L, Δ]
-p_num = [En, κ_Rn, κ_Ln, Δn]
+p_sym = [κ , g , γ , Δa , Δc ]
+p_num = [κ_, g_, γ_, Δa_, Δc_]
 dict_p1 = Dict(p_sym .=> p_num)
 
-## cavity-only operators
-bc1 = FockBasis(4)
-a_QO = destroy(bc1)
-ops_dict = Dict([a, a'] .=> [a_QO, dagger(a_QO)])
+# Gaussian pulse (definiton?)
+# η0 = 9g_
+# τ = 5/g_
+# η_t(t) = η0*exp( -(t-2τ)^2 / (0.5*τ^2) )
+# Tend = 8τ
 
-H1_QO = translate(H1, bc1; parameter=dict_p1, operators=ops_dict)
-L1_L_QO = translate(L1_L, bc1; parameter=dict_p1, operators=ops_dict)
-L1_R_QO = translate(L1_R, bc1; parameter=dict_p1, operators=ops_dict)
-J1_QO = [L1_L_QO, L1_R_QO]
-nothing # hide
+# rectengular pulse
+η0 = √(8)*g_
+T_pulse = 2π/g_
+η_t(t) = (t<T_pulse)*1.0
+dict_t = Dict( [η, conj(η)] .=> [η_t, ηc_t] )
+
+Tend = 4/κ_
+T = [0:0.001:1;]*Tend
+
+# pygui(true)
+# close("pulse")
+# figure("pulse")
+# plot(T*g_, η_t.(T)/η0)
+# grid(true)
+# xlabel("gt")
+
+
+## numerical basis
+bc = FockBasis(10)
+ba = NLevelBasis(2)
+bv = FockBasis(10)
+b = bc ⊗ ba ⊗ bv
+#
+a_QO = destroy(bc) ⊗ one(ba) 
+ad_QO = dagger(a_QO)
+σ_QO(i,j) = one(bc) ⊗ transition(ba,i,j)
+
+ops_sym = [a, a', σ(2,2), σ(1,2), σ(2,1)]
+ops_QO = [a_QO, dagger(a_QO), σ_QO(2,2), σ_QO(1,2), σ_QO(2,1)]
+ops_dict = Dict(ops_sym .=> ops_QO)
+
+H_QO = translate(H_ac, b; parameter=dict_p1, time_dep_param=dict_t, operators=ops_dict)
+L_QO = translate(√(κ)*a, b; parameter=dict_p1, time_dep_param=dict_t, operators=ops_dict)
+J_add_QO = []
 
 #
 

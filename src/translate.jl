@@ -67,7 +67,7 @@ function translate(op::QuantumCumulants.QAdd, b::QuantumOpticsBase.Basis;
 
     ### static and time-dependent operators
     args = arguments(substitute(op, parameter)) 
-    args_translated = [translate(arg, b; parameter=parameter, time_dep_param=time_dep_param, level_map=level_map) for arg in args]
+    args_translated = [translate(arg, b; parameter=parameter, time_dep_param=time_dep_param, level_map=level_map, operators=operators, op_type=sparse) for arg in args]
 
     output_op_QAdd_QO = t -> sum( args_translated[i](t) for i=1:length(args_translated) )
     return output_op_QAdd_QO
@@ -100,11 +100,15 @@ end
 #
 
 function translate(arg_c_, b::QuantumOpticsBase.Basis; 
-    parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict())  
+    parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
     # should only be needed for numbers and symbolic paramters
 
     arg_c = substitute(arg_c_, parameter)
-    one_b = sparse(one(b))
+    if isempty(operators) # if a list of operators is provide, the basis of these operators needs to be used
+        one_b = op_type(one(b))
+    else
+        one_b = op_type(one(basis(collect(values(operators))[1])))
+    end
 
     if isempty(time_dep_param)
         return arg_c*one_b
@@ -150,11 +154,10 @@ end
 function translate(ops::Vector, b::QuantumOpticsBase.Basis; kwargs...)
     return [translate(op, b; kwargs...) for op in ops]
 end
-function translate(G::SLH, b::QuantumOpticsBase.Basis; 
-        parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict()) 
+function translate(G::SLH, b::QuantumOpticsBase.Basis; kwargs...) 
     L = get_lindblad(G); H = get_hamiltonian(G)
-    H_QO = translate(H,b; parameter=parameter,time_dep_param=Dict(),time=nothing,level_map=level_map,operators=operators)
-    L_QO = [translate(L_,b; parameter=parameter,time_dep_param=Dict(),time=nothing,level_map=level_map,operators=operators) for L_ in L]
+    H_QO = translate(H,b; kwargs...)
+    L_QO = [translate(L_,b; kwargs...) for L_ in L]
     return H_QO, L_QO
 end
 
