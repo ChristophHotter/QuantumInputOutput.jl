@@ -9,22 +9,22 @@ SLH triple with scattering matrix ``S``, Lindblad term ``L`` and Hamiltonian ``H
 
 See also [`▷`](@ref) and [`⊞`](@ref)
 """
-struct SLH{S<:AbstractMatrix,L<:AbstractVector,H} # TODO: L[i] and H QTerm or Number
+struct SLH{T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}} # TODO: L[i] and H QTerm or Number
     scattering::S
     lindblad::L
     hamiltonian::H
 
     function SLH(scattering::S, lindblad::L, hamiltonian::H) where
-        {S<:AbstractMatrix,L<:AbstractVector,H}
+        {T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}}
         
         @assert size(scattering, 1) == length(lindblad)
-        new{S,L,H}(scattering, lindblad, hamiltonian)
+        new{T,LT,H,S,L}(scattering, lindblad, hamiltonian)
     end
 end
 
 # SLH(scattering::S, lindblad::L, hamiltonian::H) where {S,H,L} = SLH{S,H,L}(scattering,lindblad,hamiltonian)
 function SLH(S,L::AbstractVector,H) 
-    S_ = Matrix(I,length(L),length(L))*S 
+    S_ = Matrix{typeof(S)}(I,length(L),length(L))*S 
     return SLH(S_,L,H)
 end
 function SLH(S,L,H) 
@@ -97,8 +97,8 @@ function ⊞(G1::SLH,G2::SLH) #\boxplus
 
     lS1 = size(S1)[1]; lS2 = size(S2)[1]
 
-    S_t = Matrix{Any}(undef,lS1+lS2, lS1+lS2) # that is pretty ugly (but it works)
-    S_t .= zeros(lS1+lS2, lS1+lS2)
+    T_S = promote_type(eltype(S1), eltype(S2))
+    S_t = zeros(T_S, lS1+lS2, lS1+lS2)
     S_t[1:lS1,1:lS1] .= S1
     S_t[1+lS1:lS1+lS2,1+lS1:lS1+lS2] .= S2
 

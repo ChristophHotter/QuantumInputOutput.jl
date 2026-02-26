@@ -2,6 +2,7 @@ names = [
     # "test_code_quality.jl"
     "test_SLH.jl"
     "test_translate.jl"
+    "test_example_cavity_scattering.jl"
 ]
 
 detected_tests = filter(
