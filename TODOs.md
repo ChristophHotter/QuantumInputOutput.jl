@@ -17,6 +17,7 @@
   - [ ] translate.jl
   - [ ] utils.jl
 - [ ] more functionalities
+  - [ ] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
   - [ ] interaction picture (Johannes)
   - [ ] pulse delay (Victor paper)
   - [ ] directly QO.jl objects
