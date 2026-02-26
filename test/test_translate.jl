@@ -71,5 +71,11 @@ using Test
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2,2))).data)) < 1e-8
     @test_throws MethodError translate(conj(E), b; parameter=dict_p1)
     # F8 = translate(E^2, b; parameter=dict_p1, time_dep_param=dict_p_t2) # TODO
+
+    @testset "time_dep_param_normalization" begin
+        dict_p_t_num = Dict([E] .=> [2.5])
+        F_num = translate(a*E, b; parameter=dict_p1, time_dep_param=dict_p_t_num)
+        @test sum(abs.((F_num(0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
+    end
 end
 
