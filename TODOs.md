@@ -3,9 +3,10 @@
 - [ ] clean up code (types, ...)
 - [ ] docu
   - [ ] examples
-    - [ ] .jl file conversion (see QC.jl, Orjan)
-    - [ ] interaction picture example
-    - [ ] Multi-mode Dicke state superradiance 
+    - [x] .jl file conversion (see QC.jl, Orjan)
+    - [ ] interaction picture example (Victor paper)
+    - [ ] Multi-mode Dicke state superradiance
+    - [ ] SUPER example (Johannes)
   - [ ] theory
   - [ ] introduction
   - [ ] API
@@ -13,7 +14,7 @@
   - [ ] implementation
 - [ ] create more tests (cov +80%)
   - [ ] simple full example
-  - [ ] tranlate.jl
+  - [ ] translate.jl
   - [ ] utils.jl
 - [ ] more functionalities
   - [ ] interaction picture (Johannes)
@@ -42,13 +43,13 @@
   - [ ] concatenation -> concatenate
   - [ ] SLH: .S, .L, .H (instead of .scattering ...)
   - [ ] ui_to_u_i_im1, vi_to_v_i_im1
-  - [ ] time_dep_param -> time_dep_parameter
+  - [ ] time_dep_param -> time_parameter
 - [ ] change README.me
 - [ ] SLH more specific types
   - [ ] AbstractVector{<:QTerm}
-- [ ] only QO.jl objects
+- [ ] SLH for QO.jl objects directly
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
 - [ ] Import and export all SQA.jl 
-- [ ] time_dep_param allow for (linear) interpolations (not only functions)
+- [ ] time_parameter allow for (linear) interpolations (not only functions)
 - [ ] Get rid of "using SecondQuantizedAlgebra" in the examples: 
   - [ ] import and export fcts from SQA
