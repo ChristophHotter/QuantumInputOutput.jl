@@ -37,5 +37,8 @@ export SLH, # SLH.jl
 include("SLH.jl")
 include("translate.jl")
 include("utils.jl")
+include("pulses.jl")
+include("correlations.jl")
+include("interaction_picture.jl")
 
 end
