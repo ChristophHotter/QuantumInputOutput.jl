@@ -1,12 +1,12 @@
 ```@meta
-EditURL = "../../../examples/03-1_beam-combiner_PRA2023_107- 023715_fig2-fig3.jl"
+EditURL = "../../../examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.jl"
 ```
 
 # Perfect Splitting of a Two-photon Pulse
 
 TODO: Intro
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
@@ -15,7 +15,7 @@ using LinearAlgebra
 using DataInterpolations
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # symbolic Hilbert space
 hu2 = FockSpace(:u2)
 hu1 = FockSpace(:u1)
@@ -37,7 +37,7 @@ nothing #hide
 
 We use the symbolic operators and paramters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
 G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
 G_a = SLH(1, √(γ)*σ(1,2), Δ*σ(2,2)) # scattering atom
@@ -47,17 +47,17 @@ G_cas = cascade(G_u2, G_u1, G_a, G_v1)
 nothing # hide
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 H = get_hamiltonian(G_cas)
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 L = get_lindblad(G_cas)[1] # only one Lindblad in this example
 ````
 
 Next, the numerical parameters and functions of the system are defined.
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 γ_ = 1.0
 Δ_ = 0.0
 
@@ -85,7 +85,7 @@ To obtain the output modes we do not use the second input mode and the output mo
 
 TODO: use operator dictionary in the translate function to reduce the Hilbert space!
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # numeric bases
 bu2 = FockBasis(2)
 bu1 = FockBasis(2)
@@ -103,7 +103,7 @@ end
 nothing # hide
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # time evolution
 ψ0 = fockstate(bu2,0) ⊗ fockstate(bu1,2) ⊗ nlevelstate(bs1,1) ⊗ fockstate(bv1,0)
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
@@ -112,7 +112,7 @@ nothing # hide
 
 Now we analyze the output modes with two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$.
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 au1_qo = translate(au1,b)
 σ_qo(i,j) = translate(σ(i,j),b)
 
@@ -126,13 +126,12 @@ xlabel(L"\gamma t_2")
 ylabel(L"\gamma t_1")
 colorbar(label=L"g^{(1)}(t_1,t_2)")
 tight_layout()
-tight_layout()
 gcf()
 ````
 
 The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of around for each.
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 F = eigen(g1_m)
 n_avg = real.(F.values)*ΔT
 modes = F.vectors
@@ -143,7 +142,7 @@ v2_mode = (modes[:,end-1]) / √(ΔT)
 nothing # hide
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 close("modes") # hide
 figure("modes")
 plot(t_, -real.(v1_mode), color="black")
@@ -157,7 +156,7 @@ As described in the paper, we can define a rotated basis in which the two modes 
 
 TODO: analyse state of the output mode with v1 - one more mode - operator dictionary in translate
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 v1_p = 1/√(2) * ( v1_mode - v2_mode )
 v2_p = 1/√(2) * ( v1_mode + v2_mode )
 
@@ -203,7 +202,7 @@ dict_p_out = Dict(p_sym_out .=> p_num_out)
 nothing # hide
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 H_QO_2 = translate(H, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
 L_QO_2 = translate(L, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
 function input_output_2(t,ρ)
@@ -218,7 +217,7 @@ t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0_out, input_output_2)
 nothing # hide
 ````
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 nu1_t_comb = real(expect(au1'*au1, ρt_2))
 nu2_t_comb = real(expect(au2'*au2, ρt_2))
 nv1_t_comb = real(expect(av1'*av1, ρt_2))
@@ -228,7 +227,7 @@ nothing # hide
 
 We can see that the two single photons combine to a two photon Fock-state in one temporal mode.
 
-````@example 03-1_beam-combiner_PRA2023_107-_023715_fig2-fig3
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 close("beam combiner") # hide
 figure("beam combiner")
 plot(T, nu2_t_comb, color="red", ls="--", label=L"\langle a^\dagger a \rangle_{u_2}")

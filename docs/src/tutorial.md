@@ -1,11 +1,216 @@
 # Tutorial
 
-The basic usage is probably best illustrated with a brief example. In the following, we solve a simple model for a photon pulse scattered by a quantum dot in a chiral waveguide. 
+The basic usage is probably best illustrated with a brief example. In the following, we describe the cavity scattering of a single photon. A common procedure is as follows 
 
-We start by loading the package, defining some symbolic parameters and the photonic annihilation operator `a` as well as the atomic transition operator `σ`, which denotes a transition from level `j` to level `i` as `σ(i,j)`. This allows us to quickly write down the Hamiltonian and the collapse operators of the system with their corresponding decay rates.
+1. build the SLH model
+2. translate it to numerical operators
+3. simulate the dynamics
+4. compute the two-time correlation matrix and extract the dominant output mode
+5. simulate the dynamics again with the output mode
+
+## 1. Setup and symbolic model
+
+We start by defining the symbolic Hilbert space, operators, and parameters. The model is a one-sided cavity with an input mode `u`, a system mode `c`, and an output mode `v`.
 
 ```@example tutorial
-using Latexify # hide
-set_default(double_linebreak=true) # hide
 using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumOptics
+using LinearAlgebra
+using PyPlot
+```
+
+```@example tutorial
+hu1 = FockSpace(:u1)
+hc1 = FockSpace(:c1)
+hv1 = FockSpace(:v1)
+h = hu1 ⊗ hc1 ⊗ hv1
+
+au = Destroy(h, :a_u, 1)
+c = Destroy(h, :c, 2)
+av = Destroy(h, :a_v, 3)
+
+gu, Δ, γ = rnumbers("g_u Δ γ")
+gv = cnumber("g_v")
+nothing # hide
+```
+
+The SLH triples for input mode, system cavity, and output mode are then cascaded to obtain the effective Hamiltonian and Lindblad operator.
+
+```@example tutorial
+G_u = SLH(1, gu * au, 0)
+G_c = SLH(1, √(γ) * c, Δ * c' * c)
+G_v = SLH(1, gv * av, 0)
+
+G_cas = ▷(G_u, G_c, G_v)
+nothing # hide
+```
+
+```@example tutorial
+H = get_hamiltonian(G_cas)
+```
+
+```@example tutorial
+L = get_lindblad(G_cas)[1]
+```
+
+## 2. Numerical parameters and input pulse
+
+We choose numerical parameters and define a Gaussian input pulse `u(t)` and calculate the corresponding coupling function `g_u(t)`.
+
+```@example tutorial
+γ_ = 1.0
+Δ_ = 0.0
+
+p_sym = [γ, Δ, gv]
+p_num = [γ_, Δ_, 0.0] # gv = 0
+dict_p = Dict(p_sym .=> p_num)
+
+# Gaussian input mode
+T_p = 1/γ_
+T_end = 12T_p
+σ = sqrt(0.5)*T_p
+u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
+T = [0:0.002:1;]*T_end
+ΔT = T[2] - T[1]
+
+gu_int = u_to_gu(u1, T)
+gu_t(t) = gu_int(t)
+dict_p_t = Dict(gu => gu_t)
+nothing # hide
+```
+
+We define the numerical basis and translate the symbolic operators into `QuantumOptics.jl` objects. If `time_dep_param` is provided, the result becomes a function of time. Since the purpose of the package is to describe pulses, this is the usual case.  
+
+```@example tutorial
+bu1 = FockBasis(2)
+bc1 = FockBasis(2)
+bv1 = FockBasis(2)
+b = bu1 ⊗ bc1 ⊗ bv1
+
+H_QO = translate(H, b; parameter=dict_p, time_dep_param=dict_p_t)
+L_QO = translate(L, b; parameter=dict_p, time_dep_param=dict_p_t)
+nothing # hide
+```
+
+## 3. Time evolution
+
+We now solve the master equation. The required callback for `timeevolution.master_dynamic` returns `H(t)`, `J(t)` and `J⁺(t)` at each time.
+
+```@example tutorial
+function input_output_1(t, ρ)
+    Ht = H_QO(t)
+    J = [L_QO(t)]
+    return Ht, J, dagger.(J)
+end
+
+ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
+t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1)
+nothing # hide
+```
+
+## 4. Two-time correlation function
+
+To extract the dominant output mode, we compute the two-time correlation matrix
+``g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle`` and diagonalize it. To this end, we first define the desired numerical operators. 
+
+```@example tutorial
+au_qo = translate(au, b)
+c_qo = translate(c, b)
+av_qo = translate(av, b)
+
+Ls(t) = gu_t(t) * au_qo + √(γ_) * c_qo
+g1_m = two_time_corr_matrix(T, ρt, input_output_1, Ls)
+nothing # hide
+```
+
+```@example tutorial
+close("g1(t1,t2) matrix")
+figure("g1(t1,t2) matrix", figsize=(4,3.5))
+pcolormesh(T, T, real.(g1_m), cmap="inferno")
+xlabel(L"\gamma t_2")
+ylabel(L"\gamma t_1")
+tight_layout()
+colorbar(label=L"g^{(1)}(t_1,t_2)")
+gcf() 
+```
+
+The dominant temporal output mode corresponds to the eigenvector with the largest eigenvalue. With the average photon number in each mode, we can see that the photon is scattered into a single temporal mode.
+
+```@example tutorial
+F = eigen(g1_m)
+ΔT = T[2] - T[1]
+n_avg =  round.(real.(F.values)*ΔT; digits=3)
+
+modes = F.vectors
+v_mode = modes[:, end] / sqrt(ΔT)
+@show n_avg[end-1:end]
+nothing # hide
+```
+
+## 5. Output mode and full dynamics
+
+Finally, we treat the dominant output mode explicitly by providing `g_v(t)` (and its conjugate) as time-dependent parameters, and propagate the system again.
+
+```@example tutorial
+gv_t_ = v_to_gv(v_mode, T)
+gv_t(t) = gv_t_(t)
+gvc_t(t) = conj(gv_t_(t))
+
+dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t])
+dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])
+
+H_QO_2 = translate(H, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
+L_QO_2 = translate(L, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
+
+function input_output_2(t, ρ)
+    Ht = H_QO_2(t)
+    J = [L_QO_2(t)]
+    return Ht, J, dagger.(J)
+end
+```
+
+```@example tutorial
+t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
+
+n_u_t = real.(expect(au_qo' * au_qo, ρt))
+n_c_t = real.(expect(c_qo' * c_qo, ρt))
+n_v_t = real.(expect(av_qo' * av_qo, ρt_2))
+nothing # hide
+```
+
+We can see that the photon is fully scattered into a single mode, which is due to the linearity of the system. 
+
+```@example tutorial
+close("modes")
+figure("modes")
+subplot(2,1,1)
+plot(T, u1.(T), ls="--", label="u", color="red")
+fill_between(T, 0., u1.(T), alpha=0.5, color="red")
+
+plot(T, real.(v_mode), color="blue", label="v")
+fill_between(T, 0., real.(v_mode), alpha=0.5, color="blue")
+xlim(0,12)
+ylim(-0.8,0.8)
+yticks([-0.8,0,0.8])
+ylabel("modes")
+legend()
+
+twinx()
+xlim(0,12)
+ylim(0,8)
+plot(T, abs2.(gu_t.(T)), color="red")
+plot(T[3:end], abs2.(gv_t.(T))[3:end], color="blue", ls="--")
+ylabel("Rates (γ)")
+
+subplot(2,1,2)
+plot(T, n_u_t, label=L"\langle a^\dagger a \rangle_u", color="red")
+plot(T, n_c_t, label=L"\langle c^\dagger c \rangle", color="green")
+plot(T, n_v_t, label=L"\langle a^\dagger a \rangle_v", color="blue")
+xlim(0,12)
+ylim(0,1)
+xlabel("time (1/γ)")
+ylabel("Exciations")
+legend()
+gcf()
 ```
