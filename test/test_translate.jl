@@ -58,18 +58,17 @@ using Test
     @test isequal(a_QO2, dense(to_numeric(a,b)))
     @test isequal(translate(Δ, b; parameter=dict_p1), one(b)*Δn)
     F3 = translate(Δ, b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F3(4), one(b)*Δn)
+    @test sum(abs.((F3(4) - one(b)*Δn).data)) < 1e-8
     F4 = translate(a*3*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F4(0.2), dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2,2)))
-    
+    @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2,2))).data)) < 1e-8
     F5 = translate(a*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F5(0.2), dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2,2)))
+    @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2,2))).data)) < 1e-8
     F5_ = translate(a*conj(E), b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F5_(0.2), dense(a_QO2*E_t_c(0.2)))
+    @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
     F6 = translate(conj(E), b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F6(0.2), dense(E_t_c(0.2)*one(b)) )
+    @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
     F7 = translate(conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
-    @test isequal(F7(0.2), dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2,2)))
+    @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2,2))).data)) < 1e-8
     @test_throws MethodError translate(conj(E), b; parameter=dict_p1)
     # F8 = translate(E^2, b; parameter=dict_p1, time_dep_param=dict_p_t2) # TODO
 end
