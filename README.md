@@ -35,6 +35,6 @@ julia --project=docs -e 'using Pkg; Pkg.instantiate(); include("docs/make.jl")'
 ## Contributing
 
 Contributions are welcome. Please open an issue or a pull request with:
-- a brief description of the problem or feature,
-- minimal reproducible example or tests if applicable.
+- a brief description of the problem or feature
+- minimal reproducible example or tests if applicable
 
