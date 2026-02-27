@@ -8,9 +8,9 @@
     - [ ] Multi-mode Dicke state superradiance
     - [ ] SUPER example (Johannes)
   - [ ] theory
-  - [ ] introduction
+  - [x] introduction
   - [ ] API
-  - [ ] tutorial
+  - [x] tutorial
   - [ ] implementation
 - [ ] create more tests (cov +80%)
   - [ ] simple full example
