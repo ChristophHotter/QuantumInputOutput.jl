@@ -17,7 +17,7 @@ pages = [
         "examples/02-1_cavity-phase-noise__PRA2020_102- 023717_fig2.md",
         "examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.md",
         "examples/04-1_two-sided-cavity_with-atom_coh-drive.md",
-        "examples/05-1_N-QDs_bidirectional-waveguide_coherent-pulse"
+        "examples/05-1_N-QDs_bidirectional-waveguide_coherent-pulse.md"
     ],
 ]
 

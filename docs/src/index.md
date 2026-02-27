@@ -27,7 +27,7 @@ The typical workflow is:
 ## Where to Go
 
 - [Tutorial](@ref) for a complete walkthrough of cavity scattering
-- [Theoretical background](@ref) for the input-output formalism with quantum pulses
+- [Theory](@ref) for the input-output formalism with quantum pulses
 - [Implementation](@ref) for the symbolic-to-numeric pipeline
 - [API](@ref) for the full list of functions
-- [Examples](@ref) for multiple different usage illustrations
+- `Examples` for multiple different usage illustrations # TODO: reference?

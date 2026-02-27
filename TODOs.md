@@ -13,7 +13,7 @@
   - [x] tutorial
   - [ ] implementation
 - [ ] create more tests (cov +80%)
-  - [ ] simple full example
+  - [x] simple full example
   - [ ] translate.jl
   - [ ] utils.jl
 - [ ] more functionalities
@@ -34,7 +34,7 @@
     - [x] Be careful with other operations for time-dependent functions (power, conj, ...) 
     - [x] Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
 - [x] Parameter equal to 1.0 
-- [ ] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
+- [x] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
 - [x] Kwarg to provide substitution operators 
 - [x] level_map 
 - [x] output_functions name - test if name matters [names matter!]
