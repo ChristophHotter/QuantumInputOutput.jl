@@ -47,7 +47,7 @@
   - [ ] SLH: .S, .L, .H (instead of .scattering ...)
   - [ ] ui_to_u_i_im1, vi_to_v_i_im1
   - [ ] time_dep_param -> time_parameter
-- [ ] change README.me
+- [x] change README.me
 - [ ] SLH more specific types
   - [ ] AbstractVector{<:QTerm}
 - [ ] SLH for QO.jl objects directly

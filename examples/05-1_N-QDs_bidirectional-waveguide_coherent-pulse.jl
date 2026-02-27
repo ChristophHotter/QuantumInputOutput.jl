@@ -105,7 +105,7 @@ nothing # hide
 #
 
 ## time evolution
-T = collect(0.0:0.05:10.0)
+T = [0:0.01:1;]*Tend
 ψ0 = tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
@@ -138,4 +138,55 @@ grid(true)
 tight_layout()
 gcf()
 
-# TODO: simulate g2
+# ## Quantum regression theorem
+
+# In the following, we calculate the two-time correlation function $G^{(2)}(t_1,t_2)$ for the transmitted and reflected pulse via the quantum regression theorem.
+
+## two-time correlation function G2(t1, t2)
+lT = length(T)
+G2 = zeros(lT, lT)
+G2_ref = zeros(lT, lT)
+
+L0(t) = L_R_QO(t) 
+L0_dag(t) = dagger(L0(t))
+L0_ref(t) = L_L_QO(t)
+L0_ref_dag(t) = dagger(L0_ref(t))
+
+for it1 = 1:lT-1
+    ρ_t1 = ρt[it1]
+
+    t_2, ρ_2 = timeevolution.master_dynamic(
+        T[it1:end], L0(T[it1]) * ρ_t1 * L0_dag(T[it1]), input_output)
+
+    G2_ls = real.([expect(L0_dag(t_2[j]) * L0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
+    G2[it1, it1:end] = G2_ls
+    G2[it1:end, it1] = G2_ls
+
+    t_2_r, ρ_2_r = timeevolution.master_dynamic(
+        T[it1:end], L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]), input_output)
+
+    G2_ls_r = real.([expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)])
+    G2_ref[it1, it1:end] = G2_ls_r
+    G2_ref[it1:end, it1] = G2_ls_r
+end
+nothing # hide
+
+#
+
+close("G2") # hide
+figure("G2", figsize = (7, 3))
+subplot(121)
+title("reflection")
+pcolormesh(T, T, G2_ref' / maximum(G2_ref), cmap = "inferno")
+xlabel(L"t_1")
+ylabel(L"t_2")
+colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
+
+subplot(122)
+title("transmission")
+pcolormesh(T, T, G2' / maximum(G2), cmap = "inferno")
+xlabel(L"t_1")
+ylabel(L"t_2")
+colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
+tight_layout()
+gcf()
