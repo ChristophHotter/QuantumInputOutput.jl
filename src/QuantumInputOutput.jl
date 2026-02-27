@@ -24,7 +24,7 @@ export SLH, # SLH.jl
     ▷,
     cascade, 
     ⊞,
-    concatenation, 
+    concatenate, 
     translate, # translate.jl
     u_to_gu, # utils.jl
     v_to_gv, 

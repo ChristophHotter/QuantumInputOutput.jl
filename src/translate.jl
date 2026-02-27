@@ -7,26 +7,26 @@ _translate_numeric_raw(op, b; level_map=nothing, operators=Dict(), op_type=spars
 _translate_one(b, operators, op_type) =
     isempty(operators) ? op_type(one(b)) : op_type(one(basis(collect(values(operators))[1])))
 
-function _normalize_time_dep_param(time_dep_param)
-    if isempty(time_dep_param)
-        return time_dep_param
+function _normalize_time_parameter(time_parameter)
+    if isempty(time_parameter)
+        return time_parameter
     end
     out = Dict()
-    for (k, v) in time_dep_param
+    for (k, v) in time_parameter
         if isa(v, Function) 
             out[k] = v
         elseif isa(v, Number)
             out[k] = t -> v
         else
-            error("time_dep_param values must be callable or numeric, got $(typeof(v)) for key $(k)")
+            error("time_parameter values must be callable or numeric, got $(typeof(v)) for key $(k)")
         end
     end
     return out
 end
 
-function _translate_prefactor(arg_c, time_dep_param)
+function _translate_prefactor(arg_c, time_parameter)
     if !iscall(arg_c) # only one symbolic function in arg_c_ #TODO: time-dep parameter, e.g. g(t)
-        arg_c_sub = substitute(arg_c, time_dep_param)
+        arg_c_sub = substitute(arg_c, time_parameter)
         if isa(arg_c_sub, Function)
             return true, arg_c_sub
         else
@@ -40,7 +40,7 @@ function _translate_prefactor(arg_c, time_dep_param)
     # TODO: directly use gu(t) without substitution? (think about iscall)
     if length(arg_c_args) == 1  # conj(g)*a, sqrt(g)*a # TODO: g^2*a [length(arg_c_args) == 2]
         if arg_c_op ∈ [conj, sqrt]
-            arg_c_1 = substitute(arg_c, time_dep_param)
+            arg_c_1 = substitute(arg_c, time_parameter)
             return true, arg_c_1
         end
     else
@@ -49,7 +49,7 @@ function _translate_prefactor(arg_c, time_dep_param)
         parameter, you need to include it in the time-dependent function dictionary, see e.g.: [REF-example]
         At the moment we are also limited to functions with only one argument.") # TODO
     end
-    arg_c_all = [substitute(arg, time_dep_param) for arg ∈ arg_c_args]
+    arg_c_all = [substitute(arg, time_parameter) for arg ∈ arg_c_args]
     arg_c_numbers = filter(x -> isa(x, Number), arg_c_all)
     arg_c_functions = filter(x -> !isa(x, Number), arg_c_all)
     pref_num = prod(arg_c_numbers)
@@ -61,10 +61,10 @@ function _translate_prefactor(arg_c, time_dep_param)
 end
 
 function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
-    parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)
+    parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)
 
-    time_dep_param = _normalize_time_dep_param(time_dep_param)
-    if isempty(time_dep_param)
+    time_parameter = _normalize_time_parameter(time_parameter)
+    if isempty(time_parameter)
         return _translate_numeric(op, b; parameter=parameter, level_map=level_map, operators=operators, op_type=op_type) # TODO: test
     end
 
@@ -81,7 +81,7 @@ function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
         args_nc = op_.args_nc
         prod_args_nc = op_type(prod((to_numeric(arg, b, operators; level_map=level_map)) for arg in args_nc)) #TODO: dense, sparse, etc
 
-        is_func, pref = _translate_prefactor(arg_c, time_dep_param)
+        is_func, pref = _translate_prefactor(arg_c, time_parameter)
         if is_func
             return t -> pref(t) * prod_args_nc
         end
@@ -91,29 +91,29 @@ function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
 end
 #
 function translate(op::QuantumCumulants.QAdd, b::QuantumOpticsBase.Basis; 
-        parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
+        parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
 
-    time_dep_param = _normalize_time_dep_param(time_dep_param)
+    time_parameter = _normalize_time_parameter(time_parameter)
     op = expand(op) # should ensure that only multiplications are in arguments
     ### only static operators - returns a time-independent Hamiltonian and Lindblad
-    if isempty(time_dep_param)
+    if isempty(time_parameter)
         return _translate_numeric(op, b; parameter=parameter, level_map=level_map, operators=operators, op_type=op_type) # TODO: test
     end
 
     ### static and time-dependent operators
     args = arguments(substitute(op, parameter)) 
-    args_translated = [translate(arg, b; parameter=parameter, time_dep_param=time_dep_param, level_map=level_map, operators=operators, op_type=sparse) for arg in args]
+    args_translated = [translate(arg, b; parameter=parameter, time_parameter=time_parameter, level_map=level_map, operators=operators, op_type=sparse) for arg in args]
 
     output_op_QAdd_QO = t -> sum( args_translated[i](t) for i=1:length(args_translated) )
     return output_op_QAdd_QO
 end
 
 function translate(op::QSym, b::QuantumOpticsBase.Basis; 
-    parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
+    parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
     # QSym are only fundamental symbolic operators, e.g. a, σ_-, x, ...
 
-    time_dep_param = _normalize_time_dep_param(time_dep_param)
-    if isempty(time_dep_param)
+    time_parameter = _normalize_time_parameter(time_parameter)
+    if isempty(time_parameter)
         return _translate_numeric(op, b; parameter=parameter, level_map=level_map, operators=operators, op_type=op_type) # TODO: test
     end
 
@@ -123,9 +123,9 @@ function translate(op::QSym, b::QuantumOpticsBase.Basis;
 end
 # # Default just use to_numeric() ? 
 # function translate(op, b::QuantumOpticsBase.Basis; 
-#     parameter=Dict(), time_dep_param=Dict(), level_map=nothing)  
+#     parameter=Dict(), time_parameter=Dict(), level_map=nothing)  
     
-#     if isempty(time_dep_param)
+#     if isempty(time_parameter)
 #         return to_numeric(substitute(op, parameter), b; level_map=level_map) # TODO: test
 #     end
 
@@ -136,18 +136,18 @@ end
 #
 
 function translate(arg_c_, b::QuantumOpticsBase.Basis; 
-    parameter=Dict(), time_dep_param=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
+    parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
     # should only be needed for numbers and symbolic paramters
 
     arg_c = substitute(arg_c_, parameter)
     one_b = _translate_one(b, operators, op_type)
 
-    time_dep_param = _normalize_time_dep_param(time_dep_param)
-    if isempty(time_dep_param)
+    time_parameter = _normalize_time_parameter(time_parameter)
+    if isempty(time_parameter)
         return arg_c * one_b
     end
 
-    is_func, pref = _translate_prefactor(arg_c, time_dep_param)
+    is_func, pref = _translate_prefactor(arg_c, time_parameter)
     if is_func
         return t -> pref(t) * one_b
     end

@@ -32,7 +32,7 @@ av = Destroy(h,:a_v,3) # output cavity
 nothing # hide
 ````
 
-We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with concatenation, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
+We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
 
 ````@example xx-x_cat-state-generation__PRA2004_70-033604
 H_ac = -Δc*a'a - Δa*σ(2,2) - g*( σ(2,1)*a + σ(1,2)*a' ) + η*σ(2,1) + η'*σ(1,2)
@@ -90,7 +90,7 @@ ops_sym = [a, a', σ(2,2), σ(1,2), σ(2,1)]
 ops_QO = [a_QO, dagger(a_QO), σ_QO(2,2), σ_QO(1,2), σ_QO(2,1)]
 ops_dict = Dict(ops_sym .=> ops_QO)
 
-H_QO = translate(H_ac, b; parameter=dict_p, time_dep_param=dict_t, operators=ops_dict)
+H_QO = translate(H_ac, b; parameter=dict_p, time_parameter=dict_t, operators=ops_dict)
 L_QO = translate(√(κ)*a, b; parameter=dict_p, operators=ops_dict)
 J_add_QO = √(γ_)*σ_QO(1,2)
 
@@ -171,8 +171,8 @@ G_cas = G_ac ▷ G_v
 H_2 = G_cas.hamiltonian
 L_2 = G_cas.lindblad[1]
 
-H_QO_2 = translate(H_2, b; parameter=dict_p, time_dep_param=dict_t_2)
-L_QO_2 = translate(L_2, b; parameter=dict_p, time_dep_param=dict_t_2)
+H_QO_2 = translate(H_2, b; parameter=dict_p, time_parameter=dict_t_2)
+L_QO_2 = translate(L_2, b; parameter=dict_p, time_parameter=dict_t_2)
 J_add_QO_2 = translate(√(γ)*σ(1,2), b; parameter=dict_p)
 
 function input_output_2(t,ρ)
@@ -207,4 +207,3 @@ colorbar()
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-

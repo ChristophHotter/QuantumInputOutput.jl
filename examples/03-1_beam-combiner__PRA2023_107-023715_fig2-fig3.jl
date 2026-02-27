@@ -80,8 +80,8 @@ bs1 = NLevelBasis(2)
 bv1 = FockBasis(2)
 b = bu2 ⊗ bu1 ⊗ bs1 ⊗ bv1;
 
-H_QO = translate(H, b; parameter=dict_p, time_dep_param=dict_p_t)
-L_QO = translate(L, b; parameter=dict_p, time_dep_param=dict_p_t)
+H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
 function input_output(t,ρ)
     H = H_QO(t)
     J = [L_QO(t)]
@@ -184,8 +184,8 @@ nothing # hide
 
 #
 
-H_QO_2 = translate(H, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
-L_QO_2 = translate(L, b; parameter=dict_p_out, time_dep_param=dict_p_t_out)
+H_QO_2 = translate(H, b; parameter=dict_p_out, time_parameter=dict_p_t_out)
+L_QO_2 = translate(L, b; parameter=dict_p_out, time_parameter=dict_p_t_out)
 function input_output_2(t,ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]

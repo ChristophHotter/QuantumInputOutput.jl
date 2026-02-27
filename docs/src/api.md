@@ -19,5 +19,5 @@ cascade
 ```
 
 ```@docs
-concatenation
+concatenate
 ```

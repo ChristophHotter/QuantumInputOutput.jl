@@ -72,10 +72,10 @@ bv1 = FockBasis(1)
 b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 
-# We now use the function `translate()` to create the numeric operators. If the kwarg `time_dep_param` is provided the created operator is a time-dependent function. 
+# We now use the function `translate()` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
 
-H_QO = translate(H, b; parameter=dict_p, time_dep_param=dict_p_t)
-L_QO = translate(L, b; parameter=dict_p, time_dep_param=dict_p_t)
+H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
 nothing # hide
 
 
@@ -145,8 +145,8 @@ gvc_t(t) = conj(gv_t_(t))
 
 dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
 
-H_QO_2 = translate(H, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
-L_QO_2 = translate(L, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
+H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
+L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
 function input_output_2(t,ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]
@@ -209,8 +209,8 @@ av_3 = embed(b_3, 3, destroy(bv1_3))
 cdc_3 = c_3'c_3
 
 ## we use the same Hamiltonian as before but add a depasing term to the dissipation 
-H_QO_3 = translate(H, b_3; parameter=dict_p_2, time_dep_param=dict_p_t_2)
-L_QO_3 = translate(L, b_3; parameter=dict_p_2, time_dep_param=dict_p_t_2)
+H_QO_3 = translate(H, b_3; parameter=dict_p_2, time_parameter=dict_p_t_2)
+L_QO_3 = translate(L, b_3; parameter=dict_p_2, time_parameter=dict_p_t_2)
 function input_output_3(t,ρ)
     H = H_QO_3(t)
     J = [L_QO_3(t), √(γ_)*cdc_3]

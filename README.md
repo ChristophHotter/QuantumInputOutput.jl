@@ -5,7 +5,7 @@ It combines a symbolic layer for the SLH formalism based on `SecondQuantizedAlge
 
 ## Key Features
 
-- SLH modeling with cascade (`▷`) and concatenation (`⊞`) rules
+- SLH modeling with cascade (`▷`) and concatenate (`⊞`) rules
 - Symbolic-to-numeric translation (including time-dependent couplings)
 - Virtual-cavity tools for temporal input and output modes
 - Two-time correlation functions and output-mode extraction
@@ -37,4 +37,3 @@ julia --project=docs -e 'using Pkg; Pkg.instantiate(); include("docs/make.jl")'
 Contributions are welcome. Please open an issue or a pull request with:
 - a brief description of the problem or feature
 - minimal reproducible example or tests if applicable
-

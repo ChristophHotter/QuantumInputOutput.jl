@@ -52,11 +52,11 @@ using Test
         @test iszero(simplify(G2.lindblad[1] - (gu*au + √(γ)*c + gv*av)))
     end
 
-    @testset "simple_concatenation" begin
+    @testset "simple_concatenate" begin
         G1 = SLH(1, gu*au, 0)
         G2 = SLH(1, √(γ)*c, Δ*c'c)
 
-        Gc = concatenation(G1, G2)
+        Gc = concatenate(G1, G2)
 
         @test size(Gc.scattering) == (2, 2)
         @test Gc.scattering == [1 0; 0 1]
@@ -70,4 +70,3 @@ using Test
     end
 
 end
-

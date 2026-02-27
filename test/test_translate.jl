@@ -38,10 +38,10 @@ using Test
         @test isequal(translate(2, bc1; parameter=dict_p1, operators=ops_dict), one(bc1)*2)
         @test isequal(translate(a, bc1; parameter=dict_p1, operators=ops_dict), a_QO)
         @test isequal(translate(a*3, bc1; parameter=dict_p1, operators=ops_dict), a_QO*3)
-        F1 = translate(a*3, bc1; parameter=dict_p1, time_dep_param=dict_p_t2, operators=ops_dict)
+        F1 = translate(a*3, bc1; parameter=dict_p1, time_parameter=dict_p_t2, operators=ops_dict)
         @test isa(F1, Function)
         @test isequal(F1(0.1),a_QO*3)
-        F2 = translate(a*E, bc1; parameter=dict_p1, time_dep_param=dict_p_t2, operators=ops_dict)
+        F2 = translate(a*E, bc1; parameter=dict_p1, time_parameter=dict_p_t2, operators=ops_dict)
         @test isequal(F2(0.1),a_QO*E_t(0.1))
         F2(0.1)
         a_QO*E_t(0.1)
@@ -57,24 +57,24 @@ using Test
     
     @test isequal(a_QO2, dense(to_numeric(a,b)))
     @test isequal(translate(Δ, b; parameter=dict_p1), one(b)*Δn)
-    F3 = translate(Δ, b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F3 = translate(Δ, b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F3(4) - one(b)*Δn).data)) < 1e-8
-    F4 = translate(a*3*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F4 = translate(a*3*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2,2))).data)) < 1e-8
-    F5 = translate(a*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F5 = translate(a*conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2,2))).data)) < 1e-8
-    F5_ = translate(a*conj(E), b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F5_ = translate(a*conj(E), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
-    F6 = translate(conj(E), b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F6 = translate(conj(E), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
-    F7 = translate(conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_dep_param=dict_p_t2)
+    F7 = translate(conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2,2))).data)) < 1e-8
     @test_throws MethodError translate(conj(E), b; parameter=dict_p1)
-    # F8 = translate(E^2, b; parameter=dict_p1, time_dep_param=dict_p_t2) # TODO
+    # F8 = translate(E^2, b; parameter=dict_p1, time_parameter=dict_p_t2) # TODO
 
-    @testset "time_dep_param_normalization" begin
+    @testset "time_parameter_normalization" begin
         dict_p_t_num = Dict([E] .=> [2.5])
-        F_num = translate(a*E, b; parameter=dict_p1, time_dep_param=dict_p_t_num)
+        F_num = translate(a*E, b; parameter=dict_p1, time_parameter=dict_p_t_num)
         @test sum(abs.((F_num(0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
     end
 end

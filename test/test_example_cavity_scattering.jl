@@ -47,8 +47,8 @@ using Test
     bv1 = FockBasis(2)
     b = bu1 ⊗ bc1 ⊗ bv1
 
-    H_QO = translate(H, b; parameter=dict_p, time_dep_param=dict_p_t)
-    L_QO = translate(L, b; parameter=dict_p, time_dep_param=dict_p_t)
+    H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
+    L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
 
     function input_output_1(t, ρ)
         Ht = H_QO(t)
@@ -93,8 +93,8 @@ using Test
     
     dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
     
-    H_QO_2 = translate(H, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
-    L_QO_2 = translate(L, b; parameter=dict_p_2, time_dep_param=dict_p_t_2)
+    H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
+    L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
     function input_output_2(t,ρ)
         H = H_QO_2(t)
         J = [L_QO_2(t)]

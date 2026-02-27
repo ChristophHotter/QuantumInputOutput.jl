@@ -30,7 +30,7 @@ a = Destroy(h,:a,1) # cavity
 nothing # hide
 ````
 
-We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with concatenation, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
+We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 G_d = SLH(1, E, 0) # classical drive
@@ -222,8 +222,8 @@ a_QO2 = to_numeric(a,b)
 σ_QO(α,i,j) = to_numeric(σ(α,i,j),b)
 
 # translate to numeric Hamiltonian and Lindblad
-H_QO = translate(H2, b; parameter=dict_p2, time_dep_param=dict_p_t2)
-L2_L_QO = translate(L2_L, b; parameter=dict_p2, time_dep_param=dict_p_t2)
+H_QO = translate(H2, b; parameter=dict_p2, time_parameter=dict_p_t2)
+L2_L_QO = translate(L2_L, b; parameter=dict_p2, time_parameter=dict_p_t2)
 L2_R_QO = translate(L2_R, b; parameter=dict_p2)
 
 # additional atomic decay into free space
@@ -271,4 +271,3 @@ We can see that only about 5% is transmitted and 71% are reflected. The rest is 
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-

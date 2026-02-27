@@ -24,7 +24,7 @@ a = Destroy(h,:a,1) # cavity
 ∑σ(i,j) = sum(σ(α,i,j) for α=1:Natoms) # collective atomic operator
 nothing # hide 
 
-# We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with concatenation, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option. 
+# We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option. 
 
 G_d = SLH(1, E, 0) # classical drive
 H_cavity = -Δ*a'a
@@ -36,7 +36,7 @@ G_c_R = SLH(1,[√(κ_R)*a], 0)
 G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R
 nothing # hide 
 
-# Note that one needs to be careful to not double-count the Hamiltonian terms with the concatination. 
+# Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule. 
 
 H1 = get_hamiltonian(G_cav_L_R_drive)
 
@@ -205,8 +205,8 @@ a_QO2 = to_numeric(a,b)
 σ_QO(α,i,j) = to_numeric(σ(α,i,j),b)
 
 ## translate to numeric Hamiltonian and Lindblad
-H_QO = translate(H2, b; parameter=dict_p2, time_dep_param=dict_p_t2)
-L2_L_QO = translate(L2_L, b; parameter=dict_p2, time_dep_param=dict_p_t2)
+H_QO = translate(H2, b; parameter=dict_p2, time_parameter=dict_p_t2)
+L2_L_QO = translate(L2_L, b; parameter=dict_p2, time_parameter=dict_p_t2)
 L2_R_QO = translate(L2_R, b; parameter=dict_p2)
 
 ## additional atomic decay into free space

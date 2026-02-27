@@ -88,9 +88,9 @@ nothing # hide
 ba = NLevelBasis(2)
 b = tensor([ba for i = 1:N]...)
 
-H_QO = translate(H, b; parameter=dict_p, time_dep_param=dict_p_t)
-L_R_QO = translate(L_R, b; parameter=dict_p, time_dep_param=dict_p_t)
-L_L_QO = translate(L_L, b; parameter=dict_p, time_dep_param=dict_p_t)
+H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_R_QO = translate(L_R, b; parameter=dict_p, time_parameter=dict_p_t)
+L_L_QO = translate(L_L, b; parameter=dict_p, time_parameter=dict_p_t)
 
 σ_qo(α,i,j) = translate(σ(α,i,j), b)
 J_add = [√(γ_add[i])*σ_qo(i,1,2) for i=1:N]

@@ -89,7 +89,7 @@ cascade(args...) = ▷(args...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
 the rule ``SLH_1 \\boxplus SLH_2 = TODO``
-Unicode `\\boxplus<tab>` alias of [`concatenation`](@ref)
+Unicode `\\boxplus<tab>` alias of [`concatenate`](@ref)
 """
 function ⊞(G1::SLH,G2::SLH) #\boxplus
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
@@ -110,21 +110,14 @@ end
 ⊞(a::SLH, b::SLH, c::SLH...) = ⊞(a⊞b,c...)
 
 """
-    concatenation(G::SLH...)
+    concatenate(G::SLH...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
 the rule ``SLH_1 \\boxplus SLH_2 = TODO``
 See also [`⊞`](@ref).
 """
-concatenation(args...) = ⊞(args...)
-# function concatenation(G_ls::AbstractVector)
-#     lG = length(G_ls)
-#     G_temp = G_ls[1]
-#     for i=1:lG-1
-#         G_temp = concatenation(G_temp,G_ls[i+1])
-#     end
-#     return G_temp
-# end
+concatenate(args...) = ⊞(args...)
+concatenation(args...) = concatenate(args...) # alias
 
 Base.length(h::SecondQuantizedAlgebra.ConcreteHilbertSpace) = 1
 Base.length(h::ProductSpace) = length(h.spaces)

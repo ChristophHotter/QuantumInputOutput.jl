@@ -43,10 +43,10 @@
 
 
 - [ ] rename functions:
-  - [ ] concatenation -> concatenate
+  - [x] concatenation -> concatenate
   - [ ] SLH: .S, .L, .H (instead of .scattering ...)
   - [ ] ui_to_u_i_im1, vi_to_v_i_im1
-  - [ ] time_dep_param -> time_parameter
+  - [x] time_dep_param -> time_parameter
 - [x] change README.me
 - [ ] SLH more specific types
   - [ ] AbstractVector{<:QTerm}
