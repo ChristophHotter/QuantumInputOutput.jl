@@ -1,4 +1,4 @@
-# [Theoretical Background](@id theory)
+# Theory
 
 This section summarizes the theoretical ideas behind **QuantumInputOutput.jl**, i.e. input-output theory for quantum pulses, its formulation via SLH networks, and the use of virtual cavities to handle traveling wave packets. We also explain how temporal output-mode bases are determined using two-time correlation functions.
 
@@ -40,7 +40,7 @@ g_u(t) = \frac{u(t)}{\sqrt{1 - \int_0^t dt' \,|u(t')|^2}}
 ```
 
 emits the initial intracavity state into the traveling mode $u(t)$. Conversely, for a chosen output mode
-``v(t)``, the coupling
+$v(t)$, the coupling
 
 ```math
 g_v(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2}}
@@ -53,13 +53,36 @@ absorbs that mode into the virtual output cavity. These expressions make it poss
 In the SLH formalism, each component is specified by a triple ``(S, L, H)``:
 
 - ``S``cattering matrix
-- ``L``Lindblad operators
+- ``L``indblad operators
 - ``H``amiltonian
 
 Networks are built using composition rules:
 
 1. **Cascade** (feed-forward): $G_1 \triangleright G_2$ connects the output of $G_1$ into the input of $G_2$.
+
+```math
+G_1 \triangleright G_2 = \left(
+S_2 S_1,\;
+L_2 + S_2 L_1,\;
+H_1 + H_2 + \frac{1}{2i}\left(L_2^\dagger S_2 L_1 - L_1^\dagger S_2^\dagger L_2\right)
+\right).
+```
+
 2. **Concatenation**: $G_1 \boxplus G_2$ stacks channels side-by-side.
+
+```math
+G_1 \boxplus G_2 = \left(
+\begin{bmatrix}
+S_1 & 0 \\
+0 & S_2
+\end{bmatrix},\;
+\begin{bmatrix}
+L_1 \\
+L_2
+\end{bmatrix},\;
+H_1 + H_2
+\right).
+```
 
 By modeling the input and output pulses as virtual cavities and cascading them with the physical system, we
 obtain an effective SLH triple for the full problem. This describes a master equation involving the system and and of auxiliary modes, which can be solved with standard Lindblad solvers. 
@@ -73,7 +96,7 @@ occupations, we compute the first-order correlation function
 g^{(1)}(t_1, t_2) = \langle \hat L_s^\dagger(t_1)\, \hat L_s(t_2) \rangle,
 ```
 
-where $\hat L_s$ is the output operator (e.g., $\hat L_s = \hat a$ for a cavity).
+where $\hat L_s$ is the output operator (e.g., $\hat L_s = g_u(t) \hat{a}_u + \sqrt{\kappa} \hat c$ for a single sided cavity interacting with a puls $u(t)$).
 The eigen-decomposition
 
 ```math
@@ -89,9 +112,7 @@ central to the workflows implemented in **QuantumInputOutput.jl**.
 
 ### References
 
-The above summary follows the virtual-cavity and SLH-based pulse formalism developed in the input-output
-literature on quantum pulses and cascaded systems, in particular the works by Kiilerich, Mølmer, and collaborators,
-as well as subsequent extensions by Christiansen and coworkers.
+The above summary follows the virtual-cavity and SLH-based pulse formalism developed in the input-output literature on quantum pulses and cascaded systems, in particular the works by Kiilerich, Mølmer, and collaborators.
 
 - Input-output theory with quantum pulses
   - [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604)
