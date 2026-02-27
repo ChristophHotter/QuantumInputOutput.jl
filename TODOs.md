@@ -7,7 +7,9 @@
     - [ ] interaction picture example (Victor paper)
     - [ ] Multi-mode Dicke state superradiance
     - [ ] SUPER example (Johannes)
-  - [ ] theory
+    - [ ] g2 for waveguide example
+    - [ ] pulse delay (Victor paper)
+  - [x] theory
   - [x] introduction
   - [ ] API
   - [x] tutorial
