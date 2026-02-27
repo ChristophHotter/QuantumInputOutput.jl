@@ -18,6 +18,7 @@ import QuantumCumulants: numeric_average, QNumber
 const QC = QuantumCumulants
 
 export SLH, # SLH.jl
+    SLHqo,
     get_scattering,
     get_lindblad,
     get_hamiltonian,

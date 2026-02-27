@@ -44,7 +44,7 @@
 
 - [ ] rename functions:
   - [x] concatenation -> concatenate
-  - [ ] SLH: .S, .L, .H (instead of .scattering ...)
+  - [ ] SLH: .S, .L, .H (instead of .scattering ...)?
   - [ ] ui_to_u_i_im1, vi_to_v_i_im1
   - [x] time_dep_param -> time_parameter
 - [x] change README.me

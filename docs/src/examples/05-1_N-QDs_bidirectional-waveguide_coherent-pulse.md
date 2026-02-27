@@ -42,11 +42,14 @@ G_ϕ(i, j) = SLH(exp(1im * ϕ(i, j)), 0, 0) # phase shift
 G_R(i) = SLH(1, √(γR(i)) * σ(i, 1, 2), -Δ(i) * σ(i, 2, 2)) # right-moving decay
 G_L(i) = SLH(1, √(γL(i)) * σ(i, 1, 2), 0) # left-moving decay
 
+
 # Cascade right-moving channel
-G_R_t = cascade(G_d, [G_R(i) for i=1:N]...)
+# G_R_t = G_d ▷ cascade([G_R(i) ▷ G_ϕ(i, i + 1) for i=1:N-1]...) ▷ G_R(N) # for N > 1 # hide
+G_R_t = G_d ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
 
 # Cascade left-moving channel (reverse order)
-G_L_t = cascade([G_L(i) for i=N:-1:1]...)
+# cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
+G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
 
 # Concatenate both channels
 G_t = G_R_t ⊞ G_L_t
@@ -73,14 +76,14 @@ Next, the numerical parameters and functions of the system are defined, and we t
 γLn = fill(γ_ * β / 2, N)
 γ_add = fill(γ_ * (1-β), N) # free space decay
 Δn = fill(0.0, N)
-ϕn = fill(0.25 * π, max(N - 1, 0))
+ϕn = fill(π/10, max(N - 1, 0))
 
-σt = 1.5 # pulse with
+σt = 0.8 # pulse with
 α0 = √(0.1) # √ of total photon number
-Ω0 = α0/(π^(1/4)*√(σt))
-t0 = 3σt
+t0 = 4σt # pulse peak
 Tend = 3t0
-Ein_t(t) = Ω0 * exp(-0.5 * (t - t0)^2 / σt^2)
+u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
+Ein_t(t) = α0*u1(t)
 
 p_sym = [ [γR(i) for i = 1:N];
           [γL(i) for i = 1:N];
@@ -114,7 +117,7 @@ nothing # hide
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
 # time evolution
-T = collect(0.0:0.05:10.0)
+T = [0:0.005:1;]*Tend
 ψ0 = tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
@@ -148,7 +151,60 @@ tight_layout()
 gcf()
 ````
 
-TODO: simulate g2
+## Quantum regression theorem
+
+In the following, we calculate the two-time correlation function $G^{(2)}(t_1,t_2)$ for the transmitted and reflected pulse via the quantum regression theorem.
+
+````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
+# two-time correlation function G2(t1, t2)
+lT = length(T)
+G2 = zeros(lT, lT)
+G2_ref = zeros(lT, lT)
+
+L0(t) = L_R_QO(t)
+L0_dag(t) = dagger(L0(t))
+L0_ref(t) = L_L_QO(t)
+L0_ref_dag(t) = dagger(L0_ref(t))
+
+for it1 = 1:lT-1
+    ρ_t1 = ρt[it1]
+
+    t_2, ρ_2 = timeevolution.master_dynamic(
+        T[it1:end], L0(T[it1]) * ρ_t1 * L0_dag(T[it1]), input_output)
+
+    G2_ls = real.([expect(L0_dag(t_2[j]) * L0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
+    G2[it1, it1:end] = G2_ls
+    G2[it1:end, it1] = G2_ls
+
+    t_2_r, ρ_2_r = timeevolution.master_dynamic(
+        T[it1:end], L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]), input_output)
+
+    G2_ls_r = real.([expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)])
+    G2_ref[it1, it1:end] = G2_ls_r
+    G2_ref[it1:end, it1] = G2_ls_r
+end
+nothing # hide
+````
+
+````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
+close("G2") # hide
+figure("G2", figsize = (7, 3))
+subplot(121)
+title("reflection")
+pcolormesh(T, T, G2_ref' / maximum(G2_ref), cmap = "inferno")
+xlabel(L"t_1")
+ylabel(L"t_2")
+colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
+
+subplot(122)
+title("transmission")
+pcolormesh(T, T, G2' / maximum(G2), cmap = "inferno")
+xlabel(L"t_1")
+ylabel(L"t_2")
+colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
+tight_layout()
+gcf()
+````
 
 ---
 

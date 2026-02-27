@@ -44,7 +44,7 @@ G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R
 nothing # hide
 ````
 
-Note that one needs to be careful to not double-count the Hamiltonian terms with the concatination.
+Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 H1 = get_hamiltonian(G_cav_L_R_drive)
@@ -271,3 +271,4 @@ We can see that only about 5% is transmitted and 71% are reflected. The rest is 
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+
