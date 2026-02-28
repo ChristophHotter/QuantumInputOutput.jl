@@ -4,8 +4,8 @@ EditURL = "../../../examples/05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 
 # Quantum Pulse Bi-Directional Waveguide
 
-This example mirrors the example `Bi-Directional Waveguide` but uses the numeric SLH struct `SLHqo` directly
-and drives the system with a *quantum* single-photon pulse via a virtual cavity.
+This example mirrors the example `Bi-Directional Waveguide` but uses the numeric SLH struct `SLHqo` directly to circumvent the symbolic derivation part.
+Furthermore it drives the system with a *quantum* single-photon pulse via a virtual cavity.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 using QuantumInputOutput
@@ -30,11 +30,11 @@ b = bu ⊗ b_qds
 a_u = destroy(bu) ⊗ one(b_qds)
 
 # parameters
-γ_ = 1.0
+γ = 1.0
 β = 0.9
-γRn = fill(γ_ * β / 2, N)
-γLn = fill(γ_ * β / 2, N)
-γ_add = fill(γ_ * (1 - β), N)
+γRn = fill(γ * β / 2, N)
+γLn = fill(γ * β / 2, N)
+γ_add = fill(γ * (1 - β), N)
 Δn = fill(0.0, N)
 ϕn = fill(π/10, max(N - 1, 0))
 
@@ -46,13 +46,12 @@ T = [0:0.005:1;]*Tend
 ΔT = T[2]-T[1]
 u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
 
-sum(abs2.(u1.(T)))*(T[2]-T[1])
-
 gu_int = u_to_gu(u1, T)
 gu_t(t) = gu_int(t)
+nothing # hide
 ````
 
-SLHqo model (right-moving + left-moving channels)
+We use the `SLHqo` to directly use `QuantumOptics.jl` operators and function to the model the system.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 G_u = SLHqo(1, t -> gu_t(t) * a_u, 0*one(b))
@@ -60,47 +59,48 @@ G_ϕ(i, j) = SLHqo(exp(1im * ϕn[i]), 0*one(b), 0*one(b))
 G_R(i) = SLHqo(1, √(γRn[i]) * σ(i, 1, 2), -Δn[i] * σ(i, 2, 2))
 G_L(i) = SLHqo(1, √(γLn[i]) * σ(i, 1, 2), 0*one(b))
 
-# right-moving channel: input cavity cascaded through all QDs
 # Cascade right-moving channel
 # G_R_t = G_d ▷ cascade([G_R(i) ▷ G_ϕ(i, i + 1) for i=1:N-1]...) ▷ G_R(N) # for N > 1 # hide
 G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
-
 
 # Cascade left-moving channel (reverse order)
 # cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
 G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
 
 G_t = G_R_t ⊞ G_L_t
+````
 
+The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be a time-dependent.
+
+````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 H = get_hamiltonian(G_t)
 L = get_lindblad(G_t)
 L_R = L[1]
 L_L = L[2]
 
-# prepare time-dependent wrappers
-Hf = H isa Function ? H : (t -> H)
-L_R_f = L_R isa Function ? L_R : (t -> L_R)
-L_L_f = L_L isa Function ? L_L : (t -> L_L)
-
 J_add = [√(γ_add[i]) * σ(i, 1, 2) for i = 1:N]
 
 function input_output(t, ρ)
-    Ht = Hf(t)
-    J = [L_R_f(t), L_L_f(t), J_add...]
+    Ht = H(t)
+    J = [L_R(t), L_L(t), J_add...]
     return Ht, J, dagger.(J)
 end
+````
 
-# initial state
-α0 = √(0.1) # √(0.1) # √ of total photon number
+````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
+# time evolution
+α0 = √(0.1) # √ of total photon number
 ψ0 = coherentstate(bu, α0) ⊗ tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+````
 
+````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 # transmitted and reflected intensity
 I_R = zeros(length(t))
 I_L = zeros(length(t))
 for (i, ti) in enumerate(t)
-    LR = L_R_f(ti)
-    LL = L_L_f(ti)
+    LR = L_R(ti)
+    LL = L_L(ti)
     I_R[i] = real(expect(LR' * LR, ρt[i]))
     I_L[i] = real(expect(LL' * LL, ρt[i]))
 end
