@@ -1,6 +1,3 @@
-
-# use tuple (x,y) instead of vector [x,y] if the type is important (L?)
-
 """
     SLH
 
@@ -129,10 +126,10 @@ function ▷(G1::SLH,G2::SLH) #\triangleright
     S_t = simplify.(S2*S1)
     L_t = simplify.(L2 + S2*L1)
     # H_t = (H1 + H2 - 1im/2*(L2'S2*L1 - L1'S2'L2)) # the adjoint also creates the transpose! 
-    # H_t = (H1 + H2 - 1im/2*(QC._adjoint(L2)*S2*L1 - QC._adjoint(L1)*QC._adjoint(S2)*L2))
-    L1_ct = QC._adjoint.(L1)
-    L2_ct = QC._adjoint.(L2)
-    S2_ct = QC._adjoint.(S2)
+    # H_t = (H1 + H2 - 1im/2*(SQA._adjoint(L2)*S2*L1 - SQA._adjoint(L1)*SQA._adjoint(S2)*L2))
+    L1_ct = SQA._adjoint.(L1)
+    L2_ct = SQA._adjoint.(L2)
+    S2_ct = SQA._adjoint.(S2)
 
     H_t = simplify(H1 + H2 - 1im/2*( sum(L2_ct[it]*(S2*L1)[it] for it=1:lL1 ) - 
             sum(L1_ct[it]*(S2_ct*L2)[it] for it=1:lL1 ) ))

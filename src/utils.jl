@@ -1,5 +1,5 @@
 # move to SQA
-function numeric_average(op::QC.QNumber, state::Vector; kwargs...)
+function numeric_average(op::SQA.QNumber, state::Vector; kwargs...)
     op_num = sparse(to_numeric(op, state[1]; kwargs...))
     # TODO: sparse, dense
     return QuantumOpticsBase.expect(op_num, state)
