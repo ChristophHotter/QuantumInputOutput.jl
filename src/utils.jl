@@ -10,4 +10,4 @@ function numeric_average(avg::Average, state::Vector; kwargs...)
 end
 
 expect(avg::Average, state; kwargs...) = numeric_average(avg, state; kwargs...)
-expect(op::QNumber, state; kwargs...) = numeric_average(op, state; kwargs...)
+expect(op::SQA.QNumber, state; kwargs...) = numeric_average(op, state; kwargs...)

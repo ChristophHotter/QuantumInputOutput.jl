@@ -14,11 +14,8 @@ using LinearAlgebra: LinearAlgebra, I
 using OrdinaryDiffEq # for ui_to_u_i_im1
 
 import QuantumOpticsBase: expect
-import QuantumCumulants: numeric_average, QNumber
-
+import SecondQuantizedAlgebra: numeric_average
 const SQA = SecondQuantizedAlgebra
-const QC = QuantumCumulants
-
 
 export SLH, # SLH.jl
     SLHqo,
