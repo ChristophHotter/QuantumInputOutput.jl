@@ -24,6 +24,7 @@
   - [ ] interaction picture (Johannes)
   - [ ] pulse delay (Victor paper)
   - [ ] directly QO.jl objects
+  - [ ] padding
   - [ ] feedback reduction
 - [ ] Formatter/SpellCheck
 - [ ] JET
