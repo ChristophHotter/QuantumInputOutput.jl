@@ -41,6 +41,14 @@ struct SLHqo{S<:AbstractMatrix,L<:AbstractVector,H}
     function SLHqo(scattering::S, lindblad::L, hamiltonian::H) where
         {S<:AbstractMatrix,L<:AbstractVector,H}
         @assert size(scattering, 1) == length(lindblad)
+        if !(hamiltonian isa Function || hamiltonian isa QuantumOpticsBase.AbstractOperator)
+            error("SLHqo expects H to be a QuantumOptics operator or a time-dependent function returning one; got $(typeof(hamiltonian))")
+        end
+        for (i, l) in pairs(lindblad)
+            if !(l isa Function || l isa QuantumOpticsBase.AbstractOperator)
+                error("SLHqo expects L[$i] to be a QuantumOptics operator or a time-dependent function returning one; got $(typeof(l))")
+            end
+        end
         new{S,L,H}(scattering, lindblad, hamiltonian)
     end
 end
@@ -122,6 +130,7 @@ end
     ▷(G::SLHqo...)
 
 Cascades SLHqo triples from first to last, allowing time-dependent `L` or `H`.
+If any input `L` or `H` is time-dependent, the result uses time-dependent functions.
 """
 function ▷(G1::SLHqo, G2::SLHqo)
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
@@ -167,7 +176,6 @@ function ▷(G1::SLHqo, G2::SLHqo)
 end
 ▷(a::SLHqo, b::SLHqo, c::SLHqo...) = ▷(a▷b, c...)
 
-# TODO: vectors S, L
 """
     cascade(G::SLH...)
 
@@ -176,24 +184,24 @@ the rule ``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\
 See also [`▷`](@ref). 
 """
 cascade(args...) = ▷(args...)
-# ◁(G1::SLH,G2::SLH) = ▷(G2,G1) # unkwnown unicode character
+# ◁(G1::SLH,G2::SLH) = ▷(G2,G1) # unknown unicode character
 
-# TODO: equation for concateneate
 """
     ⊞(G::SLH...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
-the rule ``SLH_1 \\boxplus SLH_2 = TODO``
+the rule ``SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)``
 Unicode `\\boxplus<tab>` alias of [`concatenate`](@ref)
 """
 function ⊞(G1::SLH,G2::SLH) #\boxplus
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
     S2 = get_scattering(G2); L2 = get_lindblad(G2); H2 = get_hamiltonian(G2)
 
-    lS1 = size(S1)[1]; lS2 = size(S2)[1]
+    lS1 = size(S1, 1); lS2 = size(S2, 1)
 
-    S_t = Matrix{Any}(undef,lS1+lS2, lS1+lS2) # that is pretty ugly (but it works)
-    S_t .= zeros(lS1+lS2, lS1+lS2)
+    T_S = promote_type(eltype(S1), eltype(S2))
+    S_t = Matrix{T_S}(undef, lS1 + lS2, lS1 + lS2)
+    fill!(S_t, 0)
     S_t[1:lS1,1:lS1] .= S1
     S_t[1+lS1:lS1+lS2,1+lS1:lS1+lS2] .= S2
 
@@ -208,6 +216,7 @@ end
     ⊞(G::SLHqo...)
 
 Concatenates SLHqo triples, allowing time-dependent `L` or `H`.
+If any input `L` or `H` is time-dependent, the result uses time-dependent functions.
 """
 function ⊞(G1::SLHqo, G2::SLHqo)
     S1 = get_scattering(G1); L1 = get_lindblad(G1); H1 = get_hamiltonian(G1)
@@ -240,7 +249,7 @@ end
     concatenate(G::SLH...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
-the rule ``SLH_1 \\boxplus SLH_2 = TODO``
+the rule ``SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)``
 See also [`⊞`](@ref).
 """
 concatenate(args...) = ⊞(args...)
@@ -248,19 +257,3 @@ concatenation(args...) = concatenate(args...) # alias
 
 Base.length(h::SecondQuantizedAlgebra.ConcreteHilbertSpace) = 1
 Base.length(h::ProductSpace) = length(h.spaces)
-
-
-### direct QuantumOptics implementation of SLH to QuantumOptics.jl operators
-### translate SLH to (time-dependent) Hamiltonian and Lindblad operators
-
-# struct SLHqo{S<:AbstractMatrix,L<:AbstractVector,H}
-#     scattering::S
-#     lindblad::L
-#     hamiltonian::H
-# end
-# function SLHqo(scattering::S, lindblad::L, hamiltonian::H) where {S<:AbstractMatrix,L<:AbstractVector,H}
-#     @assert size(scattering, 1) == length(lindblad)
-#     return SLHqo{S,L,H}(scattering, lindblad, hamiltonian)
-# end
-
-# dispatch SLH(S,L,H::Op or function) to SLHqo
