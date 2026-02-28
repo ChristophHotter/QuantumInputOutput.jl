@@ -41,8 +41,7 @@ T = [0:0.005:1;]*Tend
 ΔT = T[2]-T[1]
 u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
 
-gu_int = u_to_gu(u1, T)
-gu_t(t) = gu_int(t)
+gu_t = u_to_gu(u1, T)
 nothing # hide
  
 # We use the `SLHqo` to directly use `QuantumOptics.jl` operators and function to the model the system.

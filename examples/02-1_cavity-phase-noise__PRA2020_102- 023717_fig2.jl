@@ -59,8 +59,7 @@ u(t) = 1/(sqrt(τ)*π^(1/4)) * exp( -(t - tp)^2 / (2*τ^2) )
 T = [0:0.002:1;]*14τ
 ΔT = T[2] - T[1]
 
-gu_int = u_to_gu(u, T) # interpolation
-gu_(t) = gu_int(t)
+gu_ = u_to_gu(u, T)
 dict_p_t = Dict(gu => gu_)
 
 ## numeric bases 

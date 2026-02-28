@@ -61,8 +61,7 @@ u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
-gu_int = u_to_gu(u1, T) # interpolation
-gu_t(t) = gu_int(t)
+gu_t = u_to_gu(u1, T)
 dict_p_t = Dict(gu => gu_t)
 
 ## numeric bases 
@@ -139,9 +138,8 @@ p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2);
 
 ## time-depedent coupling for the output mode $v(t)$
-gv_t_ = v_to_gv(v_mode, T)
-gv_t(t) = gv_t_(t)
-gvc_t(t) = conj(gv_t_(t))
+gv_t = v_to_gv(v_mode, T)
+gvc_t = t -> conj(gv_t(t))
 
 dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
 

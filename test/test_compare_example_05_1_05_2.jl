@@ -13,8 +13,7 @@ using Test
     Tend = 3t0
     T = collect(0.0:0.005:1.0) .* Tend
     u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
-    gu_int = u_to_gu(u1, T)
-    gu_t(t) = gu_int(t)
+    gu_t = u_to_gu(u1, T)
 
     # -------- Example 05-1 style (symbolic -> numeric) --------
     ha(i) = NLevelSpace("a$(i)", 2)

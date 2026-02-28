@@ -71,9 +71,8 @@ u(t) = 1/(sqrt(τ)*π^(1/4)) * exp( -(t - tp)^2 / (2*τ^2) )
 T = [0:0.002:1;]*20
 ΔT = T[2] - T[1]
 
-gu_int = u_to_gu(u, T) # interpolation
-gu_(t) = gu_int(t)
-gu_c(t) = conj.(gu_int(t))
+gu_ = u_to_gu(u, T)
+gu_c = t -> conj(gu_(t))
 
 dict_p_t = Dict([gu1, conj(gu1)] .=> [gu_, gu_c]);
 nothing #hide
@@ -173,22 +172,19 @@ u_new_data = [u1_new, u2_new]
 u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
 
 # the coupling of the $u_1$ cavity needs no adaptation
-gu1_int = u_to_gu(u1_new, T)
-gu1_(t) = gu1_int(t)
-gu1_c(t) = conj(gu1_(t))
+gu1_ = u_to_gu(u1_new, T)
+gu1_c = t -> conj(gu1_(t))
 
 # TODO: explain more!
 # $g_{u_2} needs to take into account to scatter also at the $u_1$ cavity
 # the last argument in ui_to_u_i_im1 (=2) describes the number of the input cavity
 u2_for_gu2 =  ui_to_u_i_im1(u_new_fct, T, 2) # TODO: name and description
-gu2_int = u_to_gu(u2_for_gu2,T)
-gu2_(t) = gu2_int(t)
-gu2_c(t) = conj(gu2_(t))
+gu2_ = u_to_gu(u2_for_gu2,T)
+gu2_c = t -> conj(gu2_(t))
 
 # coupling of the output mode
-gv1_int = v_to_gv(v1_new,T)
-gv1_(t) = gv1_int(t)
-gv1_c(t) = conj(gv1_(t))
+gv1_ = v_to_gv(v1_new,T)
+gv1_c = t -> conj(gv1_(t))
 
 # dictionary for the time-dependent functions
 g_sym = [gu1, gu2, gv1, conj(gu1), conj(gu2), conj(gv1)]

@@ -74,8 +74,7 @@ u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
-gu_int = u_to_gu(u1, T)
-gu_t(t) = gu_int(t)
+gu_t = u_to_gu(u1, T)
 dict_p_t = Dict(gu => gu_t)
 nothing # hide
 ```
@@ -153,9 +152,8 @@ nothing # hide
 Finally, we treat the dominant output mode explicitly by providing `g_v(t)` (and its conjugate) as time-dependent parameters, and propagate the system again.
 
 ```@example tutorial
-gv_t_ = v_to_gv(v_mode, T)
-gv_t(t) = gv_t_(t)
-gvc_t(t) = conj(gv_t_(t))
+gv_t = v_to_gv(v_mode, T)
+gvc_t = t -> conj(gv_t(t))
 
 dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t])
 dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])

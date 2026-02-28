@@ -155,9 +155,8 @@ single_mode = n_avg[end]/n_out
 time-depedent coupling for the output mode $v(t)$
 
 ````@example xx-x_cat-state-generation__PRA2004_70-033604
-gv_t_ = v_to_gv(v1_mode, T)
-gv_t(t) = gv_t_(t)
-gvc_t(t) = conj(gv_t_(t))
+gv_t = v_to_gv(v1_mode, T)
+gvc_t = t -> conj(gv_t(t))
 dict_t_2 = Dict( [η, conj(η), gv, conj(gv)] .=> [η_t, ηc_t, gv_t, gvc_t] )
 ````
 

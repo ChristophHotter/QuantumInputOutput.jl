@@ -10,8 +10,8 @@ _ϵv = 1e-10
 """
     u_to_gu(u, T)
 
-Compute the virtual-cavity coupling ``g_u(t)`` from an input mode `u(t)` sampled on `T`.
-Returns a `LinearInterpolation` over `T`.
+Compute the virtual-cavity coupling ``g_u(t)`` from an input mode `u(t)` sampled on `T` with a linear interpolation.
+Returns a callable `t -> g_u(t)`.
 """
 function u_to_gu(u::Vector, T::Vector)
     l_T = length(T)
@@ -23,7 +23,8 @@ function u_to_gu(u::Vector, T::Vector)
         end #else 0
         # gu_t[i] = u[i]' / max(sqrt(1 - ∫u2_t[i]), _tol_div) # TODO: test
     end
-    return LinearInterpolation(gu_t, T; extrapolation = _extrapolate)
+    gu_int = LinearInterpolation(gu_t, T; extrapolation = _extrapolate)
+    return t -> gu_int(t)
 end
 u_to_gu(u::Function, T::Vector) = u_to_gu(u.(T), T)
 u_to_gu(u::LinearInterpolation, T::Vector) = u_to_gu(u.(T), T)
@@ -31,8 +32,8 @@ u_to_gu(u::LinearInterpolation, T::Vector) = u_to_gu(u.(T), T)
 """
     v_to_gv(v, T)
 
-Compute the virtual-cavity coupling ``g_v(t)`` from an output mode `v(t)` sampled on `T`.
-Returns a `LinearInterpolation` over `T`.
+Compute the virtual-cavity coupling ``g_v(t)`` from an output mode `v(t)` sampled on `T` with a linear interpolation.
+Returns a callable `t -> g_v(t)`.
 """
 function v_to_gv(v::Vector, T::Vector)
     l_T = length(T)
@@ -44,7 +45,8 @@ function v_to_gv(v::Vector, T::Vector)
         end # else 0
         # gv_t[i] = -v[i]' / max(sqrt( ∫v2_t[i]), _tol_div) # TODO: test
     end
-    return LinearInterpolation(gv_t, T; extrapolation = _extrapolate)
+    gv_int = LinearInterpolation(gv_t, T; extrapolation = _extrapolate)
+    return t -> gv_int(t)
 end
 v_to_gv(v::Function, T::Vector) = v_to_gv(v.(T), T)
 v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
