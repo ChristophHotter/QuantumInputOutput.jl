@@ -87,6 +87,69 @@ H_1 + H_2
 By modeling the input and output pulses as virtual cavities and cascading them with the physical system, we
 obtain an effective SLH triple for the full problem. This describes a master equation involving the system and and of auxiliary modes, which can be solved with standard Lindblad solvers. 
 
+## Common SLH Elements
+
+Appendix 1 of [Combes et al.](https://doi.org/10.1080/23746149.2017.1343097) lists SLH triples for commonly used components. The most frequently used
+elements in this package are summarized below using the standard ``(S, L, H)`` ordering.
+
+Phase shifter (single input/output):
+
+```math
+G_{\mathrm{PS}} = \left(e^{i\phi},\, 0,\, 0\right).
+```
+
+Beam splitter (two inputs/outputs, with unitary $S$):
+
+```math
+G_{\mathrm{BS}} = \left(
+\begin{bmatrix}
+r_{11} & t_{12} \\
+t_{21} & r_{22}
+\end{bmatrix},\,
+0,\,
+0
+\right),
+\quad S^\dagger S = I.
+```
+
+Coherent drive (displaces the input field by $\alpha(t)$):
+
+```math
+G_{\mathrm{coh}} = \left(1,\, \alpha(t),\, 0\right).
+```
+
+One-sided cavity (decay rate $\kappa$, detuning $\Delta_c$, mode operator $a$):
+
+```math
+G_{\mathrm{1s}} = \left(I,\, \sqrt{\kappa}\,a,\, \Delta_c\,a^\dagger a\right).
+```
+
+Two-sided cavity / Fabry–Perot (decay rates $\kappa_1,\kappa_2$):
+
+```math
+G_{\mathrm{2s}} = \left(
+I_2,\,
+\begin{bmatrix}
+\sqrt{\kappa_1}\,a \\
+\sqrt{\kappa_2}\,a
+\end{bmatrix},\,
+\Delta_c\,a^\dagger a
+\right).
+```
+
+Two-level system side-coupled to a waveguide (guided decay $\kappa_g$ and unguided decay $\kappa_\perp$):
+
+```math
+G_{\mathrm{TLS}} = \left(
+I_2,\,
+\begin{bmatrix}
+\sqrt{\kappa_g}\,\sigma_- \\
+\sqrt{\kappa_\perp}\,\sigma_-
+\end{bmatrix},\,
+\frac{\omega}{2}\sigma_z
+\right).
+```
+
 ## Output Modes and the Correlation Function
 
 The output field is generally multimode. To determine a **basis of temporal output modes** and their

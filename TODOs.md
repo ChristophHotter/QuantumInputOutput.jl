@@ -9,6 +9,7 @@
     - [ ] SUPER example (Johannes)
     - [x] g2 for waveguide example
     - [ ] pulse delay (Victor paper)
+    - [ ] beam splitter 
   - [x] theory
   - [x] introduction
   - [ ] API
