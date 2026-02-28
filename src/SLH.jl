@@ -4,12 +4,12 @@
 """
     SLH
 
-SLH triple with scattering matrix ``S``, Lindblad term ``L`` and Hamiltonian ``H``. 
-``S`` and ``L`` can also be vectors of scattering matrices and Linblad terms
+SLH triple with scattering matrix `S`, Lindblad term `L` and Hamiltonian `H`. 
+`S` and `L` can also be vectors of scattering matrices and Linblad terms. 
 
 See also [`▷`](@ref) and [`⊞`](@ref)
 """
-struct SLH{T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}} # TODO: L[i] and H QTerm or Number
+struct SLH{T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}}
     scattering::S
     lindblad::L
     hamiltonian::H
@@ -63,8 +63,23 @@ function SLHqo(S, L, H)
     return SLHqo(S_, L_, H)
 end
 
+"""
+    get_scattering(G)
+
+Return the scattering matrix `S` of an SLH or SLHqo object.
+"""
 get_scattering(slh::SLHqo) = slh.scattering
+"""
+    get_lindblad(G)
+
+Return the Lindblad vector `L` of an SLH or SLHqo object.
+"""
 get_lindblad(slh::SLHqo) = slh.lindblad
+"""
+    get_hamiltonian(G)
+
+Return the Hamiltonian `H` of an SLH or SLHqo object.
+"""
 get_hamiltonian(slh::SLHqo) = slh.hamiltonian
 
 function Base.isequal(slh1::SLHqo, slh2::SLHqo)

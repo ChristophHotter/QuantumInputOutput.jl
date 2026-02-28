@@ -1,14 +1,20 @@
-# creates matrix of the two time correlation function
-function two_time_corr_matrix(T_ls::Vector, ρt::Vector, f::Function, Ls::Function; abstol=1e-6, reltol=1e-6) #kwargs...) TODO
-    l_T_ls = length(T_ls)
-    @assert l_T_ls == length(ρt)
-    Ls_ls = Ls.(T_ls)
-    Ls_ls_dag = dagger.(Ls_ls)
-    ρ0_ = [Ls_ls[i] * ρt[i] for i = 1:l_T_ls]
+"""
+    two_time_corr_matrix(T, ρt, f, Ls; kwargs...)
+    two_time_corr_matrix(T, ρt, H, J, Ls; kwargs...)
 
-    g1_m = zeros(ComplexF64, l_T_ls, l_T_ls)
-    for it = 1:l_T_ls-1
-        τ_, ρ_bar_τ = timeevolution.master_dynamic(T_ls[it:end], ρ0_[it], f; abstol = abstol, reltol = reltol) #kwargs...) TODO
+Compute the two-time correlation matrix ``g^{1}(t_1, t_2)`` on the time grid `T`.
+The first method supports time-dependent generators; the second is for time-independent `H` and `J`.
+"""
+function two_time_corr_matrix(T::Vector, ρt::Vector, f::Function, Ls::Function; kwargs...)
+    l_T = length(T)
+    @assert l_T == length(ρt)
+    Ls_ls = Ls.(T)
+    Ls_ls_dag = dagger.(Ls_ls)
+    ρ0_ = [Ls_ls[i] * ρt[i] for i = 1:l_T]
+
+    g1_m = zeros(ComplexF64, l_T, l_T)
+    for it = 1:l_T-1
+        τ_, ρ_bar_τ = timeevolution.master_dynamic(T[it:end], ρ0_[it], f; kwargs...)
 
         g1 = [expect(Ls_ls_dag[it + i - 1], ρ_bar_τ[i]) for i = 1:length(τ_)]
         g1_m[it, it:end] = g1
@@ -18,15 +24,15 @@ function two_time_corr_matrix(T_ls::Vector, ρt::Vector, f::Function, Ls::Functi
 end
 
 # two_time_corr_matrix for time-independent problems
-function two_time_corr_matrix(T_ls::Vector, ρt::Vector, H, J::Vector, Ls; kwargs...)
-    l_T_ls = length(T_ls)
-    @assert l_T_ls == length(ρt)
+function two_time_corr_matrix(T::Vector, ρt::Vector, H, J::Vector, Ls; kwargs...)
+    l_T = length(T)
+    @assert l_T == length(ρt)
     Ls_dag = dagger(Ls)
-    ρ0_ = [Ls * ρt[i] for i = 1:l_T_ls]
+    ρ0_ = [Ls * ρt[i] for i = 1:l_T]
 
-    g1_m = zeros(ComplexF64, l_T_ls, l_T_ls)
-    for it = 1:l_T_ls-1
-        τ_, ρ_bar_τ = timeevolution.master(T_ls[it:end], ρ0_[it], H, J; kwargs...)
+    g1_m = zeros(ComplexF64, l_T, l_T)
+    for it = 1:l_T-1
+        τ_, ρ_bar_τ = timeevolution.master(T[it:end], ρ0_[it], H, J; kwargs...)
 
         g1 = [expect(Ls_dag, ρ_bar_τ[i]) for i = 1:length(τ_)]
         g1_m[it, it:end] = g1

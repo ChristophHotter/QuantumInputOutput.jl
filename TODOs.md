@@ -7,7 +7,7 @@
     - [ ] interaction picture example (Victor paper)
     - [ ] Multi-mode Dicke state superradiance
     - [ ] SUPER example (Johannes)
-    - [ ] g2 for waveguide example
+    - [x] g2 for waveguide example
     - [ ] pulse delay (Victor paper)
   - [x] theory
   - [x] introduction
@@ -44,15 +44,13 @@
 
 - [ ] rename functions:
   - [x] concatenation -> concatenate
-  - [ ] SLH: .S, .L, .H (instead of .scattering ...)?
   - [ ] ui_to_u_i_im1, vi_to_v_i_im1
   - [x] time_dep_param -> time_parameter
 - [x] change README.me
 - [ ] SLH more specific types
   - [ ] AbstractVector{<:QTerm}
-- [ ] SLH for QO.jl objects directly
+- [x] SLH for QO.jl objects directly
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
-- [ ] Import and export all SQA.jl 
 - [ ] time_parameter allow for (linear) interpolations (not only functions)
 - [ ] Get rid of "using SecondQuantizedAlgebra" in the examples: 
-  - [ ] import and export fcts from SQA
+  - [ ] Import and export all SQA.jl 

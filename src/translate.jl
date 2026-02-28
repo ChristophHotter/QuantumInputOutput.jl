@@ -60,6 +60,16 @@ function _translate_prefactor(arg_c, time_parameter)
     return true, pref_f
 end
 
+"""
+    translate(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),
+              level_map=nothing, operators=Dict(), op_type=sparse)
+
+Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator with the corresponding basis `b`. 
+The dictionary `parameter` substitutes symbolic parameters with numbers. Time the functions can be provide 
+with the dictionary `time_parameter`. 
+If `time_parameter` is non-empty, the result is a time-dependent function `t -> op(t)`. 
+TODO: level_map=nothing, operators=Dict(), op_type=sparse
+"""
 function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
     parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)
 

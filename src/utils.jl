@@ -5,7 +5,7 @@ function numeric_average(op::QC.QNumber, state::Vector; kwargs...)
     return QuantumOpticsBase.expect(op_num, state)
 end
 function numeric_average(avg::Average, state::Vector; kwargs...)
-    op = undo_average(op)
+    op = undo_average(avg)
     return numeric_average(op, state; kwargs...)
 end
 

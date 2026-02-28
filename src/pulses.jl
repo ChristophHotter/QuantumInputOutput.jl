@@ -7,7 +7,12 @@ _extrapolate = ExtrapolationType.Extension
 _ϵu = 1e-10
 _ϵv = 1e-10
 
-# return g_u(t) from u(t) - single input mode
+"""
+    u_to_gu(u, T)
+
+Compute the virtual-cavity coupling ``g_u(t)`` from an input mode `u(t)` sampled on `T`.
+Returns a `LinearInterpolation` over `T`.
+"""
 function u_to_gu(u::Vector, T::Vector)
     l_T = length(T)
     ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
@@ -23,7 +28,12 @@ end
 u_to_gu(u::Function, T::Vector) = u_to_gu(u.(T), T)
 u_to_gu(u::LinearInterpolation, T::Vector) = u_to_gu(u.(T), T)
 
-# return g_v(t) from v(t) - single output mode
+"""
+    v_to_gv(v, T)
+
+Compute the virtual-cavity coupling ``g_v(t)`` from an output mode `v(t)` sampled on `T`.
+Returns a `LinearInterpolation` over `T`.
+"""
 function v_to_gv(v::Vector, T::Vector)
     l_T = length(T)
     ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
@@ -39,7 +49,12 @@ end
 v_to_gv(v::Function, T::Vector) = v_to_gv(v.(T), T)
 v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
 
-# for Gauss u(t) = 1/(√(σ)*π^(1/4)) * exp( -(t-τ)^2 / (2*σ^2) ) * exp(-i*Δ*t)
+"""
+    u_to_gu_Gauss(u, τ, σ)
+
+Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ` and width `σ`.
+Returns a callable `t -> g_u(t)`.
+"""
 function u_to_gu_Gauss(u, τ, σ)
     # u = mode function (Gauss or Gauss*exp(i*ω*t))
     # τ = time delay # σ = width
@@ -47,6 +62,12 @@ function u_to_gu_Gauss(u, τ, σ)
     f(t_) = u(t_)' / max(√(1 - ∫u_2_t(t_)), _tol_div) # TODO: benchmark
     return f
 end
+"""
+    v_to_gv_Gauss(v, τ, σ)
+
+Compute ``g_v(t)` for a Gaussian output mode `v(t)` with delay `τ` and width `σ`.
+Returns a callable `t -> g_v(t)`.
+"""
 function v_to_gv_Gauss(v, τ, σ)
     # v = mode function (Gauss or Gauss*exp(i*ω*t))
     # τ = time delay # σ = width
@@ -55,7 +76,12 @@ function v_to_gv_Gauss(v, τ, σ)
     return f
 end
 
-# return g_v(t) from v(t) for multiple output modes
+"""
+    vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
+    vi_to_v_i_im1(v_fcts, T_ls, i)
+
+Compute the effective output mode `v_i^{(i-1)}(t)` for multiple output modes.
+"""
 function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
@@ -74,7 +100,12 @@ function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
 end
 vi_to_v_i_im1(v_fcts, T_ls, i) = vi_to_v_i_im1(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_ls, i)
 
-# return g_u(t) from u(t) for multiple output modes
+"""
+    ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
+    ui_to_u_i_im1(u_fcts, T_ls, i)
+
+Compute the effective input mode `u_i^{(i-1)}(t)` for multiple input modes.
+"""
 function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
