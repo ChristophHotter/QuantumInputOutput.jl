@@ -15,7 +15,10 @@ using OrdinaryDiffEq # for ui_to_u_i_im1
 
 import QuantumOpticsBase: expect
 import QuantumCumulants: numeric_average, QNumber
+
+const SQA = SecondQuantizedAlgebra
 const QC = QuantumCumulants
+
 
 export SLH, # SLH.jl
     SLHqo,

@@ -70,7 +70,7 @@ with the dictionary `time_parameter`.
 If `time_parameter` is non-empty, the result is a time-dependent function `t -> op(t)`. 
 TODO: level_map=nothing, operators=Dict(), op_type=sparse
 """
-function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
+function translate(op::SQA.QMul, b::QuantumOpticsBase.Basis;
     parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)
 
     time_parameter = _normalize_time_parameter(time_parameter)
@@ -80,7 +80,7 @@ function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
 
     op_ = substitute(op, parameter) # First substitute all symbolic paramters with the numerical values -> only time-dependent parameters
 
-    if isa(op_, QuantumCumulants.QSym) # special case if parameter is 1.0: after substitute p*op -> 1.0*op -> op (has no fields arg_c, args_nc)
+    if isa(op_, QSym) # special case if parameter is 1.0: after substitute p*op -> 1.0*op -> op (has no fields arg_c, args_nc)
         output_op_QMul_QO_ = _translate_numeric_raw(op_, b; level_map=level_map, operators=operators, op_type=op_type) # this is faster!
         output_op_QMul_QO = t -> output_op_QMul_QO_
         return output_op_QMul_QO
@@ -100,7 +100,7 @@ function translate(op::QuantumCumulants.QMul, b::QuantumOpticsBase.Basis;
     end
 end
 #
-function translate(op::QuantumCumulants.QAdd, b::QuantumOpticsBase.Basis; 
+function translate(op::SQA.QAdd, b::QuantumOpticsBase.Basis; 
         parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
 
     time_parameter = _normalize_time_parameter(time_parameter)

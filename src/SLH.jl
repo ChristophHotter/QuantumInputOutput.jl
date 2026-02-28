@@ -214,9 +214,8 @@ function ⊞(G1::SLH,G2::SLH) #\boxplus
 
     lS1 = size(S1, 1); lS2 = size(S2, 1)
 
-    T_S = promote_type(eltype(S1), eltype(S2))
-    S_t = Matrix{T_S}(undef, lS1 + lS2, lS1 + lS2)
-    fill!(S_t, 0)
+    S_t = Matrix{Any}(undef,lS1+lS2, lS1+lS2) # that is pretty ugly (but it works)
+    S_t .= zeros(lS1+lS2, lS1+lS2)
     S_t[1:lS1,1:lS1] .= S1
     S_t[1+lS1:lS1+lS2,1+lS1:lS1+lS2] .= S2
 
