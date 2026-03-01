@@ -76,9 +76,11 @@ function interaction_picture_A_4modes(g1, g2, g3, g4)
     g2f = _as_time_function(g2)
     g3f = _as_time_function(g3)
     g4f = _as_time_function(g4)
-    A(t_) = 0.5 * [0 -g1f(t_) * conj(g2f(t_)) g1f(t_) * conj(g3f(t_)) g1f(t_) * conj(g4f(t_));
-        conj(g1f(t_)) * g2f(t_) 0 g2f(t_) * conj(g3f(t_)) g2f(t_) * conj(g4f(t_));
+    A(t_) = 0.5 * [0 g1f(t_) * conj(g2f(t_)) g1f(t_) * conj(g3f(t_)) g1f(t_) * conj(g4f(t_));
+        -conj(g1f(t_)) * g2f(t_) 0 g2f(t_) * conj(g3f(t_)) g2f(t_) * conj(g4f(t_));
         -conj(g1f(t_)) * g3f(t_) -conj(g2f(t_)) * g3f(t_) 0 g3f(t_) * conj(g4f(t_));
         -conj(g1f(t_)) * g4f(t_) -conj(g2f(t_)) * g4f(t_) -conj(g3f(t_)) * g4f(t_) 0]
-    return A
+    return A 
 end
+
+# TODO: check minus signs, general function

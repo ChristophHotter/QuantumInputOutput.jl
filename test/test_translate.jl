@@ -87,4 +87,21 @@ using Test
         expected = dense(a_QO2 * E1_t(0.4) * E2_t_c(0.4))
         @test sum(abs.((F_multi(0.4) - expected).data)) < 1e-8
     end
+
+    @testset "substitute_operators_qmul" begin
+        h2 = FockSpace(:h2)
+        a = Destroy(h2, :a, 1)
+        @cnumbers c1 c2 c3
+        a_1 = 2 * c2 * a + c3*a
+        a_2 = c2 * a*a
+        dict_sub = Dict(a => a_1)
+        dict_sub2 = Dict(a => a_2)
+        
+        x = a*a*c1 + a*c3
+        y = substitute_operators(x, dict_sub)
+        y2 = substitute_operators(x, dict_sub2)
+
+        @test isequal(simplify(y - (a_1*a_1*c1 + a_1*c3)), 0)
+        @test isequal(simplify(y2 - (a_2*a_2*c1 + a_2*c3)), 0)
+    end
 end
