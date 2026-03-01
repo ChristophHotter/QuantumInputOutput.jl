@@ -93,3 +93,9 @@ interaction_picture_A_4modes
 ```@docs
 two_time_corr_matrix
 ```
+
+## [Utilities](@id API: Utilities)
+
+```@docs
+substitute_operators
+```
