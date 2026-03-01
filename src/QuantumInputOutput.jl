@@ -33,7 +33,14 @@ export SLH, # SLH.jl
     v_to_gv_Gauss,
     ui_to_u_i_im1,
     vi_to_v_i_im1,
-    two_time_corr_matrix
+    two_time_corr_matrix,
+    interaction_picture_M,
+    interaction_picture_A_2modes,
+    interaction_picture_A_3modes,
+    interaction_picture_A_4modes,
+    interaction_picture_A_uv,
+    interaction_picture_A_ucv,
+    interaction_picture_A_uuvv
 
 include("SLH.jl")
 include("translate.jl")

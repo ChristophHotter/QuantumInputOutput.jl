@@ -49,10 +49,10 @@ function _translate_prefactor(arg_c, time_parameter)
         parameter, you need to include it in the time-dependent function dictionary, see e.g.: [REF-example]
         At the moment we are also limited to functions with only one argument.") # TODO
     end
-    arg_c_all = [substitute(arg, time_parameter) for arg ∈ arg_c_args]
-    arg_c_numbers = filter(x -> isa(x, Number), arg_c_all)
-    arg_c_functions = filter(x -> !isa(x, Number), arg_c_all)
-    pref_num = prod(arg_c_numbers)
+    arg_c_numbers = filter(x -> isa(x, Number), arg_c_args)
+    pref_num = isempty(arg_c_numbers) ? 1 : prod(arg_c_numbers)
+    arg_c_functions_ = filter(x -> !isa(x, Number), arg_c_args)
+    arg_c_functions = [substitute(arg, time_parameter) for arg ∈ arg_c_functions_]
     if isempty(arg_c_functions)
         return false, pref_num
     end
@@ -89,7 +89,7 @@ function translate(op::SQA.QMul, b::QuantumOpticsBase.Basis;
     else
         arg_c = op_.arg_c
         args_nc = op_.args_nc
-        prod_args_nc = op_type(prod((to_numeric(arg, b, operators; level_map=level_map)) for arg in args_nc)) #TODO: dense, sparse, etc
+        prod_args_nc = op_type(prod((to_numeric(arg, b, operators; level_map=level_map)) for arg in args_nc)) 
 
         is_func, pref = _translate_prefactor(arg_c, time_parameter)
         if is_func

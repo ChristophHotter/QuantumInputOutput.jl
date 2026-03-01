@@ -6,7 +6,7 @@ using Test
 
 @testset "translate" begin
     @rnumbers κ_L κ_R Δ g γ
-    @cnumbers E
+    @cnumbers E E1 E2
     Natoms = 2
 
     hc = FockSpace(:cavity)
@@ -77,5 +77,14 @@ using Test
         F_num = translate(a*E, b; parameter=dict_p1, time_parameter=dict_p_t_num)
         @test sum(abs.((F_num(0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
     end
-end
 
+    @testset "multiple_time_prefactors" begin
+        E1_t(t) = 1.2 + 0.3im + 0.5t
+        E2_t(t) = 0.7 - 0.1im + 0.2t
+        E2_t_c(t) = conj(E2_t(t))
+        dict_p_t_multi = Dict([E1, conj(E2)] .=> [E1_t, E2_t_c])
+        F_multi = translate(a * E1 * conj(E2), b; parameter=dict_p1, time_parameter=dict_p_t_multi)
+        expected = dense(a_QO2 * E1_t(0.4) * E2_t_c(0.4))
+        @test sum(abs.((F_multi(0.4) - expected).data)) < 1e-8
+    end
+end

@@ -70,6 +70,24 @@ ui_to_u_i_im1
 vi_to_v_i_im1
 ```
 
+## [Interaction Picture](@id API: Interaction Picture)
+
+```@docs
+interaction_picture_M
+```
+
+```@docs
+interaction_picture_A_2modes
+```
+
+```@docs
+interaction_picture_A_3modes
+```
+
+```@docs
+interaction_picture_A_4modes
+```
+
 ## [Correlations](@id API: Correlations)
 
 ```@docs
