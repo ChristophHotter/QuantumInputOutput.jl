@@ -10,7 +10,7 @@
     - [x] g2 for waveguide example
     - [ ] pulse delay (Victor paper)
     - [x] beam splitter loss
-    - [ ] beam splitter HOM
+    - [x] beam splitter HOM
   - [x] theory
   - [x] introduction
   - [ ] API

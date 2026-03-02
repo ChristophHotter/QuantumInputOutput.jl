@@ -156,3 +156,16 @@ grid(true)
 legend()
 tight_layout()
 gcf()
+
+# ## Package versions
+
+# These results were obtained using the following versions:
+
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "QuantumOpitcs", "SecondQuantizedAlgebra", "SymbolicUtils", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)

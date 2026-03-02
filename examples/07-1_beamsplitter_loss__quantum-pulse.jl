@@ -132,3 +132,16 @@ tight_layout()
 gcf()
 
 # Note that the calculation can also be performed in the interaction picture, which would be numerically beneficial and the loss of the input mode $u(t)$ can be directly observed. 
+
+# ## Package versions
+
+# These results were obtained using the following versions:
+
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)

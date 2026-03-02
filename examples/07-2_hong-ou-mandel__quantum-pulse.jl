@@ -1,0 +1,189 @@
+# # Hong-Ou-Mandel Effect
+#
+# Two single photons in identical temporal modes impinge on a 50/50 beam splitter. The photons bunch into one output port.
+
+using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumOptics
+using PyPlot
+using LinearAlgebra
+using Random #hide
+
+#
+
+## symbolic Hilbert space and operators
+hu1 = FockSpace(:u1)
+hu2 = FockSpace(:u2)
+hv1 = FockSpace(:v1)
+hv2 = FockSpace(:v2)
+h = hu1 ⊗ hu2 ⊗ hv1 ⊗ hv2
+
+au1 = Destroy(h, :a_u1, 1)
+au2 = Destroy(h, :a_u2, 2)
+av1 = Destroy(h, :a_v1, 3)
+av2 = Destroy(h, :a_v2, 4)
+
+## symbolic parameters
+@rnumbers gu1 gu2 gv1 gv2 t r
+
+#
+
+
+## input cavities, beam splitter, and output cavities
+S_bs = [r t; t -r]
+G_u1 = SLH(1, gu1 * au1, 0)
+G_u2 = SLH(1, gu2 * au2, 0)
+G_in = G_u1 ⊞ G_u2
+G_bs = SLH(S_bs, [0, 0], 0)
+G_v1 = SLH(1, gv1 * av1, 0)
+G_v2 = SLH(1, gv2 * av2, 0)
+G_out = G_v1 ⊞ G_v2
+G = G_in ▷ G_bs ▷ G_out
+nothing # hide
+
+#
+
+H = get_hamiltonian(G)
+L = get_lindblad(G)
+
+#
+
+## Gaussian input mode (two single-photon pulses, u1 = u2)
+γ_ = 1.0
+T_p = 1 / γ_
+T_end = 12T_p
+σ = sqrt(0.5) * T_p
+u(t) = sqrt(1 / (σ * √(2π)) * exp(-0.5 * (t - 4T_p)^2 / σ^2))
+T = [0:0.002:1;] * T_end
+ΔT = T[2] - T[1]
+
+## time-dependent couplings for input and output modes
+u1 = u
+u2 = u
+gu1_t = u_to_gu(u1, T)
+gu2_t = u_to_gu(u2, T)
+
+v1(t) = u(t)
+v2(t) = u(t)
+gv1_t = v_to_gv(v1, T)
+gv2_t = v_to_gv(v2, T)
+
+dict_p_t = Dict(gu1 => gu1_t, gu2 => gu2_t, gv1 => gv1_t, gv2 => gv2_t)
+
+## beam splitter parameters (50/50)
+η = 0.5
+r_ = sqrt(η)
+t_ = sqrt(1 - η)
+
+dict_p = Dict([t,r] .=> [t_,r_])
+nothing # hide
+
+#
+
+## numeric basis
+bu1 = FockBasis(1)
+bu2 = FockBasis(1)
+bv1 = FockBasis(2)
+bv2 = FockBasis(2)
+b = bu1 ⊗ bu2 ⊗ bv1 ⊗ bv2
+
+au1_qo = destroy(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ one(bv2)
+au2_qo = one(bu1) ⊗ destroy(bu2) ⊗ one(bv1) ⊗ one(bv2)
+av1_qo = one(bu1) ⊗ one(bu2) ⊗ destroy(bv1) ⊗ one(bv2)
+av2_qo = one(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ destroy(bv2)
+
+## translate to numeric operators
+H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_QO = [translate(Li, b; parameter=dict_p, time_parameter=dict_p_t) for Li in L]
+
+function input_output(t, ρ)
+    Ht = H_QO(t)
+    J = [L_QO[1](t), L_QO[2](t)]
+    return Ht, J, dagger.(J)
+end
+nothing # hide
+
+#
+
+## time evolution
+ψ0 = fockstate(bu1, 1) ⊗ fockstate(bu2, 1) ⊗ fockstate(bv1, 0) ⊗ fockstate(bv2, 0)
+time, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+nothing # hide
+#
+
+## output observables
+n_v1 = real.(expect(av1_qo' * av1_qo, ρt[end]))
+n_v2 = real.(expect(av2_qo' * av2_qo, ρt[end]))
+g2_v1 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits=4)
+g2_v2 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits=4)
+v1_v2_coinc = round(real.(expect((av1_qo' * av1_qo) * (av2_qo' * av2_qo), ρt[end])), digits=4)
+
+@show g2_v1
+@show g2_v2
+@show v1_v2_coinc
+
+@show n_v1[end]
+@show n_v2[end]
+@show coinc[end]
+nothing # hide
+
+# In the following, we show Monte-Carlo wave funtion simulations to show the bunching of photons into one of the two output ports in each realization. 
+# To this end, we collapse the photon number at the end of the time evolution (t > 0.9 T_{end}) with the photon detection operator in each output mode $a^\dagger_{v_i} a_{v_i}$.
+
+R = 1 # collapse rate
+n_v1_coll(t) = (t > 0.9*T[end])*R*av1_qo'av1_qo
+n_v2_coll(t) = (t > 0.9*T[end])*R*av2_qo'av2_qo
+
+function input_output_mc(t, ρ)
+    Ht = H_QO(t)
+    J = [L_QO[1](t), L_QO[2](t), n_v1_coll(t), n_v2_coll(t)]
+    return Ht, J, dagger.(J)
+end
+
+Random.seed!(1) # hide
+Ntraj = 20
+n_v1_mc_ls = [zeros(length(T)) for i=1:Ntraj]
+n_v2_mc_ls = deepcopy(n_v1_mc_ls)
+
+for it=1:Ntraj  
+    t_mc, ψt_mc = timeevolution.mcwf_dynamic(T, ψ0, input_output_mc)
+    n_v1_mc = real.(expect(av1_qo' * av1_qo, ψt_mc))
+    n_v2_mc = real.(expect(av2_qo' * av2_qo, ψt_mc))
+
+    n_v1_mc_ls[it] = n_v1_mc
+    n_v2_mc_ls[it] = n_v2_mc
+end
+nothing # hide
+
+close("HOM mcwf") # hide
+figure("HOM mcwf", figsize=(5.4, 4.2))
+subplot(211)
+for it=1:Ntraj
+    plot(T, n_v1_mc_ls[it])
+end
+ylabel("mean photons")
+grid(true)
+
+subplot(212)
+for it=1:Ntraj
+    plot(T, n_v2_mc_ls[it])
+end
+xlabel("time")
+ylabel("mean photons")
+grid(true)
+gcf()
+
+# We can see that both photons always go together into one of the two detectors. 
+
+# ## Package versions
+
+# These results were obtained using the following versions:
+
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
