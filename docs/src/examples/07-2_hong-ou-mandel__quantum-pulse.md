@@ -30,6 +30,7 @@ av2 = Destroy(h, :a_v2, 4)
 
 # symbolic parameters
 @rnumbers gu1 gu2 gv1 gv2 t r
+nothing # hide
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
@@ -48,6 +49,9 @@ nothing # hide
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 H = get_hamiltonian(G)
+````
+
+````@example 07-2_hong-ou-mandel__quantum-pulse
 L = get_lindblad(G)
 ````
 
@@ -130,7 +134,7 @@ nothing # hide
 ````
 
 In the following, we show Monte-Carlo wave funtion simulations to show the bunching of photons into one of the two output ports in each realization.
-To this end, we collapse the photon number at the end of the time evolution (t > 0.9 T_{end}) with the photon detection operator in each output mode $a^\dagger_{v_i} a_{v_i}$.
+To this end, we collapse the photon number at the end of the time evolution ($t > 0.9 T_{end}$) with the photon detection operator in each output mode $ a^{\dagger}_{v} a_{v} $.
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 R = 1 # collapse rate
@@ -147,7 +151,9 @@ Random.seed!(1) # hide
 Ntraj = 20
 n_v1_mc_ls = [zeros(length(T)) for i=1:Ntraj]
 n_v2_mc_ls = deepcopy(n_v1_mc_ls)
+````
 
+````@example 07-2_hong-ou-mandel__quantum-pulse
 for it=1:Ntraj
     t_mc, ψt_mc = timeevolution.mcwf_dynamic(T, ψ0, input_output_mc)
     n_v1_mc = real.(expect(av1_qo' * av1_qo, ψt_mc))
@@ -157,14 +163,16 @@ for it=1:Ntraj
     n_v2_mc_ls[it] = n_v2_mc
 end
 nothing # hide
+````
 
+````@example 07-2_hong-ou-mandel__quantum-pulse
 close("HOM mcwf") # hide
-figure("HOM mcwf", figsize=(5.4, 4.2))
+figure("HOM mcwf", figsize=(6.5, 4.5))
 subplot(211)
 for it=1:Ntraj
     plot(T, n_v1_mc_ls[it])
 end
-ylabel("mean photons")
+ylabel(L"\langle a^\dagger_{v_1} a_{v_1} \rangle")
 grid(true)
 
 subplot(212)
@@ -172,7 +180,7 @@ for it=1:Ntraj
     plot(T, n_v2_mc_ls[it])
 end
 xlabel("time")
-ylabel("mean photons")
+ylabel(L"\langle a^\dagger_{v_2} a_{v_2} \rangle")
 grid(true)
 gcf()
 ````

@@ -2,7 +2,7 @@
 EditURL = "../../../examples/04-1_two-sided-cavity_with-atom_coh-drive.jl"
 ```
 
-# Two-sided Cavity with Atom
+Two-sided Cavity with Atom
 
 In this example, we first simulate a continuously coherently driven empty two-sided cavity where we see the transmission and reflection spectrum. Afterwards, we couple $N=2$ two-level system resonantly to the cavity to investigate the transmission and reflection of a weak coherent pulse.
 

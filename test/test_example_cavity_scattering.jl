@@ -90,7 +90,8 @@ using Test
     gvc_t = t -> conj(gv_t(t))
     
     dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
-    
+    # dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
+
     H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
     L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
     function input_output_2(t,ρ)

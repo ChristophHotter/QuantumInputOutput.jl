@@ -24,6 +24,7 @@ function _normalize_time_parameter(time_parameter)
     return out
 end
 
+# TODO: use Symbolics.build_function() for this
 function _translate_prefactor(arg_c, time_parameter)
     if !iscall(arg_c) # only one symbolic function in arg_c_ #TODO: time-dep parameter, e.g. g(t)
         arg_c_sub = substitute(arg_c, time_parameter)
@@ -37,7 +38,6 @@ function _translate_prefactor(arg_c, time_parameter)
     arg_c_args = arguments(arg_c)
     arg_c_op = operation(arg_c)
 
-    # TODO: directly use gu(t) without substitution? (think about iscall)
     if length(arg_c_args) == 1  # conj(g)*a, sqrt(g)*a # TODO: g^2*a [length(arg_c_args) == 2]
         if arg_c_op ∈ [conj, sqrt]
             arg_c_1 = substitute(arg_c, time_parameter)
@@ -59,6 +59,13 @@ function _translate_prefactor(arg_c, time_parameter)
     pref_f = t -> prod(arg_c_f(t) for arg_c_f in arg_c_functions) * pref_num
     return true, pref_f
 end
+# function _translate_prefactor(arg_c, time_parameter) # TODO: see test/translate_fct_test.jl
+#     expr = substitute(arg_c, time_parameter) 
+#     pref_build = build_function(expr, iv; expression=Val(false))
+#     pref_f = t -> 
+
+#     return pref_f
+# end
 
 """
     translate(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),

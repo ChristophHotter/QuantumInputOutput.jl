@@ -29,7 +29,6 @@ nothing # hide
 
 #
 
-
 ## input cavities, beam splitter, and output cavities
 S_bs = [r t; t -r]
 G_u1 = SLH(1, gu1 * au1, 0)

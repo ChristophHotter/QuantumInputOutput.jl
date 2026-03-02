@@ -5,7 +5,7 @@ using QuantumCumulants
 using QuantumOpticsBase
 using QuantumOptics
 using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
-# using Symbolics #?
+using Symbolics #?
 # using ModelingToolkit #?
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType

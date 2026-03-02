@@ -24,8 +24,8 @@
   - [ ] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
   - [ ] interaction picture (Victor)
     - [x] analytic expression for u=v
+    - [x] kwarg for adjoint replacement in substitute_operators
     - [ ] general expression for A(t)
-    - [ ] kwarg for adjoint replacement in substitute_operators
   - [ ] pulse delay (Victor paper)
   - [x] directly QO.jl objects
   - [x] padding
@@ -61,3 +61,4 @@
 - [x] SLH for QO.jl objects directly
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
 - [ ] time_parameter allow for (linear) interpolations (not only functions)
+- [ ] directly use gu(t) without substitution? (think about iscall)

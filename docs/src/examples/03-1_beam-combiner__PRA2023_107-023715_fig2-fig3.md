@@ -4,7 +4,8 @@ EditURL = "../../../examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.jl
 
 # Perfect Splitting of a Two-photon Pulse
 
-TODO: Intro
+In this example, simulate the perfect splitting of a two-photon pulse into two orthogonal temporal modes with one photon each.
+We then show the reverse process to combine the two orthogonal photons into a single temporal mode with two photons.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 using QuantumInputOutput
@@ -80,9 +81,10 @@ nothing #hide
 
 We translate the symbolic expressions to numerical operators and solve the time-dependent master equation with QuantumOptics.jl.
 
-To obtain the output modes we do not use the second input mode and the output mode cavity. However, to keep the example short we include them already from the beginning since they are needed later. To perform time consumeing parameter scans one should merely use the necessary Hilbert spaces. In this case this would correspond to one input cavity and the two-level system.
-
-TODO: use operator dictionary in the translate function to reduce the Hilbert space!
+To obtain the output modes we do not use the second input mode and the output mode cavity.
+However, to keep the example short we include them already from the beginning since they are needed later.
+To perform time consuming parameter scans one should merely use the necessary Hilbert spaces. In this case this would correspond to one input cavity and the two-level system.
+The kwarg `operators` of the function [translate](@ref) provides a convenient to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # numeric bases
@@ -153,7 +155,7 @@ gcf()
 
 As described in the paper, we can define a rotated basis in which the two modes are not entangled and equally populated by a single photon Fock-state. In the following, we define these rotated modes and use them to combine two single photons into a two photon Fock state. The temporal output mode of this two photon Fock state needs to be the same as the previous input mode which separated the two single photons before.
 
-TODO: analyse state of the output mode with v1 - one more mode - operator dictionary in translate
+TODO: analyse state of the output mode with v1 - one more mode - operator dictionary in translate # hide
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 v1_p = 1/√(2) * ( v1_mode - v2_mode )
