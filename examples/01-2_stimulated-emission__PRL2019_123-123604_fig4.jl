@@ -122,3 +122,16 @@ ylabel("population")
 legend()
 tight_layout()
 gcf() 
+
+# ## Package versions
+
+# These results were obtained using the following versions:
+
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)

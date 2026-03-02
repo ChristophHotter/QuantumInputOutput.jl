@@ -5,7 +5,6 @@
 
 using QuantumInputOutput
 using QuantumOptics
-using SecondQuantizedAlgebra
 using PyPlot
 
 # 
@@ -109,3 +108,16 @@ legend()
 grid(true)
 tight_layout()
 gcf()
+
+# ## Package versions
+
+# These results were obtained using the following versions:
+
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
