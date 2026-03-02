@@ -45,7 +45,8 @@ using Test
     a0_ls = [au_sym, av_sym]
     la = length(a0_ls)
     a_int_ls = [sum(M(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]
-    int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; adjoint.(a_int_ls)])
+    # int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; adjoint.(a_int_ls)])
+    int_dict = Dict(a0_ls .=> a_int_ls)
 
     H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
     L_int_sym = simplify(substitute_operators(L, int_dict))

@@ -2,7 +2,7 @@
 EditURL = "../../../examples/06-1_interaction-picture__PRA2023_107-013706_fig2.jl"
 ```
 
-# Interaction Picture: Scattering with a Quantum Pulse
+# Interaction Picture Scattering with a Quantum Pulse
 
 In this example, we study the scattering of a Fock state $| n = 20 \rangle$ on a two-level system, using the interaction picture introduced in
 [Christiansen et al., Phys. Rev. A 107, 013706 (2023)](https://doi.org/10.1103/PhysRevA.107.013706).
@@ -169,6 +169,21 @@ grid(true)
 legend()
 tight_layout()
 gcf()
+````
+
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "QuantumOpitcs", "SecondQuantizedAlgebra", "SymbolicUtils", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
 ````
 
 ---

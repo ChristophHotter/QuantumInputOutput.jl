@@ -2,7 +2,7 @@
 EditURL = "../../../examples/07-1_beamsplitter_loss__quantum-pulse.jl"
 ```
 
-# Loss of a Quantum Pulse on a Beam Splitter (n=2)
+# Beam Splitter Loss
 
 This example models loss of pulse in a Fock-state by mixing the pulse with a vacuum
 port on a beam splitter. We analyze the output mode $v(t)$ which is the same as the
@@ -80,7 +80,7 @@ gv_t = v_to_gv(u, T) # v(t) = u(t)
 dict_p_t = Dict(gu => gu_t, gv => gv_t)
 
 # beam splitter parameters
-η = 0.2 # loss rate
+η = 0.2 # loss
 r_ = sqrt(η) # reflection
 t_ = sqrt(1 - η) # transmission
 dict_p = Dict([t,r] .=> [t_, r_])
@@ -126,6 +126,9 @@ pop_n_ls = [ρv_end.data[i,i] for i=1:n_ph+1]
 nothing # hide
 ````
 
+We plot the mean photon number and the distribution of the Fock state components after the beam splitter interaction.
+We can see that the mean photon number is reduced by $\eta = 20%$.
+
 ````@example 07-1_beamsplitter_loss__quantum-pulse
 close("beam splitter loss") # hide
 figure("beam splitter loss", figsize=(5.4, 4.2))
@@ -144,6 +147,21 @@ gcf()
 ````
 
 Note that the calculation can also be performed in the interaction picture, which would be numerically beneficial and the loss of the input mode $u(t)$ can be directly observed.
+
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 07-1_beamsplitter_loss__quantum-pulse
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
+````
 
 ---
 
