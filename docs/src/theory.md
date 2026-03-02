@@ -173,12 +173,57 @@ further analysis or for feedback into a second virtual cavity.
 This procedure yields a principled way to extract a small number of relevant modes from a continuum and is
 central to the workflows implemented in **QuantumInputOutput.jl**.
 
+## Interaction Picture for Traveling Pulses
+
+For pulse scattering problems (with large photon numbers) it is often advantageous to transform to an interaction picture that removes the pure mode-transfer dynamics between the virtual input and output cavities. Following [Christiansen et al. (2023)](https://doi.org/10.1103/PhysRevA.107.013706), 
+one splits the total Hamiltonian into the system part and a coupling part that only exchanges excitations between
+the upstream and downstream virtual modes. For the two-mode case this is
+
+```math
+\hat H_{uv}(t) = \frac{i}{2}\left[g_u(t) g_v^*(t)\,\hat a_u^\dagger \hat a_v - g_v(t) g_u^*(t)\,\hat a_v^\dagger \hat a_u\right].
+```
+
+The corresponding interaction-picture transformation affects only the field-mode operators. Writing
+$(\hat a_u(t), \hat a_v(t))^T = M(t)\,(\hat a_u(0), \hat a_v(0))^T$, the coefficient matrix solves
+
+```math
+\frac{d}{dt} M(t) = A(t)\,M(t), \qquad
+A(t) = \frac{1}{2}\begin{bmatrix}
+0 & g_u(t) g_v^*(t) \\
+-g_u^*(t) g_v(t) & 0
+\end{bmatrix},
+```
+
+with $M(0)=I$. In this picture the remaining Hamiltonian and dissipators are obtained by substituting the
+interaction-picture mode operators into the full cascaded model and subtracting $\hat H_{uv}(t)$ from the original
+Hamiltonian. The key practical benefit is that the virtual modes no longer undergo full emptying and refilling
+during the pulse; instead, only a narrow band of Fock states is populated at any time, which allows much smaller
+Hilbert-space truncations for numerical simulations. 
+
+The interaction picture can be generalized to multiple cascaded modes with
+
+```math
+A(t) = \frac{1}{2}\begin{bmatrix}
+0 & g_1 g_2^* & \cdots & g_1 g_M^* \\
+-g_1^* g_2 & 0 & \ddots & \vdots \\
+\vdots & \ddots & 0 & g_3 g_4^* \\
+-g_1^* g_M & \cdots & -g_{M-1}^* g_M & 0
+\end{bmatrix}
+```
+
+, which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_M$, where $G_i = (0, g_i \hat a_i, 0)$. 
+
+TODO: check
+
+
 ### References
 
-The above summary follows the virtual-cavity and SLH-based pulse formalism developed in the input-output literature on quantum pulses and cascaded systems, in particular the works by Kiilerich, Mølmer, and collaborators.
+The above summary follows the virtual-cavity and SLH-based pulse formalism developed in the input-output literature on quantum pulses and cascaded systems, in particular the works by Kiilerich, Christiansen, Mølmer, and collaborators.
 
 - Input-output theory with quantum pulses
   - [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604)
   - [A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717)
 - The SLH framework for modeling quantum inputoutput networks
   - [J. Combes, et. al. Advances in Physics: X, 2:3, 784-888 (2017)](https://doi.org/10.1080/23746149.2017.1343097) 
+- Interaction picture for quantum pulses
+  - [Christiansen et al., Phys. Rev. A 107, 013706 (2023)](https://doi.org/10.1103/PhysRevA.107.013706)
