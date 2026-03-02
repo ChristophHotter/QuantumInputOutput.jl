@@ -135,6 +135,21 @@ tight_layout()
 gcf()
 ````
 
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
+````
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*

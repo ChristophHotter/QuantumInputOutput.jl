@@ -239,6 +239,21 @@ tight_layout()
 gcf()
 ````
 
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot", "DataInterpolations"],
+    mode = PKGMODE_MANIFEST,
+)
+````
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*

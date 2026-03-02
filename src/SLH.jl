@@ -111,7 +111,10 @@ get_hamiltonian(slh::SLH) = slh.hamiltonian
     ▷(G::SLH...)
 
 Creates a new SLH triple by cascading the SLH triples from first to last according to 
-the rule ``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+the rule 
+
+``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+
 Unicode `\\triangleright<tab>` alias of [`cascade`](@ref)
 """
 function ▷(G1::SLH,G2::SLH) #\triangleright
@@ -192,7 +195,12 @@ end
     cascade(G::SLH...)
 
 Creates a new SLH triple by cascading the SLH triples from first to last according to 
-the rule ``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+the rule 
+
+```math
+SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) 
+```
+
 See also [`▷`](@ref). 
 """
 cascade(args...) = ▷(args...)
@@ -202,7 +210,12 @@ cascade(args...) = ▷(args...)
     ⊞(G::SLH...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
-the rule ``SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)``
+the rule 
+
+```math
+SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)
+```
+
 Unicode `\\boxplus<tab>` alias of [`concatenate`](@ref)
 """
 function ⊞(G1::SLH,G2::SLH) #\boxplus
@@ -260,7 +273,12 @@ end
     concatenate(G::SLH...)
 
 Creates a new SLH triple by concatenating the SLH triples according to 
-the rule ``SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)``
+the rule 
+
+```math
+SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)
+```
+
 See also [`⊞`](@ref).
 """
 concatenate(args...) = ⊞(args...)

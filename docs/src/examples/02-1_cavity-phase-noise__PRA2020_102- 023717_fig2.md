@@ -142,6 +142,21 @@ gcf()
 
 We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a mistake in their numerical model.
 
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
+````
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*

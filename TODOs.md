@@ -4,7 +4,7 @@
 - [ ] docu
   - [ ] examples
     - [x] .jl file conversion (see QC.jl, Orjan)
-    - [ ] interaction picture example (Victor paper)
+    - [x] interaction picture example (Victor paper)
     - [ ] Multi-mode Dicke state superradiance
     - [ ] SUPER example (Johannes)
     - [x] g2 for waveguide example
@@ -26,7 +26,7 @@
     - [ ] analytic expression for u=v
     - [ ] kwarg for adjoint replacement in substitute_operators
   - [ ] pulse delay (Victor paper)
-  - [ ] directly QO.jl objects
+  - [x] directly QO.jl objects
   - [ ] padding
   - [ ] feedback reduction
 - [ ] More tests

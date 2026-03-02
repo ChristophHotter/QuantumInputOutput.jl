@@ -268,6 +268,21 @@ gcf()
 
 We can see that only about 5% is transmitted and 71% are reflected. The rest is scattered into free space by the atoms.
 
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 04-1_two-sided-cavity_with-atom_coh-drive
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "QuantumCumulants", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
+````
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*

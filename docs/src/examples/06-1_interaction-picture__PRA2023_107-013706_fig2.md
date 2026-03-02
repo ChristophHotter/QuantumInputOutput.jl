@@ -4,7 +4,7 @@ EditURL = "../../../examples/06-1_interaction-picture__PRA2023_107-013706_fig2.j
 
 # Interaction Picture: Scattering with a Quantum Pulse
 
-In this example, we study the scattering of a Fock state $|n=\rangle$ on a two-level system, using the interaction picture introduced in
+In this example, we study the scattering of a Fock state $| n = 20 \rangle$ on a two-level system, using the interaction picture introduced in
 [Christiansen et al., Phys. Rev. A 107, 013706 (2023)](https://doi.org/10.1103/PhysRevA.107.013706).
 We start by loading the packages and specifying the model.
 
@@ -53,13 +53,13 @@ Usually we deal with the above derived Hamiltonian and Lindblad. In this example
 H_uv = get_hamiltonian(▷(G_u, G_v))
 ````
 
-To do so, we first subtract $H_uv$ from $H$ and then replace the virtual cavity operators $a_v$ and $a_u$ as described in the [Theory](@ref) section.
+To do so, we first subtract $H_{uv}$ from $H$ and then replace the virtual cavity operators $a_v$ and $a_u$ as described in the [Theory](@ref) section.
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
 H_int_sym_ = simplify(H - H_uv)
 
 # symbolic coefficient matrix $M(t)$
-M(i,j) = cnumber("M$(i)$(j)")
+M(i,j) = cnumber("M_{$(i)$(j)}")
 a0_ls = [au_sym, av_sym]
 la = length(a0_ls)
 a_int_ls = [sum(M(i,j)*a0_ls[j] for j=1:la) for i=1:la]
@@ -84,11 +84,7 @@ We define the numerical parameters of the system, calculate the solution for the
 # numerical parameters
 γ_ = 1.0
 n_photons = 20
-````
 
-Gaussian pulse u(t), Eq. (21)
-
-````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
 τ = 1 / γ_
 t_p = 4 / γ_
 u(t) = 1 / (sqrt(τ) * π^(1/4)) * exp(-0.5 * ((t - t_p) / τ)^2)
@@ -147,6 +143,7 @@ av = one(bu) ⊗ one(ba) ⊗ destroy(bv)
 n_u = real.(expect(au' * au, ρt))
 n_v = real.(expect(av' * av, ρt))
 P_e = real.(expect(σee, ρt))
+nothing # hide
 ````
 
 We can see that the mean photon number of the initial temporal mode $u$ is reduced by less than two photons.
@@ -158,7 +155,7 @@ subplot(2, 1, 1)
 plot(T, n_u, label = L"\langle n_u \rangle")
 xlabel("tγ")
 ylabel("excitations")
-ylim(18, 20)
+ylim(17, 20)
 grid(true)
 legend()
 

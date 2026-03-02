@@ -10,7 +10,6 @@ Furthermore it drives the system with a *quantum* single-photon pulse via a virt
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 using QuantumInputOutput
 using QuantumOptics
-using SecondQuantizedAlgebra
 using PyPlot
 ````
 
@@ -118,6 +117,21 @@ legend()
 grid(true)
 tight_layout()
 gcf()
+````
+
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
 ````
 
 ---

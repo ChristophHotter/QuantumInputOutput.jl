@@ -206,6 +206,21 @@ tight_layout()
 gcf()
 ````
 
+## Package versions
+
+These results were obtained using the following versions:
+
+````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
+````
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
