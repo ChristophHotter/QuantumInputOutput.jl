@@ -35,6 +35,7 @@ export SLH, # SLH.jl
     vi_to_v_i_im1,
     two_time_corr_matrix,
     interaction_picture_M,
+    interaction_picture_M_2modes_equal,
     interaction_picture_A_2modes,
     interaction_picture_A_3modes,
     interaction_picture_A_4modes,

@@ -101,9 +101,9 @@ A_uv = interaction_picture_A_2modes(gu_t, gv_t)
 M_t = interaction_picture_M(A_uv, T)
 
 # numerical basis
-bu = FockBasis(n_photons, n_photons-4)
+bu = FockBasis(n_photons, n_photons-5)
 ba = NLevelBasis(2)
-bv = FockBasis(4)
+bv = FockBasis(5)
 b = bu ⊗ ba ⊗ bv
 
 # constant and time-dependent parameters
@@ -155,7 +155,7 @@ subplot(2, 1, 1)
 plot(T, n_u, label = L"\langle n_u \rangle")
 xlabel("tγ")
 ylabel("excitations")
-ylim(17, 20)
+ylim(17, 20.2)
 grid(true)
 legend()
 

@@ -4,6 +4,7 @@ names = [
     "test_translate.jl"
     "test_example_cavity_scattering.jl"
     "test_compare_example_05_1_05_2.jl"
+    "test_interaction_picture.jl"
 ]
 
 detected_tests = filter(

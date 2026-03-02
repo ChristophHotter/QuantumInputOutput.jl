@@ -77,6 +77,10 @@ interaction_picture_M
 ```
 
 ```@docs
+interaction_picture_M_2modes_equal
+```
+
+```@docs
 interaction_picture_A_2modes
 ```
 

@@ -23,6 +23,32 @@ function interaction_picture_M(A::Function, T; alg = Tsit5(), kwargs...)
     return t -> sol(t)
 end
 
+"""
+    interaction_picture_M_2modes_equal(u, T)
+
+Analytic interaction-picture coefficient matrix for two modes when `u(t) = v(t)`,
+as described in Christiansen et al. (PRA 107, 013706). The matrix is
+
+`M(t) = [cos θ(t)  -sin θ(t); sin θ(t)  cos θ(t)]`,
+
+where `sin^2 θ(t) = ∫_0^t |u(t')|^2 dt'`.
+"""
+function interaction_picture_M_2modes_equal(u, T)
+    u_vals = u isa Function ? u.(T) : u
+    sin2θ = cumul_integrate(T, abs2.(u_vals))
+    sin2θ = clamp.(real.(sin2θ), 0.0, 1.0)
+    θ = asin.(sqrt.(sin2θ))
+    cθ = cos.(θ)
+    sθ = sin.(θ)
+
+    M11 = LinearInterpolation(cθ, T; extrapolation = ExtrapolationType.Extension)
+    M12 = LinearInterpolation(-sθ, T; extrapolation = ExtrapolationType.Extension)
+    M21 = LinearInterpolation(sθ, T; extrapolation = ExtrapolationType.Extension)
+    M22 = LinearInterpolation(cθ, T; extrapolation = ExtrapolationType.Extension)
+
+    return t -> [M11(t) M12(t); M21(t) M22(t)]
+end
+
 _as_time_function(x) = x isa Function ? x : (_ -> x)
 
 """

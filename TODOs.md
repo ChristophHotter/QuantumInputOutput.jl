@@ -9,7 +9,8 @@
     - [ ] SUPER example (Johannes)
     - [x] g2 for waveguide example
     - [ ] pulse delay (Victor paper)
-    - [ ] beam splitter 
+    - [x] beam splitter loss
+    - [ ] beam splitter HOM
   - [x] theory
   - [x] introduction
   - [ ] API
@@ -60,5 +61,3 @@
 - [x] SLH for QO.jl objects directly
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
 - [ ] time_parameter allow for (linear) interpolations (not only functions)
-- [ ] Get rid of "using SecondQuantizedAlgebra" in the examples: 
-  - [ ] Import and export all SQA.jl 
