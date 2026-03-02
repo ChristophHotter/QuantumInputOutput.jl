@@ -23,16 +23,16 @@
 - [ ] more functionalities
   - [ ] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
   - [ ] interaction picture (Victor)
+    - [x] analytic expression for u=v
     - [ ] general expression for A(t)
-    - [ ] analytic expression for u=v
     - [ ] kwarg for adjoint replacement in substitute_operators
   - [ ] pulse delay (Victor paper)
   - [x] directly QO.jl objects
-  - [ ] padding
+  - [x] padding
   - [ ] feedback reduction
 - [ ] More tests
   - [ ] codecov
-  - [ ] interaction picture: gamma=0; comparison analytic M; comparison (atom) with "normal" system
+  - [ ] interaction picture: test general A(t)
 - [ ] Formatter/SpellCheck
 - [ ] JET
 - [ ] Aqua
