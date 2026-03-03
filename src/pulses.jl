@@ -57,7 +57,7 @@ v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
 Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ` and width `σ`.
 Returns a callable `t -> g_u(t)`.
 """
-function u_to_gu_Gauss(u, τ, σ)
+function u_to_gu_Gauss(u, τ, σ) # TODO: add Δ as kwarg; arg u not needed?!
     # u = mode function (Gauss or Gauss*exp(i*ω*t))
     # τ = time delay # σ = width
     ∫u_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
@@ -70,7 +70,7 @@ end
 Compute ``g_v(t)` for a Gaussian output mode `v(t)` with delay `τ` and width `σ`.
 Returns a callable `t -> g_v(t)`.
 """
-function v_to_gv_Gauss(v, τ, σ)
+function v_to_gv_Gauss(v, τ, σ) # TODO: add Δ as kwarg; arg v not needed?!
     # v = mode function (Gauss or Gauss*exp(i*ω*t))
     # τ = time delay # σ = width
     ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))

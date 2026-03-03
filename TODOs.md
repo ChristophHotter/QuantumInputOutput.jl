@@ -21,7 +21,7 @@
   - [ ] translate.jl
   - [ ] utils.jl
 - [ ] more functionalities
-  - [ ] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
+  - [x] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
   - [ ] interaction picture (Victor)
     - [x] analytic expression for u=v
     - [x] kwarg for adjoint replacement in substitute_operators
@@ -30,6 +30,9 @@
   - [x] directly QO.jl objects
   - [x] padding
   - [ ] feedback reduction
+  - [ ] gu_to_Gauss
+    - [ ] add Δ as kwarg
+    - [ ] arg u not needed?! 
 - [ ] More tests
   - [ ] codecov
   - [ ] interaction picture: test general A(t)
