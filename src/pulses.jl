@@ -52,6 +52,54 @@ v_to_gv(v::Function, T::Vector) = v_to_gv(v.(T), T)
 v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
 
 """
+    uv_to_gout(u, v, T)
+
+Compute the out-coupling strength ``\\tilde g_{\\mathrm{out},u,v}(t)`` for a delay cavity
+that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
+Returns callable `t -> g_out(t)` based on samples on `T` with a linear interpolation.
+"""
+function uv_to_gout(u::Vector, v::Vector, T::Vector)
+    l_T = length(T)
+    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
+    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
+    gout_t = zeros(ComplexF64, l_T)
+    for i = 2:l_T
+        denom = ∫v2_t[i] - ∫u2_t[i]
+        if abs(sqrt(denom)) > _tol_div
+            gout_t[i] = u[i]' / sqrt(denom + _ϵu)
+        end
+    end
+    gout_int = LinearInterpolation(gout_t, T; extrapolation = _extrapolate)
+    return t -> gout_int(t)
+end
+uv_to_gout(u::Function, v::Function, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+
+"""
+    uv_to_gin(u, v, T)
+
+Compute the in-coupling strength ``\\tilde g_{\\mathrm{in},v,u}(t)`` for a delay cavity
+that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
+Returns callable `t -> g_in(t)` based on samples on `T` with a linear interpolation. 
+"""
+function uv_to_gin(u::Vector, v::Vector, T::Vector)
+    l_T = length(T)
+    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
+    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
+    gin_t = zeros(ComplexF64, l_T)
+    for i = 2:l_T
+        denom = ∫v2_t[i] - ∫u2_t[i]
+        if abs(sqrt(denom)) > _tol_div
+            gin_t[i] = -v[i]' / sqrt(denom + _ϵv)
+        end
+    end
+    gin_int = LinearInterpolation(gin_t, T; extrapolation = _extrapolate)
+    return t -> gin_int(t)
+end
+uv_to_gin(u::Function, v::Function, T::Vector) = uv_to_gin(u.(T), v.(T), T)
+uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gin(u.(T), v.(T), T)
+
+"""
     u_to_gu_Gauss(u, τ, σ)
 
 Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ` and width `σ`.

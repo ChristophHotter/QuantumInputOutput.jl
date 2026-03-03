@@ -33,6 +33,8 @@ export SLH, # SLH.jl
     v_to_gv_Gauss,
     ui_to_u_i_im1,
     vi_to_v_i_im1,
+    uv_to_gout,
+    uv_to_gin,
     two_time_corr_matrix,
     interaction_picture_M,
     interaction_picture_M_2modes_equal,
