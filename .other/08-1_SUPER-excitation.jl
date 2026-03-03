@@ -95,9 +95,9 @@ T = [T0:dt:Tend;]
 u1(t_) = 1/(√(σ1_)*π^(1/4)) * exp( -(t_ - τ1_)^2 / (2*σ1_^2) ) * exp(-1im*Δ1_*t_)
 u2(t_) = 1/(√(σ2_)*π^(1/4)) * exp( -(t_ - τ2_)^2 / (2*σ2_^2) ) * exp(-1im*Δ2_*t_)
 
-gu1_t_ = u_to_gu_Gauss(u1, τ1_, σ1_)
+gu1_t_ = u_to_gu_Gauss(τ1_, σ1_)
 gu1_t(t) = gu1_t_(t) # TODO: needed?
-gv1_t_ = v_to_gv_Gauss(u1, τ1_, σ1_)
+gv1_t_ = v_to_gv_Gauss(τ1_, σ1_)
 gv1_t(t) = gv1_t_(t)
 gu1_c_t(t) = conj(gu1_t(t))
 gv1_c_t(t) = conj(gv1_t(t))

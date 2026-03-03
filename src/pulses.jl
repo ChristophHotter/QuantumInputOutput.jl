@@ -19,7 +19,7 @@ function u_to_gu(u::Vector, T::Vector)
     gu_t = zeros(ComplexF64, l_T)
     for i = 2:l_T
         if abs(sqrt(1 - ∫u2_t[i])) > _tol_div
-            gu_t[i] = u[i]' / sqrt(1 - ∫u2_t[i] + _ϵu)
+            gu_t[i] = u[i]' / sqrt(abs(1 - ∫u2_t[i]) + _ϵu)
         end #else 0
         # gu_t[i] = u[i]' / max(sqrt(1 - ∫u2_t[i]), _tol_div) # TODO: test
     end
@@ -52,77 +52,42 @@ v_to_gv(v::Function, T::Vector) = v_to_gv(v.(T), T)
 v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
 
 """
-    uv_to_gout(u, v, T)
+    u_to_gu_Gauss(τ, σ; δ=0)
 
-Compute the out-coupling strength ``\\tilde g_{\\mathrm{out},u,v}(t)`` for a delay cavity
-that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
-Returns callable `t -> g_out(t)` based on samples on `T` with a linear interpolation.
-"""
-function uv_to_gout(u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
-    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
-    gout_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        denom = ∫v2_t[i] - ∫u2_t[i]
-        if abs(sqrt(denom)) > _tol_div
-            gout_t[i] = u[i]' / sqrt(denom + _ϵu)
-        end
-    end
-    gout_int = LinearInterpolation(gout_t, T; extrapolation = _extrapolate)
-    return t -> gout_int(t)
-end
-uv_to_gout(u::Function, v::Function, T::Vector) = uv_to_gout(u.(T), v.(T), T)
-uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ`, width `σ`, and detuning `δ`:
 
-"""
-    uv_to_gin(u, v, T)
+`` u(t) = 1/\\sqrt{ \\sigma*\\sqrt{\\pi} }*e^{-(t - \\tau)^2 / 2 \\sigma^2 )} * e^{i*\\delta*t} ``
 
-Compute the in-coupling strength ``\\tilde g_{\\mathrm{in},v,u}(t)`` for a delay cavity
-that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
-Returns callable `t -> g_in(t)` based on samples on `T` with a linear interpolation. 
-"""
-function uv_to_gin(u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
-    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
-    gin_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        denom = ∫v2_t[i] - ∫u2_t[i]
-        if abs(sqrt(denom)) > _tol_div
-            gin_t[i] = -v[i]' / sqrt(denom + _ϵv)
-        end
-    end
-    gin_int = LinearInterpolation(gin_t, T; extrapolation = _extrapolate)
-    return t -> gin_int(t)
-end
-uv_to_gin(u::Function, v::Function, T::Vector) = uv_to_gin(u.(T), v.(T), T)
-uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gin(u.(T), v.(T), T)
 
-"""
-    u_to_gu_Gauss(u, τ, σ)
-
-Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ` and width `σ`.
 Returns a callable `t -> g_u(t)`.
 """
-function u_to_gu_Gauss(u, τ, σ) # TODO: add Δ as kwarg; arg u not needed?!
-    # u = mode function (Gauss or Gauss*exp(i*ω*t))
-    # τ = time delay # σ = width
+function u_to_gu_Gauss(τ, σ; δ=0) # slower than u_to_gu
+    if δ==0 # type stable
+        u = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 )
+    else
+        u = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 ) * exp(1im*δ*t)
+    end
     ∫u_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    f(t_) = u(t_)' / max(√(1 - ∫u_2_t(t_)), _tol_div) # TODO: benchmark
+    f = t_ -> u(t_)' / √(abs(1 - ∫u_2_t(t_)) + _ϵu) 
     return f
 end
 """
-    v_to_gv_Gauss(v, τ, σ)
+    v_to_gv_Gauss(τ, σ; δ=0)
 
-Compute ``g_v(t)` for a Gaussian output mode `v(t)` with delay `τ` and width `σ`.
+Compute ``g_v(t)` for a Gaussian output mode `v(t)` with delay `τ`, width `σ`, and detuning `δ`:
+
+`` v(t) = 1/\\sqrt{ \\sigma*\\sqrt{\\pi} }*e^{-(t - \\tau)^2 / 2 \\sigma^2 )} * e^{i*\\delta*t} ``
+
 Returns a callable `t -> g_v(t)`.
 """
-function v_to_gv_Gauss(v, τ, σ) # TODO: add Δ as kwarg; arg v not needed?!
-    # v = mode function (Gauss or Gauss*exp(i*ω*t))
-    # τ = time delay # σ = width
-    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    f(t_) = v(t_)' / max(√(∫v_2_t(t_)), _tol_div) # TODO: benchmark
+function v_to_gv_Gauss(τ, σ; δ=0) # slower than v_to_gv
+    if δ==0 # type stable
+        v = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 )
+    else
+        v = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 ) * exp(1im*δ*t)
+    end
+    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ)) 
+    f = t_ -> -v(t_)' / √(∫v_2_t(t_) + _ϵv) 
     return f
 end
 
@@ -175,3 +140,51 @@ function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
 end
 ui_to_u_i_im1(u_fcts, T_ls, i) = ui_to_u_i_im1(u_fcts, [u_to_gu(u_, T_ls) for u_ in u_fcts], T_ls, i)
 # TODO: rename, better method (Victor)
+
+"""
+    uv_to_gout(u, v, T)
+
+Compute the out-coupling strength ``\\tilde g_{\\mathrm{out},u,v}(t)`` for a delay cavity
+that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
+Returns callable `t -> g_out(t)` based on samples on `T` with a linear interpolation.
+"""
+function uv_to_gout(u::Vector, v::Vector, T::Vector)
+    l_T = length(T)
+    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
+    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
+    gout_t = zeros(ComplexF64, l_T)
+    for i = 2:l_T
+        denom = abs(∫v2_t[i] - ∫u2_t[i])
+        if abs(sqrt(denom)) > _tol_div
+            gout_t[i] = u[i]' / sqrt(denom + _ϵu)
+        end
+    end
+    gout_int = LinearInterpolation(gout_t, T; extrapolation = _extrapolate)
+    return t -> gout_int(t)
+end
+uv_to_gout(u::Function, v::Function, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+
+"""
+    uv_to_gin(u, v, T)
+
+Compute the in-coupling strength ``\\tilde g_{\\mathrm{in},v,u}(t)`` for a delay cavity
+that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
+Returns callable `t -> g_in(t)` based on samples on `T` with a linear interpolation. 
+"""
+function uv_to_gin(u::Vector, v::Vector, T::Vector)
+    l_T = length(T)
+    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
+    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
+    gin_t = zeros(ComplexF64, l_T)
+    for i = 2:l_T
+        denom = abs(∫v2_t[i] - ∫u2_t[i])
+        if abs(sqrt(denom)) > _tol_div
+            gin_t[i] = -v[i]' / sqrt(denom + _ϵv)
+        end
+    end
+    gin_int = LinearInterpolation(gin_t, T; extrapolation = _extrapolate)
+    return t -> gin_int(t)
+end
+uv_to_gin(u::Function, v::Function, T::Vector) = uv_to_gin(u.(T), v.(T), T)
+uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gin(u.(T), v.(T), T)

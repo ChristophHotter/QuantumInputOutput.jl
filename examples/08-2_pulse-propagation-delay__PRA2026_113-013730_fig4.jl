@@ -1,3 +1,5 @@
+# # TODO
+
 # # Ramsey Interference with Delayed Fock Pulses
 
 # In this example, we reproduces the Ramsey-like interference pattern for a partially delayed input Fock state with `n = 9`, studied in  [V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)](https://doi.org/10.1103/PhysRevA.113.013730). 
@@ -58,7 +60,7 @@ n = 9
 tw = π^(3/2) / (8*γ_*n)
 tp = 6*tw
 
-u(t_) = 1/(√(tw)*π^(1/4)) * exp( -(t_ - tp)^2 / (2*tw^2) )
+u(t_) = 1/(√(tw)*π^(1/4)) * exp( -(t_ - tp)^2 / (2*tw^2) ) # TODO
 u1(t_) = u(t_)
 
 T0 = 0.0
@@ -67,7 +69,9 @@ dt = tw/30
 T = [T0:dt:Tend;]
 t1 = tp + τ + 2tw
 
-gu1_ = u_to_gu_Gauss(u1, tp, tw)
+sum(u.(T))*(T[2]-T[1]) # TODO
+
+gu1_ = u_to_gu_Gauss(tp, tw)
 dict_p_t = Dict([gu1, conj(gu1)] .=> [gu1_, t -> conj(gu1_(t))])
 
 #
