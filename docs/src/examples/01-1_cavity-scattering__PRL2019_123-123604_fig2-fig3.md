@@ -150,18 +150,17 @@ v_mode = (modes[:,end]) / sqrt(ΔT)
 nothing # hide
 ````
 
-We use now the mode with the highest mean photon number as our out-mode to determine its quantum state. Due to a problem with the conjugate of a function we also need to provide the $g_v^*(t)$ in the dictionary for the time-dependent paramters.
+We use now the mode with the highest mean photon number as our out-mode to determine its quantum state.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 p_sym_2 = [γ , Δ ]
 p_num_2 = [γ_, Δ_]
-dict_p_2 = Dict(p_sym_2 .=> p_num_2);
+dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
 # time-depedent coupling for the output mode $v(t)$
 gv_t = v_to_gv(v_mode, T)
-gvc_t = t -> conj(gv_t(t))
 
-dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
+dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 
 H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
 L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)

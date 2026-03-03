@@ -77,9 +77,11 @@ using Test
     dict_p = Dict(γ_sym => γ)
     M_ls = [M(i, j) for i = 1:la for j = 1:la]
     M_t_ls = [t -> M_num(t)[i, j] for i = 1:la for j = 1:la]
-    M_t_c_ls = [t -> conj(M_num(t)[i, j]) for i = 1:la for j = 1:la]
-    p_t_sym = [gu_sym, gv_sym, M_ls..., conj.(M_ls)...]
-    p_t_num = [gu_t, gv_t, M_t_ls..., M_t_c_ls...]
+    # M_t_c_ls = [t -> conj(M_num(t)[i, j]) for i = 1:la for j = 1:la]
+    # p_t_sym = [gu_sym, gv_sym, M_ls..., conj.(M_ls)...]
+    # p_t_num = [gu_t, gv_t, M_t_ls..., M_t_c_ls...]
+    p_t_sym = [gu_sym, gv_sym, M_ls...]
+    p_t_num = [gu_t, gv_t, M_t_ls...]
     dict_p_t = Dict(p_t_sym .=> p_t_num)
 
     H_int_QO = translate(H_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)

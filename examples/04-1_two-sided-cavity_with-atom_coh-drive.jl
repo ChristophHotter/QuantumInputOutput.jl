@@ -1,4 +1,4 @@
-# Two-sided Cavity with Atom 
+# # Two-sided Cavity with Atom 
 
 # In this example, we first simulate a continuously coherently driven empty two-sided cavity where we see the transmission and reflection spectrum. Afterwards, we couple $N=2$ two-level system resonantly to the cavity to investigate the transmission and reflection of a weak coherent pulse. 
 
@@ -23,6 +23,8 @@ a = Destroy(h,:a,1) # cavity
 σ(α,i,j) = Transition(h,"σ_$(α)",i,j,1+α) # two-level atom α
 ∑σ(i,j) = sum(σ(α,i,j) for α=1:Natoms) # collective atomic operator
 nothing # hide 
+
+# ## Empty two-sided cavity
 
 # We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option. 
 

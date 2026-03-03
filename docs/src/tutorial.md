@@ -149,7 +149,7 @@ nothing # hide
 
 ## 5. Output mode and full dynamics
 
-Finally, we treat the dominant output mode explicitly by providing `g_v(t)` (and its conjugate) as time-dependent parameters, and propagate the system again.
+Finally, we treat the dominant output mode explicitly by providing `g_v(t)` as time-dependent parameters, and propagate the system again.
 
 ```@example tutorial
 gv_t = v_to_gv(v_mode, T)

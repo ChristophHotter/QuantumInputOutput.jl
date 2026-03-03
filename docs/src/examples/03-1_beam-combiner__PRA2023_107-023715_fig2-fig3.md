@@ -2,7 +2,7 @@
 EditURL = "../../../examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.jl"
 ```
 
-# Perfect Splitting of a Two-photon Pulse
+# Perfect Splitting and Combining of a Two-photon Pulse
 
 In this example, simulate the perfect splitting of a two-photon pulse into two orthogonal temporal modes with one photon each.
 We then show the reverse process to combine the two orthogonal photons into a single temporal mode with two photons.
@@ -64,7 +64,7 @@ Next, the numerical parameters and functions of the system are defined.
 
 p_sym = [γ , Δ , gu2, gv1]
 p_num = [γ_, Δ_, 0  , 0  ]
-dict_p = Dict(p_sym .=> p_num);
+dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input pulse
 τ = 0.38; tp = 4/γ_
@@ -73,10 +73,8 @@ T = [0:0.002:1;]*20
 ΔT = T[2] - T[1]
 
 gu_ = u_to_gu(u, T)
-gu_c = t -> conj(gu_(t))
-
-dict_p_t = Dict([gu1, conj(gu1)] .=> [gu_, gu_c]);
-nothing #hide
+dict_p_t = Dict(gu1 => gu_)
+nothing # hide
 ````
 
 We translate the symbolic expressions to numerical operators and solve the time-dependent master equation with QuantumOptics.jl.
@@ -175,22 +173,19 @@ u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
 
 # the coupling of the $u_1$ cavity needs no adaptation
 gu1_ = u_to_gu(u1_new, T)
-gu1_c = t -> conj(gu1_(t))
 
 # TODO: explain more!
 # $g_{u_2} needs to take into account to scatter also at the $u_1$ cavity
 # the last argument in ui_to_u_i_im1 (=2) describes the number of the input cavity
 u2_for_gu2 =  ui_to_u_i_im1(u_new_fct, T, 2) # TODO: name and description
 gu2_ = u_to_gu(u2_for_gu2,T)
-gu2_c = t -> conj(gu2_(t))
 
 # coupling of the output mode
 gv1_ = v_to_gv(v1_new,T)
-gv1_c = t -> conj(gv1_(t))
 
 # dictionary for the time-dependent functions
-g_sym = [gu1, gu2, gv1, conj(gu1), conj(gu2), conj(gv1)]
-g_num = [gu1_, gu2_, gv1_, gu1_c, gu2_c, gv1_c]
+g_sym = [gu1, gu2, gv1]
+g_num = [gu1_, gu2_, gv1_]
 dict_p_t_out = Dict(g_sym .=> g_num)
 
 # dictionary for the constant paramters

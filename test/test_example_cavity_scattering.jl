@@ -87,10 +87,10 @@ using Test
     
     # time-depedent coupling for the output mode $v(t)$
     gv_t = v_to_gv(v_mode, T)
-    gvc_t = t -> conj(gv_t(t))
     
-    dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
-    # dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
+    # gvc_t = t -> conj(gv_t(t))
+    # dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
+    dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
 
     H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
     L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
