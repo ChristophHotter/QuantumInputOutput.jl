@@ -110,9 +110,8 @@ b = bu ⊗ ba ⊗ bv
 dict_p = Dict(γ => γ_)
 M_ls = [M(i,j) for i=1:la for j=1:la]
 M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
-M_t_c_ls =  [t -> conj(M_t(t)[i,j]) for i=1:la for j=1:la]
-p_t_sym = [gu, gv, M_ls..., conj.(M_ls)...]
-p_t_num = [gu_t, gv_t, M_t_ls..., M_t_c_ls...]
+p_t_sym = [gu, gv, M_ls...]
+p_t_num = [gu_t, gv_t, M_t_ls...]
 dict_p_t = Dict(p_t_sym .=> p_t_num)
 nothing # hide
 ````

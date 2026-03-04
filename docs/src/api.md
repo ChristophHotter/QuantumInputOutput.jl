@@ -70,6 +70,14 @@ ui_to_u_i_im1
 vi_to_v_i_im1
 ```
 
+```@docs
+uv_to_gin
+```
+
+```@docs
+uv_to_gout
+```
+
 ## [Interaction Picture](@id API: Interaction Picture)
 
 ```@docs
