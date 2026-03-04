@@ -10,7 +10,6 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using SymbolicUtils
 using LinearAlgebra
 using PyPlot
 
@@ -55,6 +54,8 @@ nothing #hide
 
 #
 
+G_u_bs_d1_d2.hamiltonian
+
 L_atom = [0, 0, √(γ/2)*σ(1,2), √(γ/2)*σ(1,2)]
 G_atom = SLH(I4, L_atom, Δ*σ(2,2))
 
@@ -63,46 +64,6 @@ H = get_hamiltonian(G_u_bs_d1_d2_atom)
 L = get_lindblad(G_u_bs_d1_d2_atom)
 
 #
-
-## Interaction picture
-H_pulse = G_u_bs_d1_d2.hamiltonian
-H_int_ = simplify(H - H_pulse)
-
-## TODO: M 3x3 matrix gu, gd1in, gd2in
-
-## symbolic coefficient matrix $M(t)$
-M(i,j) = cnumber("M_{$(i)$(j)}")
-a_ls = [au, ad1, ad2]
-la = length(a_ls)
-a_int_ls = [sum(M(i,j)*a_ls[j] for j=1:la) for i=1:la]
-int_dict = Dict(a_ls .=> a_int_ls)
-
-
-# ## delay cavity 1
-# M1(i,j) = cnumber("M1_{$(i)$(j)}")
-# a1_ls = [au, ad1]
-# la1 = length(a1_ls)
-# a1_int_ls = [sum(M1(i,j)*a1_ls[j] for j=1:la1) for i=1:la1]
-
-# ## delay cavity 1
-# M2(i,j) = cnumber("M2_{$(i)$(j)}")
-# a2_ls = [au, ad2]
-# la2 = length(a2_ls)
-# a2_int_ls = [sum(M2(i,j)*a2_ls[j] for j=1:la2) for i=1:la2]
-# int_dict = Dict([a1_ls; a2_ls] .=> [a1_int_ls; a2_int_ls])
-
-## substitute interaction picture operators
-H_int = simplify(substitute_operators(H_int_, int_dict))
-L_int = [simplify(substitute_operators(L_, int_dict)) for L_ in L]
-
-function interaction_picture_A_3modes(g1, g2, g3) 
-    A(t) = 0.5 * [0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
-            -g2(t) * conj(g1(t)) 0 0;
-            -conj(g1(t)) * g3(t) 0 0]
-    return A
-end
-
-
 
 ## Pulse parameters 
 n = 5#9

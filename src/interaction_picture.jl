@@ -64,8 +64,8 @@ All couplings may be time-dependent or constant.
 function interaction_picture_A_2modes(g1, g2)
     g1f = _as_time_function(g1)
     g2f = _as_time_function(g2)
-    A(t_) = 0.5 * [0 g1f(t_) * conj(g2f(t_));
-        -conj(g1f(t_)) * g2f(t_) 0]
+    A(t) = 0.5 * [0 g1f(t) * conj(g2f(t));
+        -conj(g1f(t)) * g2f(t) 0]
     return A
 end
 interaction_picture_A_2modes(g_ls) = interaction_picture_A_2modes(g_ls...)
@@ -83,11 +83,9 @@ function interaction_picture_A_3modes(g1, g2, g3)
     g1f = _as_time_function(g1)
     g2f = _as_time_function(g2)
     g3f = _as_time_function(g3)
-    A(t_) = begin
-        0.5 * [0 conj(g2f(t_)) * g1f(t_) g1f(t_) * conj(g3f(t_));
-            -g2f(t_) * conj(g1f(t_)) 0 g2f(t_) * conj(g3f(t_));
-            -conj(g1f(t_)) * g3f(t_) -conj(g2f(t_)) * g3f(t_) 0]
-    end
+    A(t) = 0.5 * [0 conj(g2f(t)) * g1f(t) g1f(t) * conj(g3f(t));
+            -g2f(t) * conj(g1f(t)) 0 g2f(t) * conj(g3f(t));
+            -conj(g1f(t)) * g3f(t) -conj(g2f(t)) * g3f(t) 0]
     return A
 end
 
@@ -102,10 +100,10 @@ function interaction_picture_A_4modes(g1, g2, g3, g4)
     g2f = _as_time_function(g2)
     g3f = _as_time_function(g3)
     g4f = _as_time_function(g4)
-    A(t_) = 0.5 * [0 g1f(t_) * conj(g2f(t_)) g1f(t_) * conj(g3f(t_)) g1f(t_) * conj(g4f(t_));
-        -conj(g1f(t_)) * g2f(t_) 0 g2f(t_) * conj(g3f(t_)) g2f(t_) * conj(g4f(t_));
-        -conj(g1f(t_)) * g3f(t_) -conj(g2f(t_)) * g3f(t_) 0 g3f(t_) * conj(g4f(t_));
-        -conj(g1f(t_)) * g4f(t_) -conj(g2f(t_)) * g4f(t_) -conj(g3f(t_)) * g4f(t_) 0]
+    A(t) = 0.5 * [0 g1f(t) * conj(g2f(t)) g1f(t) * conj(g3f(t)) g1f(t) * conj(g4f(t));
+        -conj(g1f(t)) * g2f(t) 0 g2f(t) * conj(g3f(t)) g2f(t) * conj(g4f(t));
+        -conj(g1f(t)) * g3f(t) -conj(g2f(t)) * g3f(t) 0 g3f(t) * conj(g4f(t));
+        -conj(g1f(t)) * g4f(t) -conj(g2f(t)) * g4f(t) -conj(g3f(t)) * g4f(t) 0]
     return A 
 end
 

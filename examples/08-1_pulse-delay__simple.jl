@@ -125,7 +125,7 @@ gcf()
 
 # Introducing a separate cavity to delay the pulse is a big disadvantage if one has multiple modes. 
 # To eliminate the delay cavity, we can transform into the interaction picture of the output and delay cavity coupling. 
-# This is, however, only possible if the delay is larger than the pulse. Nevertheless, since in most cases only the relative 
+# This is, however, only possible if the delay is larger than the pulse, because only then we have $g_{in}(t) \approx g_{v=u}(t)$. Nevertheless, since in most cases only the relative 
 # delay between different modes is crucial, e.g. for two arms of an interferometer, we can simply add a constant delay `Tc >> σ` to all modes. 
 
 G_d_in = SLH(S2, [gin*ad, 0], 0)

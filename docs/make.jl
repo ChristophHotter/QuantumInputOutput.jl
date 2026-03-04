@@ -17,11 +17,13 @@ pages = [
         "examples/02-1_cavity-phase-noise__PRA2020_102- 023717_fig2.md",
         "examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.md",
         "examples/04-1_two-sided-cavity_with-atom_coh-drive.md",
+        "examples/04-2_two-sided-cavity_with-atom_coh-drive__cumulants.md",
         "examples/05-1_N-QDs_bidirectional-waveguide_coherent-pulse.md",
         "examples/05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo.md",
         "examples/06-1_interaction-picture__PRA2023_107-013706_fig2.md",
         "examples/07-1_beamsplitter_loss__quantum-pulse.md",
-        "examples/07-2_hong-ou-mandel__quantum-pulse.md"
+        "examples/07-2_hong-ou-mandel__quantum-pulse.md",
+        "examples/08-1_pulse-delay__simple.md"
     ],
 ]
 

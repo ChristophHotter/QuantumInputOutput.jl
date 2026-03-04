@@ -1,4 +1,4 @@
-# # Two-sided Cavity with Atom 
+# # Two-sided Cavity with Atoms
 
 # In this example, we first simulate a continuously coherently driven empty two-sided cavity where we see the transmission and reflection spectrum. Afterwards, we couple $N=2$ two-level system resonantly to the cavity to investigate the transmission and reflection of a weak coherent pulse. 
 
@@ -50,13 +50,11 @@ L1_L = get_lindblad(G_cav_L_R_drive)[1]
 
 L1_R = get_lindblad(G_cav_L_R_drive)[2]
 
-# The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. Ref SUPER example TODO.
-
-# TODO: simplify $(\sqrt{\kappa})^2 = \kappa$
+# The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. example `Mean-field Two-sided Cavity`.
 
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
 
-# TODO: Latexify?
+# TODO: Latexify? 
 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`. 
 
@@ -149,7 +147,7 @@ gcf()
 
 # ## Two-sided cavity with atoms
 
-# In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of coherent Gaussian pulse with with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
+# In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
 
 H_ac = -Δ*(a'a + ∑σ(2,2)) + g*(a'∑σ(1,2) + a*∑σ(2,1))
 G_ac = SLH(1, √κ_L*a, H_ac)
