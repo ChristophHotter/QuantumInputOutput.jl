@@ -1,11 +1,10 @@
 using QuantumInputOutput
-using SpecialFunctions: erf
 using Test
 
 @testset "utils" begin
-    τ = 2.0
+    τ = 3.0
     σ = 0.5
-    δ = 0.3
+    δ = 0#0.3
 
     u(t) = 1 / (sqrt(σ) * π^(1/4)) * exp(-0.5 * ((t - τ) / σ)^2) * exp(1im * δ * t)
     v(t) = u(t)
@@ -15,19 +14,18 @@ using Test
     gu_num = u_to_gu(u, T)
     gv_num = v_to_gv(v, T)
 
+    gu_num2 = u_to_gu(u.(T), T)
+    gv_num2 = v_to_gv(v.(T), T)
+
+    @test sum(abs.(gu_num2.(T) - gu_num.(T))) < 1e-9
+    @test sum(abs.(gv_num2.(T) - gv_num.(T))) < 1e-9
+
     gu_ana = u_to_gu_Gauss(τ, σ; δ=δ)
     gv_ana = v_to_gv_Gauss(τ, σ; δ=δ)
 
-    # sum(abs.(gu_num.(T) .- gu_ana.(T)))
-    # sum(abs.(gu_num.(T) .- gu_ana.(T)))
+    gv_err = maximum(abs.(gv_num.(T[2:end]) .- gv_ana.(T[2:end])))
+    gu_err = maximum(abs.(gu_num.(T[2:end]) .- gu_ana.(T[2:end])))
 
-    ∫_2(t) = 0.5 * (erf((t - τ) / σ) + erf(τ / σ))
-    T_gv = [t for t in T if ∫_2(t) > 1e-6]
-    T_gu = [t for t in T if (1 - ∫_2(t)) > 1e-6]
-
-    gv_err = maximum(abs.(gv_num.(T_gv) .- gv_ana.(T_gv)))
-    gu_err = maximum(abs.(gu_num.(T_gu) .- gu_ana.(T_gu)))
-
-    @test gv_err < 5e-3
-    @test gu_err < 5e-3
+    @test gv_err < 5e-4
+    @test gu_err < 5e-4
 end

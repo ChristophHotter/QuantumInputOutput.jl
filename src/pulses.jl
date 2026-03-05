@@ -93,9 +93,11 @@ end
     vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
     vi_to_v_i_im1(v_fcts, T_ls, i)
 
-Compute the effective output mode `v_i^{(i-1)}(t)` for multiple output modes.
+Compute the effective output mode `v_i^{(i-1)}(t)` for multiple output modes. 
+
+Further kwargs are passed on to the ODE solver.     
 """
-function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
+function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...)
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
@@ -107,7 +109,7 @@ function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
     u0 = zeros(ComplexF64, i-1)
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_outputs_α, u0, tspan)
-    sol_α = solve(prob) #; abstol, reltol) # TODO: kwarg
+    sol_α = solve(prob, alg; kwargs...) 
     v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
     return v_i_im1
 end
@@ -118,8 +120,10 @@ vi_to_v_i_im1(v_fcts, T_ls, i) = vi_to_v_i_im1(v_fcts, [v_to_gv(v_, T_ls) for v_
     ui_to_u_i_im1(u_fcts, T_ls, i)
 
 Compute the effective input mode `u_i^{(i-1)}(t)` for multiple input modes.
+
+Further kwargs are passed on to the ODE solver.   
 """
-function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
+function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...)
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
@@ -132,7 +136,7 @@ function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
     u0 = zeros(ComplexF64, i-1)
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_inputs_α, u0, tspan)
-    sol_α = solve(prob, Tsit5()) #; abstol, reltol) # TODO: kwarg
+    sol_α = solve(prob, alg; kwargs...)
     u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
     return u_i_im1
 end

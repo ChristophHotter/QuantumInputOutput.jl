@@ -211,7 +211,7 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 \end{bmatrix}
 ```
 
-, which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_M$, where $G_i = (0, g_i \hat a_i, 0)$. 
+which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_M$, where $G_i = (0, g_i \hat a_i, 0)$. 
 
 
 ### References

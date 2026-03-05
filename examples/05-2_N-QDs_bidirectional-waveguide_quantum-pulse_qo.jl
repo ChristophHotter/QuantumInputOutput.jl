@@ -60,6 +60,7 @@ G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
 G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
 
 G_t = G_R_t ⊞ G_L_t
+nothing # hide
 
 # The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be a time-dependent. 
 
@@ -82,6 +83,7 @@ end
 α0 = √(0.1) # √ of total photon number 
 ψ0 = coherentstate(bu, α0) ⊗ tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+nothing # hide
 
 #
 
