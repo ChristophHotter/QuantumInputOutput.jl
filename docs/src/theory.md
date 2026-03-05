@@ -213,13 +213,17 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 
 which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_M$, where $G_i = (0, g_i \hat a_i, 0)$. 
 
+## Pulse Delay
 
-### References
+TODO
+
+## References
 
 - Input-output theory with quantum pulses
   - [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604)
   - [A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717)
 - The SLH framework for modeling quantum inputoutput networks
   - [J. Combes, et. al. Advances in Physics: X, 2:3, 784-888 (2017)](https://doi.org/10.1080/23746149.2017.1343097) 
-- Interaction picture for quantum pulses
+- Interaction picture and pulse delay for quantum pulses
   - [Christiansen et al., Phys. Rev. A 107, 013706 (2023)](https://doi.org/10.1103/PhysRevA.107.013706)
+  - [Christiansen et al., Phys. Rev. A 113, 013730 (2026)](https://doi.org/10.1103/3f3w-jmj8)

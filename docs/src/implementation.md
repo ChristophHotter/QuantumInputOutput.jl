@@ -43,7 +43,7 @@ If the dynamics of the system should be solved with a higher-order mean-field ap
 Quantum pulses are encoded through virtual cavities. Given a normalized input mode `u(t)` and output mode `v(t)`, the package constructs time-dependent couplings
 
 ``g_u(t) = u^*(t) / \sqrt{1 - \int_0^t |u(t')|^2 dt'}`` and
-``g_v(t) = -v^*(t) / \sqrt{\int_0^t |v(t')|^2 dt'}``.
+``g_v(t) = -v^*(t) / \sqrt{\int_0^t |v(t')|^2 dt'}``. 
 
 The implementation uses cumulative numerical integration on a time grid `T` and a linear interpolation. 
 
@@ -52,7 +52,7 @@ The implementation uses cumulative numerical integration on a time grid `T` and 
 
 For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. 
 
-For multiple pulses, the effective input mode `u_i^{eff}(t)` and output mode `v_i^{eff}(t)` for the virtual cavity `i` are constructed via [`u_eff`](@ref) and [`v_eff`](@ref).  
+For multiple pulses, the effective input mode ``u_i^{eff}(t)`` and output mode ``v_i^{eff}(t)`` for the virtual cavity `i` are constructed via [`u_eff`](@ref) and [`v_eff`](@ref).  
 TODO: explain more; show equation; 
 
 
@@ -62,13 +62,15 @@ The dominant output modes are extracted by computing the two-time correlation ma
 
 ``g^{(1)}(t_1, t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle``
 
-and diagonalizing it. In this package, [`two_time_corr_matrix`](@ref) builds that matrix from a previously computed trajectory `ρ(t)` and a chosen output operator `L_s(t)`. The eigenvectors correspond to temporal modes and the eigenvalues to their photon-number weights, consistent with the pulse-mode treatment of Kiilerich & Mølmer (2019) and the cascaded master-equation construction in Christiansen et al. (2023).
+and diagonalizing it. In this package, [`two_time_corr_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $L_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $L_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
 
-The full end-to-end procedure is illustrated in the [Tutorial](@ref) and in the cavity-scattering example `examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3.md`.
+The eigenvectors of the matrix $g^{(1)}(t_1, t_2)$ correspond to temporal modes and the eigenvalues to their mean photon-number weights. The full procedure is illustrated in the [Tutorial](@ref). 
 
 ## Interaction picture
 
-For networks with multiple virtual modes, an interaction-picture transformation can simplify the dynamics by factoring out known mode mixing. The functions in `src/interaction_picture.jl` implement
+For networks with multiple virtual modes, an interaction-picture transformation can simplify the dynamics by removing the pure mode-transfer dynamics between the virtual input and output cavities. 
+
+out known mode mixing. The functions in `src/interaction_picture.jl` implement
 
 ``\dot M(t) = A(t) M(t)``, with ``M(t_0) = I``,
 
@@ -83,4 +85,6 @@ Pulse propagation delays are modeled by a virtual delay cavity that absorbs a pu
 - [`uv_to_gin`](@ref)
 - [`uv_to_gout`](@ref)
 
-compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity. This construction follows the propagation-delay treatment in Christiansen & Mølmer (2026) and builds on the pulse-shaping ideas of Kiilerich & Mølmer (2019).
+compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity, according to 
+
+TODO
