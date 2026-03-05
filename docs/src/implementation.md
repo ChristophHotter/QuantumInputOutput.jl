@@ -13,9 +13,11 @@ SLH element and rules
 
 QuantumOptics.jl and QuantumCumulants.jl
 
+SLHqo for direct implementation without symbolics
+
 ## Field coupling terms
 
-gu, gv, multi-mode
+gu, gv, multi-mode u_eff and v_eff
 
 ## Correlation function and the output modes
 
