@@ -85,6 +85,14 @@ Pulse propagation delays are modeled by a virtual delay cavity that absorbs a pu
 - [`uv_to_gin`](@ref)
 - [`uv_to_gout`](@ref)
 
-compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity, according to 
+compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity, according to
 
-TODO
+```math
+\tilde g_{\mathrm{out},u,v}(t) = \frac{u^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}},
+\qquad
+\tilde g_{\mathrm{in},v,u}(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}.
+```
+
+The implementation mirrors [`u_to_gu`](@ref) and [`v_to_gv`](@ref): compute cumulative integrals on a time grid and return interpolated time-dependent couplings. 
+
+A simple single-pulse case is demonstrated in the example [Simple Pulse Delay with a Virtual Cavity](examples/08-1_pulse-delay__simple.md), where an input pulse is emitted, delayed by a virtual cavity, and captured into an output cavity. 
