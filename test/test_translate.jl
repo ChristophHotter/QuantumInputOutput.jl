@@ -31,7 +31,9 @@ using Test
 
     E_t(t) = 2*t + 1im
     E_t_c(t) = conj(E_t(t))
-    dict_p_t2 = Dict( [E, conj(E)] .=> [E_t, E_t_c] )
+    # dict_p_t2 = Dict( [E, conj(E)] .=> [E_t, E_t_c] )
+    dict_p_t2 = Dict( E => E_t )
+
 
     @testset "kwarg_operators" begin
         @test isequal(translate(Δ, bc1; parameter=dict_p1, operators=ops_dict), one(bc1)*Δn)
@@ -70,7 +72,9 @@ using Test
     F7 = translate(conj(E) + Δ*σ(2,2), b; parameter=dict_p1, time_parameter=dict_p_t2)
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2,2))).data)) < 1e-8
     @test_throws MethodError translate(conj(E), b; parameter=dict_p1)
-    # F8 = translate(E^2, b; parameter=dict_p1, time_parameter=dict_p_t2) # TODO
+    F8 = translate(E^2, b; parameter=dict_p1, time_parameter=dict_p_t2) 
+    @test sum(abs.((F8(0.2) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
+
 
     @testset "time_parameter_normalization" begin
         dict_p_t_num = Dict([E] .=> [2.5])
