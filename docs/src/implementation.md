@@ -70,13 +70,19 @@ The eigenvectors of the matrix $g^{(1)}(t_1, t_2)$ correspond to temporal modes 
 
 For networks with multiple virtual modes, an interaction-picture transformation can simplify the dynamics by removing the pure mode-transfer dynamics between the virtual input and output cavities. 
 
-out known mode mixing. The functions in `src/interaction_picture.jl` implement
+For the interaction picture of $N$ modes, corresponding to the Hamiltonian obtained from $G_1 \triangleright ...  G_N$, where $G_i = (0, g_i \hat a_i, 0)$, we obtain the transformation for the operators 
+$(\hat a_1(t),  ..., \hat a_N(t))^T = M(t)\,(\hat a_1(0), ..., \hat a_N(0))^T$, where the coefficient matrix $N(t)$ is determined by ``\dot M(t) = A(t) M(t)``, with ``M(t_0) = I`` and the coupling matrix
 
-``\dot M(t) = A(t) M(t)``, with ``M(t_0) = I``,
+```math
+A(t) = \frac{1}{2}\begin{bmatrix}
+0 & g_1 g_2^* & \cdots & g_1 g_N^* \\
+-g_1^* g_2 & 0 & \ddots & \vdots \\
+\vdots & \ddots & 0 & g_3 g_4^* \\
+-g_1^* g_N & \cdots & -g_{N-1}^* g_N & 0
+\end{bmatrix}
+```
 
-where `A(t)` depends on the couplings `g_u(t), g_v(t), ...`. The numerical solver is exposed as [`interaction_picture_M`](@ref), and analytic shortcuts are provided in special cases, e.g. [`interaction_picture_M_2modes_equal`](@ref) for two equal pulses (Christiansen et al., 2023, PRA 107, 013706).
-
-The [`interaction_picture_A_2modes`](@ref), [`interaction_picture_A_3modes`](@ref), and [`interaction_picture_A_4modes`](@ref) helpers build the coupling matrices used in those transformations. These tools are used in the interaction-picture examples and are the preferred route when you want stable dynamics for long pulses or weak couplings.
+The functions [`interaction_picture_A_2modes`](@ref), [`interaction_picture_A_3modes`](@ref), and [`interaction_picture_A_4modes`](@ref) build the coupling matrices for two, three and four modes. For two equal modes ($u(t) = v(t)$) the analytic solution of $M(t)$ is provided by [`interaction_picture_M_2modes_equal`](@ref).
 
 ## Pulse delay
 

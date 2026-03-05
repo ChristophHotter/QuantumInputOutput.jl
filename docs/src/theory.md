@@ -204,14 +204,14 @@ The interaction picture can be generalized to multiple cascaded modes with
 
 ```math
 A(t) = \frac{1}{2}\begin{bmatrix}
-0 & g_1 g_2^* & \cdots & g_1 g_M^* \\
+0 & g_1 g_2^* & \cdots & g_1 g_N^* \\
 -g_1^* g_2 & 0 & \ddots & \vdots \\
 \vdots & \ddots & 0 & g_3 g_4^* \\
--g_1^* g_M & \cdots & -g_{M-1}^* g_M & 0
+-g_1^* g_N & \cdots & -g_{N-1}^* g_N & 0
 \end{bmatrix}
 ```
 
-which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_M$, where $G_i = (0, g_i \hat a_i, 0)$. 
+which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_N$, where $G_i = (0, g_i \hat a_i, 0)$. 
 
 ## Pulse Delay
 
