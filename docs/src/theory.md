@@ -31,7 +31,7 @@ describe the full system–field dynamics in a tractable way, without explicitly
 
 ## Virtual Cavities and Pulse Modes
 
-The key idea is to replace the traveling input and output pulses by **virtual cavities**, each with a time-dependent, complex coupling to the system determined by the corresponding temperal mode.  
+The key idea is to replace the traveling input and output pulses by **virtual cavities**, each with a time-dependent, complex coupling to the system determined by the corresponding temporal mode.  
 
 For a normalized input mode $u(t)$, the coupling
 
@@ -215,8 +215,6 @@ which corresponds to the interaction of the Hamiltonian obtained from $G_1 \tria
 
 
 ### References
-
-The above summary follows the virtual-cavity and SLH-based pulse formalism developed in the input-output literature on quantum pulses and cascaded systems, in particular the works by Kiilerich, Christiansen, Mølmer, and collaborators.
 
 - Input-output theory with quantum pulses
   - [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604)

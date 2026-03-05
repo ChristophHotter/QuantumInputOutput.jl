@@ -79,7 +79,7 @@ dict_p_t = Dict(gu => gu_t)
 nothing # hide
 ```
 
-We define the numerical basis and translate the symbolic operators into `QuantumOptics.jl` objects. If `time_parameter` is provided, the result becomes a function of time. Since the purpose of the package is to describe pulses, this is the usual case.  
+We define the numerical basis and translate the symbolic operators into [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) objects. If `time_parameter` is provided, the result becomes a function of time. Since the purpose of the package is to describe pulses, this is the usual case.  
 
 ```@example tutorial
 bu1 = FockBasis(2)
