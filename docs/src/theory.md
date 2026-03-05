@@ -215,7 +215,20 @@ which corresponds to the interaction of the Hamiltonian obtained from $G_1 \tria
 
 ## Pulse Delay
 
-TODO
+Propagation delays become essential when pulses traverse different path lengths as for example in a Mach-Zehnder interferometer. Such delays can be modeled without discretizing the entire field continuum by introducing a **virtual delay cavity** that first absorbs a chosen pulse and later re-emits it with a controlled delay.
+For long delays, the pulse can first be captured and then re-emitted, so a delay by. For short delays, however, capture and emission must occur simultaneously. 
+
+Hier weiter!!
+
+In that case the couplings are modified to account for both incoming and outgoing photons, yielding
+
+```math
+\tilde g_{\mathrm{out},u,v}(t) = \frac{u^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}},
+\qquad
+\tilde g_{\mathrm{in},v,u}(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}.
+```
+
+These expressions are implemented in [uv_to_gout](@ref) and [uv_to_gin](@ref), and the simple single-pulse case is demonstrated in the example [Simple Pulse Delay with a Virtual Cavity](examples/08-1_pulse-delay__simple.md), where an input pulse is emitted, delayed by a virtual cavity, and captured into an output cavity. The same formalism extends to interferometric settings by introducing one delay cavity per path and adjusting only the relative delays, which is the physically relevant quantity in many experiments. 
 
 ## References
 
