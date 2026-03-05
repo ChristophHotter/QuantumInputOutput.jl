@@ -93,11 +93,15 @@ end
     vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
     vi_to_v_i_im1(v_fcts, T_ls, i)
 
-Compute the effective output mode `v_i^{(i-1)}(t)` for multiple output modes. 
+Compute the effective output mode ``v_i^{eff}(t)`` for multiple output modes, 
+due to the pulse distortion from the preceding output cavities.  
+The returned mode function is the relevant one for ``g_{v_i}``. 
+The output modes in the list `v_fcts` need to be sorted starting with the first 
+output cavity after the system. 
 
 Further kwargs are passed on to the ODE solver.     
 """
-function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...)
+function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
@@ -119,11 +123,15 @@ vi_to_v_i_im1(v_fcts, T_ls, i) = vi_to_v_i_im1(v_fcts, [v_to_gv(v_, T_ls) for v_
     ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
     ui_to_u_i_im1(u_fcts, T_ls, i)
 
-Compute the effective input mode `u_i^{(i-1)}(t)` for multiple input modes.
+Compute the effective input mode ``u_i^{eff}(t)`` for multiple input modes, 
+due to the pulse distortion from the subsequent input cavities.  
+The returned mode function is the relevant one for ``g_{u_i}``. 
+The input modes in the list `u_fcts` need to be sorted starting with the first 
+input cavity before the system. 
 
 Further kwargs are passed on to the ODE solver.   
 """
-function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...)
+function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
