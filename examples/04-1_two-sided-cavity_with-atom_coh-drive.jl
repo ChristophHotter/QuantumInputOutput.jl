@@ -9,6 +9,8 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using QuantumCumulants
 using PyPlot
+using Latexify # hide
+set_default(double_linebreak=true) # hide
 
 #
 
