@@ -21,6 +21,7 @@
   - [ ] translate.jl
   - [ ] utils.jl
 - [ ] more functionalities
+  - [ ] better method for u_eff and v_eff (Victor)
   - [x] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
   - [ ] interaction picture (Victor)
     - [x] analytic expression for u=v
@@ -58,7 +59,7 @@
 
 - [ ] rename functions:
   - [x] concatenation -> concatenate
-  - [ ] ui_to_u_i_im1, vi_to_v_i_im1
+  - [ ] u_eff, v_eff
   - [x] time_dep_param -> time_parameter
 - [x] change README.me
 - [ ] SLH more specific types

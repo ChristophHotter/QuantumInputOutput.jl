@@ -11,7 +11,7 @@ using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate
 using LinearAlgebra: LinearAlgebra, I
-using OrdinaryDiffEq # for ui_to_u_i_im1
+using OrdinaryDiffEq # for u_eff
 
 import QuantumOpticsBase: expect
 import SecondQuantizedAlgebra: numeric_average
@@ -31,8 +31,8 @@ export SLH, # SLH.jl
     v_to_gv, 
     u_to_gu_Gauss,
     v_to_gv_Gauss,
-    ui_to_u_i_im1,
-    vi_to_v_i_im1,
+    u_eff,
+    v_eff,
     uv_to_gout,
     uv_to_gin,
     two_time_corr_matrix,

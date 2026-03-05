@@ -63,11 +63,11 @@ v_to_gv_Gauss
 ```
 
 ```@docs
-ui_to_u_i_im1
+u_eff
 ```
 
 ```@docs
-vi_to_v_i_im1
+v_eff
 ```
 
 ```@docs

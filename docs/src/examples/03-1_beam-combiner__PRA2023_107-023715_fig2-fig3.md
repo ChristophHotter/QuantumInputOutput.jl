@@ -176,8 +176,8 @@ gu1_ = u_to_gu(u1_new, T)
 
 # TODO: explain more!
 # $g_{u_2} needs to take into account to scatter also at the $u_1$ cavity
-# the last argument in ui_to_u_i_im1 (=2) describes the number of the input cavity
-u2_for_gu2 =  ui_to_u_i_im1(u_new_fct, T, 2) # TODO: name and description
+# the last argument in u_eff (=2) describes the number of the input cavity
+u2_for_gu2 =  u_eff(u_new_fct, T, 2) # TODO: name and description
 gu2_ = u_to_gu(u2_for_gu2,T)
 
 # coupling of the output mode

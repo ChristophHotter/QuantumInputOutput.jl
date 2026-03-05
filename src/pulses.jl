@@ -90,10 +90,10 @@ function v_to_gv_Gauss(τ, σ; δ=0) # slower than v_to_gv
 end
 
 """
-    vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i)
-    vi_to_v_i_im1(v_fcts, T_ls, i)
+    v_eff(v_fcts, gv_fcts, T_ls, i)
+    v_eff(v_fcts, T_ls, i)
 
-Compute the effective output mode ``v_i^{eff}(t)`` for multiple output modes, 
+Compute the effective output mode ``v_i^{eff}(t)`` for a system with multiple output modes, 
 due to the pulse distortion from the preceding output cavities.  
 The returned mode function is the relevant one for ``g_{v_i}``. 
 The output modes in the list `v_fcts` need to be sorted starting with the first 
@@ -101,7 +101,7 @@ output cavity after the system.
 
 Further kwargs are passed on to the ODE solver.     
 """
-function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function v_eff(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
@@ -117,13 +117,13 @@ function vi_to_v_i_im1(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO:
     v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
     return v_i_im1
 end
-vi_to_v_i_im1(v_fcts, T_ls, i) = vi_to_v_i_im1(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_ls, i)
+v_eff(v_fcts, T_ls, i) = v_eff(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_ls, i)
 
 """
-    ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i)
-    ui_to_u_i_im1(u_fcts, T_ls, i)
+    u_eff(u_fcts, gu_fcts, T_ls, i)
+    u_eff(u_fcts, T_ls, i)
 
-Compute the effective input mode ``u_i^{eff}(t)`` for multiple input modes, 
+Compute the effective input mode ``u_i^{eff}(t)`` for a system with multiple input modes, 
 due to the pulse distortion from the subsequent input cavities.  
 The returned mode function is the relevant one for ``g_{u_i}``. 
 The input modes in the list `u_fcts` need to be sorted starting with the first 
@@ -131,7 +131,7 @@ input cavity before the system.
 
 Further kwargs are passed on to the ODE solver.   
 """
-function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function u_eff(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
         for j = 1:i-1
@@ -148,8 +148,7 @@ function ui_to_u_i_im1(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO:
     u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
     return u_i_im1
 end
-ui_to_u_i_im1(u_fcts, T_ls, i) = ui_to_u_i_im1(u_fcts, [u_to_gu(u_, T_ls) for u_ in u_fcts], T_ls, i)
-# TODO: rename, better method (Victor)
+u_eff(u_fcts, T_ls, i) = u_eff(u_fcts, [u_to_gu(u_, T_ls) for u_ in u_fcts], T_ls, i)
 
 """
     uv_to_gout(u, v, T)

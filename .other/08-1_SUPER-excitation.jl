@@ -103,12 +103,12 @@ gu1_c_t(t) = conj(gu1_t(t))
 gv1_c_t(t) = conj(gv1_t(t))
 
 u_fcts = [u1, u2]
-gu2_ = u_to_gu(ui_to_u_i_im1(u_fcts, T, 2), T)
+gu2_ = u_to_gu(u_eff(u_fcts, T, 2), T)
 gu2_t(t) = gu2_(t)
 gu2_c_t(t) = conj(gu2_t(t))
 
 v_fcts = [u1, u2]
-gv2_ = v_to_gv(vi_to_v_i_im1(v_fcts, T, 2), T)
+gv2_ = v_to_gv(v_eff(v_fcts, T, 2), T)
 gv2_t(t) = gv2_(t)
 gv2_c_t(t) = conj(gv2_t(t))
 
