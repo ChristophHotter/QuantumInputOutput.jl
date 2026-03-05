@@ -195,12 +195,10 @@ operators = Dict( [au, au', ad, ad', av, av'] .=>  [au_int, au_int', ad_int, ad_
 
 H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int, operators)
 L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int, operators) for i=1:length(L_int_sym)]
-````
+# H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int)
+# L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)]
+nothing # hide
 
-H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int)
-L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)]
-
-````@example 08-1_pulse-delay__simple
 function input_output_int(t, ρ)
     Ht = H_int_QO(t)
     Jt = [L_int_QO[i](t) for i=1:length(L_int_QO)]

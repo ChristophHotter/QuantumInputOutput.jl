@@ -56,7 +56,7 @@ dict_p = Dict(p_sym .=> p_num);
 ## Gaussian input mode
 σ = 1/γ_
 T_end = 12σ
-# u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
+## u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 )) # hide
 u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
