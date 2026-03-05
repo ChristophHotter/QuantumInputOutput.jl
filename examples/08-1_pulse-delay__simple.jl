@@ -62,7 +62,7 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-# gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
+## gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)
@@ -161,7 +161,7 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-# gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
+## gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)
@@ -189,8 +189,9 @@ operators = Dict( [au, au', ad, ad', av, av'] .=>  [au_int, au_int', ad_int, ad_
 
 H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int, operators)
 L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int, operators) for i=1:length(L_int_sym)]
-# H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int)
-# L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)]
+## H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int)
+## L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)]
+nothing # hide
 
 function input_output_int(t, ρ)
     Ht = H_int_QO(t)
@@ -202,10 +203,9 @@ end
 t_int, ρt_int = timeevolution.master_dynamic(T, ψ0_int, input_output_int)
 
 nu_int = real.(expect(dagger(au_int)*au_int, ρt_int))
-# nd_int = real.(expect(dagger(ad_int)*ad_int, ρt_int)) # hide
+## nd_int = real.(expect(dagger(ad_int)*ad_int, ρt_int)) # hide
 nv_int = real.(expect(dagger(av_int)*av_int, ρt_int))
-
-# @show maximum(nd_int) # hide
+## @show maximum(nd_int) # hide
 nothing # hide
 
 #
@@ -213,7 +213,7 @@ nothing # hide
 close("delay int. picture") # hide
 figure("delay int. picture", figsize=(5,3))
 plot(T, nu_int, label=L"\langle a_u^\dagger a_u \rangle_{IP}")
-# plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
+## plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
 plot(T, nv_int, label=L"\langle a_v^\dagger a_v \rangle_{IP}")
 xlabel("time")
 ylabel("mean photon number")

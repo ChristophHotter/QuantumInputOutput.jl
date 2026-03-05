@@ -36,6 +36,7 @@
 - [ ] More tests
   - [ ] codecov
   - [ ] interaction picture: test general A(t)
+  - [ ] cumulants: comparison example 04-1 and 04-2
 - [ ] Formatter/SpellCheck
 - [ ] JET
 - [ ] Aqua

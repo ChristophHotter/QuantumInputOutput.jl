@@ -15,8 +15,210 @@ population at the evaluation time used in the paper and compare with a coherent-
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using SymbolicUtils
 using LinearAlgebra
 using PyPlot
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+# symbolic Hilbert space
+hu = FockSpace(:u)
+hd1 = FockSpace(:d1)
+hd2 = FockSpace(:d2)
+hs = NLevelSpace(:atom, 2)
+h = hu ⊗ hd1 ⊗ hd2 ⊗ hs
+
+# symbolic operators
+au = Destroy(h, :au, 1)
+ad1 = Destroy(h, :ad_1, 2)
+ad2 = Destroy(h, :ad_2, 3)
+σ(i,j) = Transition(h, :σ, i, j, 4)
+
+# symbolic parameters
+@rnumbers γ Δ r t
+gu, gd1in, gd1out, gd2in, gd2out = cnumbers("gu gd1_{in} gd1_{out} gd2_{in} gd2_{out}")
+nothing # hide
+````
+
+Two-channel coupling to the atom with a beam splitter.
+The second input is a padding (vacuum) channel.
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+G_u = concatenate(SLH(1, gu*au, 0), SLH(1, 0, 0))
+
+S_bs = [r t; t -r]
+G_bs = SLH(S_bs, [0, 0], 0)
+
+I2 = Matrix(I, 2, 2)
+G_u_bs = concatenate(G_u ▷ G_bs, SLH(I2, [0,0], 0))
+
+I4 = Matrix(I, 4, 4)
+G_d1_d2 = SLH(I4, [gd1in*ad1, gd2in*ad2, gd1out*ad1, gd2out*ad2], 0) # input at port 1 & 2, output at port 3 & 4
+
+G_u_bs_d1_d2 = G_u_bs ▷ G_d1_d2
+nothing #hide
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+L_atom = [0, 0, √(γ/2)*σ(1,2), √(γ/2)*σ(1,2)]
+G_atom = SLH(I4, L_atom, Δ*σ(2,2))
+
+G_u_bs_d1_d2_atom = G_u_bs_d1_d2 ▷ G_atom
+H = get_hamiltonian(G_u_bs_d1_d2_atom)
+L = get_lindblad(G_u_bs_d1_d2_atom)
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+# Interaction picture
+H_pulse = G_u_bs_d1_d2.hamiltonian
+H_int_ = simplify(H - H_pulse)
+
+# symbolic coefficient matrix $M(t)$
+M(i,j) = cnumber("M_{$(i)$(j)}")
+a_ls = [au, ad1, ad2]
+la = length(a_ls)
+a_int_ls = [sum(M(i,j)*a_ls[j] for j=1:la) for i=1:la]
+int_dict = Dict(a_ls .=> a_int_ls)
+````
+
+## delay cavity 1
+M1(i,j) = cnumber("M1_{$(i)$(j)}")
+a1_ls = [au, ad1]
+la1 = length(a1_ls)
+a1_int_ls = [sum(M1(i,j)*a1_ls[j] for j=1:la1) for i=1:la1]
+
+## delay cavity 1
+M2(i,j) = cnumber("M2_{$(i)$(j)}")
+a2_ls = [au, ad2]
+la2 = length(a2_ls)
+a2_int_ls = [sum(M2(i,j)*a2_ls[j] for j=1:la2) for i=1:la2]
+int_dict = Dict([a1_ls; a2_ls] .=> [a1_int_ls; a2_int_ls])
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+# substitute interaction picture operators
+H_int = simplify(substitute_operators(H_int_, int_dict))
+L_int = [simplify(substitute_operators(L_, int_dict)) for L_ in L]
+
+function interaction_picture_A_3modes(g1, g2, g3)
+    A(t) = 0.5 * [0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
+            -g2(t) * conj(g1(t)) 0 0;
+            -conj(g1(t)) * g3(t) 0 0]
+    return A
+end
+
+
+
+# Pulse parameters
+n = 5#9
+γ_ = 1.0
+τ = 0.5/γ_
+tw = π^(3/2) / (8*γ_*n)
+tp = 4*tw
+
+u(t) = 1/(√(tw)*π^(1/4)) * exp( -(t - tp)^2 / (2*tw^2) )
+ud1(t) = u(t-tp)
+ud2(t) = u(t-tp-τ)
+
+Tend = 2tp + τ + 2tw
+dt = tw/30
+T = [0:dt:Tend;]
+t1 = 2tp + τ + 2tw
+
+rn = 1/√(2)
+tn = 1/√(2)
+
+gu_ = u_to_gu(u, T)
+gd1in_ = v_to_gv(u, T)
+gd1out_ = u_to_gu(ud1, T)
+gd2in_ = v_to_gv(u, T)
+gd2out_ =  u_to_gu(ud2, T)
+dict_p_t = Dict([gu, gd1in, gd1out, gd2in, gd2out] .=> [gu_, gd1in_, gd1out_, gd2in_, gd2out_])
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+# numerical bases
+bu = FockBasis(n)
+bd1 = FockBasis(n)
+bd2 = FockBasis(n)
+bs = NLevelBasis(2)
+b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
+
+σ22_QO = translate(σ(2,2), b)
+
+dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
+H_QO_Δ(Δn) = translate(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
+L_QO_Δ(Δn) = [translate(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
+nothing # hide
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+ψ0_fock = fockstate(bu, n) ⊗ fockstate(bd1, 0) ⊗ fockstate(bd2, 0) ⊗ nlevelstate(bs, 1)
+````
+
+Detuning scan and excited-state population at t1.
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+Δ_ls = range(-20γ_, 20γ_, length=80)
+pop_fock = zeros(length(Δ_ls))
+pop_coh = zeros(length(Δ_ls))
+idx_t1 = findmin(abs.(T .- t1))[2]
+using ProgressMeter
+prog = Progress(length(Δ_ls))
+
+for (it, Δn) in enumerate(Δ_ls)
+    Δn = Δ_ls[it]
+
+    H_QO = H_QO_Δ(Δn)
+    L_QO = L_QO_Δ(Δn)
+
+    input_output = (t, ρ) -> (H_QO(t), [L_QO[i](t) for i in 1:length(L_QO)], [dagger(L_QO[i](t)) for i in 1:length(L_QO)])
+
+    t_, ρt = timeevolution.master_dynamic([T[1], T[end]], ψ0_fock, input_output)
+````
+
+pop_fock[it] = real(expect(σ22_QO, ρt[idx_t1]))
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+    pop_fock[it] = real(expect(σ22_QO, ρt[end]))
+````
+
+t_, ρt = timeevolution.master_dynamic(T, ψ0_coh, input_output)
+pop_coh[it] = real(expect(σ22_QO, ρt[idx_t1]))
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+    next!(prog)
+end
+nothing # hide
+````
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+pygui(true)
+close("ramsey-population") # hide
+figure("ramsey-population")
+plot(Δ_ls, pop_fock, label="Fock, n=$(n)")
+````
+
+plot(Δ_ls, pop_coh, ls="--", label="coherent, ⟨n⟩=9")
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+xlabel("detuning Δ/γ")
+ylabel(L"\langle \sigma^{22} \rangle (t_1)")
+grid(true)
+legend()
+tight_layout()
+````
+
+## Package versions
+
+````@example 08-2_pulse-propagation-delay__PRA2026_113-013730_fig4
+using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    mode = PKGMODE_MANIFEST,
+)
 ````
 
 ---

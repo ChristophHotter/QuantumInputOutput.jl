@@ -68,8 +68,6 @@ L = get_lindblad(G_u_bs_d1_d2_atom)
 H_pulse = G_u_bs_d1_d2.hamiltonian
 H_int_ = simplify(H - H_pulse)
 
-## TODO: M 3x3 matrix gu, gd1in, gd2in
-
 ## symbolic coefficient matrix $M(t)$
 M(i,j) = cnumber("M_{$(i)$(j)}")
 a_ls = [au, ad1, ad2]
@@ -94,15 +92,6 @@ int_dict = Dict(a_ls .=> a_int_ls)
 ## substitute interaction picture operators
 H_int = simplify(substitute_operators(H_int_, int_dict))
 L_int = [simplify(substitute_operators(L_, int_dict)) for L_ in L]
-
-function interaction_picture_A_3modes(g1, g2, g3) 
-    A(t) = 0.5 * [0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
-            -g2(t) * conj(g1(t)) 0 0;
-            -conj(g1(t)) * g3(t) 0 0]
-    return A
-end
-
-
 
 ## Pulse parameters 
 n = 5#9
@@ -129,6 +118,25 @@ gd1out_ = u_to_gu(ud1, T)
 gd2in_ = v_to_gv(u, T)
 gd2out_ =  u_to_gu(ud2, T)
 dict_p_t = Dict([gu, gd1in, gd1out, gd2in, gd2out] .=> [gu_, gd1in_, gd1out_, gd2in_, gd2out_])
+nothing # hide
+
+function interaction_picture_A_3modes(g1, g2, g3) 
+    A(t) = 0.5 * [0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
+            -g2(t) * conj(g1(t)) 0 0;
+            -conj(g1(t)) * g3(t) 0 0]
+    return A
+end
+
+A_ud = interaction_picture_A_3modes(gu_, gd1in_, gd2in_)
+M_t = interaction_picture_M(A_ud, T) 
+
+M_ls = [M(i,j) for i=1:la for j=1:la]
+M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
+
+p_t_sym = [gu, gd1in, gd1out, gd2in, gd2out, M_ls...]
+p_t_num = [gu_, gd1in_, gd1out_, gd2in_, gd2out_, M_t_ls...]
+dict_p_t_int = Dict(p_t_sym .=> p_t_num)
+
 
 #
 
@@ -139,11 +147,12 @@ bd2 = FockBasis(n)
 bs = NLevelBasis(2)
 b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
-σ22_QO = translate(σ(2,2), b)
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
-H_QO_Δ(Δn) = translate(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
-L_QO_Δ(Δn) = [translate(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
+H_QO_Δ(Δn) = translate(H_int, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t_int)
+L_QO_Δ(Δn) = [translate(L_int[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t_int) for i=1:length(L)]
+# H_QO_Δ(Δn) = translate(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
+# L_QO_Δ(Δn) = [translate(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
 nothing # hide
 #
 
@@ -151,9 +160,33 @@ nothing # hide
 
 #
 
-# Detuning scan and excited-state population at t1.
+σ22_QO = translate(σ(2,2), b)
+au_QO = translate(au, b)
+ad1_QO = translate(ad1, b)
+ad2_QO = translate(ad2, b)
 
+Δn = 0
+H_QO = H_QO_Δ(Δn)
+L_QO = L_QO_Δ(Δn)
+
+input_output = (t, ρ) -> (H_QO(t), [L_QO[i](t) for i in 1:length(L_QO)], [dagger(L_QO[i](t)) for i in 1:length(L_QO)])
+t_, ρt = timeevolution.master_dynamic(T, ψ0_fock, input_output)
+
+expect(au_QO'au_QO, ρt)
+
+figure(111)
+plot(T, expect(au_QO'au_QO, ρt))
+plot(T, expect(ad1_QO'ad1_QO, ρt))
+plot(T, expect(ad2_QO'ad2_QO, ρt))
+
+
+expect(σ22_QO, ρt[end])
+
+## TODO: the simulation is correct; next step: use operators b1 and b2 to eliminate one mode (see paper, ask Victor)
+
+## Detuning scan and excited-state population at t1.
 Δ_ls = range(-20γ_, 20γ_, length=80)
+Δ_ls = range(0γ_, 20γ_, length=40)
 pop_fock = zeros(length(Δ_ls))
 pop_coh = zeros(length(Δ_ls))
 idx_t1 = findmin(abs.(T .- t1))[2]
@@ -184,7 +217,8 @@ pygui(true)
 close("ramsey-population") # hide
 figure("ramsey-population")
 plot(Δ_ls, pop_fock, label="Fock, n=$(n)")
-# plot(Δ_ls, pop_coh, ls="--", label="coherent, ⟨n⟩=9")
+## plot([-Δ_ls; Δ_ls], [pop_fock; pop_fock], label="Fock, n=$(n)")
+## plot(Δ_ls, pop_coh, ls="--", label="coherent, ⟨n⟩=9")
 xlabel("detuning Δ/γ")
 ylabel(L"\langle \sigma^{22} \rangle (t_1)")
 grid(true)

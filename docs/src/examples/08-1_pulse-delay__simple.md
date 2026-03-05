@@ -66,11 +66,8 @@ u_del(t_) = u(t_ - τ)
 Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
-````
 
-gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
-
-````@example 08-1_pulse-delay__simple
+# gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)
@@ -169,11 +166,8 @@ u_del(t_) = u(t_ - τ)
 Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
-````
 
-gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
-
-````@example 08-1_pulse-delay__simple
+# gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)
@@ -217,17 +211,9 @@ end
 t_int, ρt_int = timeevolution.master_dynamic(T, ψ0_int, input_output_int)
 
 nu_int = real.(expect(dagger(au_int)*au_int, ρt_int))
-````
-
-nd_int = real.(expect(dagger(ad_int)*ad_int, ρt_int)) # hide
-
-````@example 08-1_pulse-delay__simple
+# nd_int = real.(expect(dagger(ad_int)*ad_int, ρt_int)) # hide
 nv_int = real.(expect(dagger(av_int)*av_int, ρt_int))
-````
-
-@show maximum(nd_int) # hide
-
-````@example 08-1_pulse-delay__simple
+# @show maximum(nd_int) # hide
 nothing # hide
 ````
 
@@ -235,11 +221,7 @@ nothing # hide
 close("delay int. picture") # hide
 figure("delay int. picture", figsize=(5,3))
 plot(T, nu_int, label=L"\langle a_u^\dagger a_u \rangle_{IP}")
-````
-
-plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
-
-````@example 08-1_pulse-delay__simple
+# plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
 plot(T, nv_int, label=L"\langle a_v^\dagger a_v \rangle_{IP}")
 xlabel("time")
 ylabel("mean photon number")
