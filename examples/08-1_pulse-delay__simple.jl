@@ -62,7 +62,6 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-## gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)
@@ -161,7 +160,6 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-## gu_ = u_to_gu_Gauss(tp, σ) # TODO: slower? # hide
 gu_ = u_to_gu(u, T)
 gout_ = uv_to_gout(u_del, u, T)
 gin_ = uv_to_gin(u_del, u, T)

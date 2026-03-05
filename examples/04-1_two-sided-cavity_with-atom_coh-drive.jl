@@ -53,8 +53,7 @@ L1_R = get_lindblad(G_cav_L_R_drive)[2]
 # The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. example [Mean-field Two-sided Cavity](examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.md).
 
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
-
-# TODO: Latexify? 
+## TODO: Latexify? # hide
 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`. 
 

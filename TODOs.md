@@ -37,6 +37,7 @@
   - [ ] codecov
   - [ ] interaction picture: test general A(t)
   - [ ] cumulants: comparison example 04-1 and 04-2
+  - [ ] u_Gaussian, V_GAussian; slower?
 - [ ] Formatter/SpellCheck
 - [ ] JET
 - [ ] Aqua

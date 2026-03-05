@@ -21,7 +21,6 @@ function u_to_gu(u::Vector, T::Vector)
         if abs(sqrt(1 - ∫u2_t[i])) > _tol_div
             gu_t[i] = u[i]' / sqrt(abs(1 - ∫u2_t[i]) + _ϵu)
         end #else 0
-        # gu_t[i] = u[i]' / max(sqrt(1 - ∫u2_t[i]), _tol_div) # TODO: test
     end
     gu_int = LinearInterpolation(gu_t, T; extrapolation = _extrapolate)
     return t -> gu_int(t)
@@ -43,7 +42,6 @@ function v_to_gv(v::Vector, T::Vector)
         if abs(sqrt(∫v2_t[i])) > _tol_div
             gv_t[i] = -v[i]' / sqrt(∫v2_t[i] + _ϵv)
         end # else 0
-        # gv_t[i] = -v[i]' / max(sqrt( ∫v2_t[i]), _tol_div) # TODO: test
     end
     gv_int = LinearInterpolation(gv_t, T; extrapolation = _extrapolate)
     return t -> gv_int(t)

@@ -54,8 +54,7 @@ L1_R = get_lindblad(G_cav_L_R_drive)[2]
 # We use the function `meanfield` to obtain the equation for the intra-cavity field, which leads to a closed set of equations in this particular case.  
 
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
-
-# TODO: Latexify?
+## TODO: Latexify? # hide
 
 ## numerical parameters
 En = 0.5
