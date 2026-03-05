@@ -1,6 +1,6 @@
 # Theory
 
-This section summarizes the theoretical ideas behind **QuantumInputOutput.jl**, i.e. input-output theory for quantum pulses, its formulation via SLH networks, and the use of virtual cavities to handle traveling wave packets. We also explain how temporal output-mode bases are determined using two-time correlation functions.
+This section summarizes the theoretical ideas behind **QuantumInputOutput.jl**, i.e. input-output theory for quantum pulses, its formulation via SLH networks, and the use of virtual cavities to handle traveling wave packets. We also explain how temporal output-mode bases are determined using two-time correlation functions and describe the interaction-picture, as well as pulse delay for traveling pulses. 
 
 ## Input-Output Theory with Quantum Pulses
 
@@ -50,15 +50,15 @@ absorbs that mode into the virtual output cavity. These expressions make it poss
 
 ## SLH Networks for Cascaded Pulses
 
-In the SLH formalism, each component is specified by a triple ``(S, L, H)``:
+In the SLH formalism, each component is specified by a triple `(S, L, H)`:
 
-- ``S``cattering matrix
-- ``L``indblad operators
-- ``H``amiltonian
+- `S`cattering matrix
+- `L`indblad operators
+- `H`amiltonian
 
 Networks are built using composition rules:
 
-1. **Cascade** (feed-forward): $G_1 \triangleright G_2$ connects the output of $G_1$ into the input of $G_2$.
+1. **Cascade**: $G_1 \triangleright G_2$ connects the output of $G_1$ into the input of $G_2$ 
 
 ```math
 G_1 \triangleright G_2 = \left(
@@ -68,7 +68,7 @@ H_1 + H_2 + \frac{1}{2i}\left(L_2^\dagger S_2 L_1 - L_1^\dagger S_2^\dagger L_2\
 \right).
 ```
 
-2. **Concatenation**: $G_1 \boxplus G_2$ stacks channels side-by-side.
+2. **Concatenation**: $G_1 \boxplus G_2$ stacks channels side-by-side 
 
 ```math
 G_1 \boxplus G_2 = \left(
@@ -85,12 +85,11 @@ H_1 + H_2
 ```
 
 By modeling the input and output pulses as virtual cavities and cascading them with the physical system, we
-obtain an effective SLH triple for the full problem. This describes a master equation involving the system and and of auxiliary modes, which can be solved with standard Lindblad solvers. 
+obtain an effective SLH triple for the full problem. This describes a master equation involving the system and auxiliary modes, which can be solved with standard Lindblad solvers. 
 
 ## Common SLH Elements
 
-Appendix 1 of [Combes et al.](https://doi.org/10.1080/23746149.2017.1343097) lists SLH triples for commonly used components. The most frequently used
-elements in this package are summarized below using the standard ``(S, L, H)`` ordering.
+Appendix 1 of [Combes et al. (2017)](https://doi.org/10.1080/23746149.2017.1343097) lists SLH triples for commonly used components. The most frequently used elements in this package are summarized below using the standard ``(S, L, H)`` ordering.
 
 Phase shifter (single input/output):
 
@@ -152,7 +151,7 @@ I_2,\,
 
 ## Output Modes and the Correlation Function
 
-The output field is generally multimode. To determine a **basis of temporal output modes** and their
+The output field is generally multimode. To determine a proper **basis of temporal output modes** and their
 occupations, we compute the first-order correlation function
 
 ```math
@@ -168,9 +167,7 @@ g^{(1)}(t_1, t_2) = \sum_i n_i\, v_i^*(t_1)\, v_i(t_2)
 
 defines an orthonormal set of temporal modes $v_i(t)$ with mean occupations $n_i$. The most populated
 output modes correspond to the largest eigenvalue and are used as the physically relevant pulse shapes for
-further analysis or for feedback into a second virtual cavity.
-
-This procedure yields a principled way to extract a small number of relevant modes from a continuum and is
+further analysis. This procedure yields a principled way to extract a small number of relevant modes from a continuum and is
 central to the workflows implemented in **QuantumInputOutput.jl**.
 
 ## Interaction Picture for Traveling Pulses
@@ -211,20 +208,20 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 \end{bmatrix}
 ```
 
-which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ...  G_N$, where $G_i = (0, g_i \hat a_i, 0)$. 
+which corresponds to the interaction of the Hamiltonian obtained from $G_1 \triangleright ... \triangleright G_N$, where $G_i = (0, g_i \hat a_i, 0)$. 
 
 ## Pulse Delay
 
 Propagation delays become essential when pulses traverse different path lengths as for example in a Mach-Zehnder interferometer. Such delays can be modeled without discretizing the entire field continuum by introducing a **virtual delay cavity** that first absorbs a chosen pulse and later re-emits it with a controlled delay.
-For long delays, the pulse can first be captured and then re-emitted, so a delay by. For short delays, however, capture and emission must occur simultaneously. In that case the couplings are modified to account for both incoming and outgoing photons, yielding
+For long delays, the pulse can first be captured and then re-emitted. For short delays, however, capture and emission must occur simultaneously. In that case, the couplings are modified to account for both incoming and outgoing photons, yielding
 
 ```math
-\tilde g_{\mathrm{out},u,v}(t) = \frac{u^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}},
+\tilde g_{\mathrm{out},u,v}(t) = \frac{u^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}
 \qquad
-\tilde g_{\mathrm{in},v,u}(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}.
+\tilde g_{\mathrm{in},v,u}(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}
 ```
 
-The same formalism extends to interferometric settings by introducing one delay cavity per path and adjusting only the relative delays, which is the physically relevant quantity in many experiments. 
+The same formalism extends to interferometric settings by introducing one delay cavity per path and adjusting only the relative delays, which usually is the physically relevant quantity. 
 
 ## References
 

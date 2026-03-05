@@ -35,7 +35,7 @@ gv = cnumber("g_v")
 nothing # hide
 ```
 
-The SLH triples for input mode, system cavity, and output mode are then cascaded to obtain the effective Hamiltonian and Lindblad operator.
+The SLH triples for the input mode, system cavity, and output mode are then cascaded to obtain the effective Hamiltonian and Lindblad operator.
 
 ```@example tutorial
 G_u = SLH(1, gu * au, 0)
@@ -67,10 +67,9 @@ p_num = [γ_, Δ_, 0.0] # gv = 0
 dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input mode
-T_p = 1/γ_
-T_end = 12T_p
-σ = sqrt(0.5)*T_p
-u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
+σ = 1/γ_
+T_end = 12σ
+u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
@@ -79,7 +78,7 @@ dict_p_t = Dict(gu => gu_t)
 nothing # hide
 ```
 
-We define the numerical basis and translate the symbolic operators into [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) objects. If `time_parameter` is provided, the result becomes a function of time. Since the purpose of the package is to describe pulses, this is the usual case.  
+We define the numerical basis and translate the symbolic operators into [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) objects. If `time_parameter` are provided, the result becomes a function of time. Since the purpose of the package is to describe pulses, this is the usual case.  
 
 ```@example tutorial
 bu1 = FockBasis(2)
@@ -149,13 +148,12 @@ nothing # hide
 
 ## 5. Output mode and full dynamics
 
-Finally, we treat the dominant output mode explicitly by providing `g_v(t)` as time-dependent parameters, and propagate the system again.
+Finally, we treat the dominant output mode explicitly by providing `g_v(t)` as a time-dependent parameter, and propagate the system again.
 
 ```@example tutorial
 gv_t = v_to_gv(v_mode, T)
-gvc_t = t -> conj(gv_t(t))
 
-dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t])
+dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])
 
 H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
@@ -166,6 +164,7 @@ function input_output_2(t, ρ)
     J = [L_QO_2(t)]
     return Ht, J, dagger.(J)
 end
+nothing # hide
 ```
 
 ```@example tutorial
@@ -177,7 +176,7 @@ n_v_t = real.(expect(av_qo' * av_qo, ρt_2))
 nothing # hide
 ```
 
-We can see that the photon is fully scattered into a single mode, which is due to the linearity of the system. 
+Due to the linearity of the system the photon is fully scattered into a single mode. 
 
 ```@example tutorial
 close("modes")

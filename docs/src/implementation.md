@@ -4,7 +4,7 @@ This section explains how the package moves from a symbolic SLH model to a numer
 
 ## Symbolic expressions
 
-The symbolic layer is built on [SecondQuantizedAlgebra.jl](https://github.com/qojulia/SecondQuantizedAlgebra.jl). You define Hilbert spaces and operators explicitly and keep the SLH model usualy analytic. A typical setup looks like this:
+The symbolic layer is built on [SecondQuantizedAlgebra.jl](https://github.com/qojulia/SecondQuantizedAlgebra.jl). You define Hilbert spaces and operators explicitly and usually derive the SLH model. A typical setup looks like this:
 
 ```julia
 hu = FockSpace(:u)
