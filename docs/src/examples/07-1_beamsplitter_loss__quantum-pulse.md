@@ -67,10 +67,10 @@ L = get_lindblad(G)
 ````@example 07-1_beamsplitter_loss__quantum-pulse
 # Gaussian input mode
 γ_ = 1.0
-T_p = 1 / γ_
-T_end = 12T_p
-σ = sqrt(0.5) * T_p
-u(t) = sqrt(1 / (σ * √(2π)) * exp(-0.5 * (t - 4T_p)^2 / σ^2))
+σ = 1 / γ_
+T_end = 12σ
+u(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+
 T = [0:0.004:1;] * T_end
 ΔT = T[2] - T[1]
 

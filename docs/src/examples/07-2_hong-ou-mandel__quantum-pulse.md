@@ -61,7 +61,8 @@ L = get_lindblad(G)
 T_p = 1 / γ_
 T_end = 12T_p
 σ = sqrt(0.5) * T_p
-u(t) = sqrt(1 / (σ * √(2π)) * exp(-0.5 * (t - 4T_p)^2 / σ^2))
+u(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+
 T = [0:0.002:1;] * T_end
 ΔT = T[2] - T[1]
 
@@ -151,6 +152,7 @@ Random.seed!(1) # hide
 Ntraj = 20
 n_v1_mc_ls = [zeros(length(T)) for i=1:Ntraj]
 n_v2_mc_ls = deepcopy(n_v1_mc_ls)
+nothing # hide
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse

@@ -65,11 +65,8 @@ We use the function `meanfield` to obtain the equation for the intra-cavity fiel
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
-````
+# TODO: Latexify? # hide
 
-TODO: Latexify?
-
-````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 # numerical parameters
 En = 0.5
 κ_Rn = 1.0
@@ -261,7 +258,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "QuantumCumulants", "PyPlot"], # TODO: update
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumCumulants", "ModelingToolkit", "OrdinaryDiffEq", "QuantumOpitcsBase", "PyPlot"],
     mode = PKGMODE_MANIFEST,
 )
 ````

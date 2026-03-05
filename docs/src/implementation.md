@@ -85,4 +85,3 @@ Pulse propagation delays are modeled by a virtual delay cavity that absorbs a pu
 
 compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity. This construction follows the propagation-delay treatment in Christiansen & Mølmer (2026) and builds on the pulse-shaping ideas of Kiilerich & Mølmer (2019).
 
-For a concrete implementation, see the pulse-delay example `examples/08-1_pulse-delay__simple.md` and the related draft in `.other/08-2_pulse-propagation-delay__PRA2026_113-013730_fig4.jl`.

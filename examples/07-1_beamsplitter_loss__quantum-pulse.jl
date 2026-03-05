@@ -57,7 +57,7 @@ L = get_lindblad(G)
 ## Gaussian input mode
 γ_ = 1.0
 σ = 1 / γ_
-T_end = 12T_p
+T_end = 12σ
 u(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
 
 T = [0:0.004:1;] * T_end

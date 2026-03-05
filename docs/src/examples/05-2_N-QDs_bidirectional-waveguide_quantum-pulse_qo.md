@@ -43,7 +43,8 @@ t0 = 4σt  # pulse peak
 Tend = 3t0
 T = [0:0.005:1;]*Tend
 ΔT = T[2]-T[1]
-u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
+# u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
+u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
 
 gu_t = u_to_gu(u1, T)
 nothing # hide
@@ -66,6 +67,7 @@ G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
 G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
 
 G_t = G_R_t ⊞ G_L_t
+nothing # hide
 ````
 
 The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be a time-dependent.
@@ -90,6 +92,7 @@ end
 α0 = √(0.1) # √ of total photon number
 ψ0 = coherentstate(bu, α0) ⊗ tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+nothing # hide
 ````
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo

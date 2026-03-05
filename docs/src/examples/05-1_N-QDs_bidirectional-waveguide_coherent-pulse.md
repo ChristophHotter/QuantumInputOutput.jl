@@ -82,7 +82,8 @@ Next, the numerical parameters and functions of the system are defined, and we t
 α0 = √(0.1) # √ of total photon number
 t0 = 4σt # pulse peak
 Tend = 3t0
-u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
+# u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
+u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
 Ein_t(t) = α0*u1(t)
 
 p_sym = [ [γR(i) for i = 1:N];

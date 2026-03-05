@@ -64,11 +64,10 @@ The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combinati
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
+# TODO: Latexify? # hide
 ````
 
-TODO: Latexify?
-
-To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`.
+To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 # numerical parameters
