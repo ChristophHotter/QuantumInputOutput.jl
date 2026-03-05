@@ -213,7 +213,7 @@ Creates a new SLH triple by concatenating the SLH triples according to
 the rule 
 
 ```math
-SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)
+SLH_1 \\boxplus SLH_2 = \\left( \\begin{pmatrix} S_1 & 0 \\; 0 & S_2 \\end{pmatrix}, \\begin{pmatrix} L_1 \\; L_2 \\end{pmatrix}, H_1 + H_2 \\right)
 ```
 
 Unicode `\\boxplus<tab>` alias of [`concatenate`](@ref)
@@ -276,7 +276,7 @@ Creates a new SLH triple by concatenating the SLH triples according to
 the rule 
 
 ```math
-SLH_1 \\boxplus SLH_2 = \\\\left( \\\\begin{pmatrix} S_1 & 0 \\\\; 0 & S_2 \\\\end{pmatrix}, \\\\begin{pmatrix} L_1 \\\\; L_2 \\\\end{pmatrix}, H_1 + H_2 \\\\right)
+SLH_1 \\boxplus SLH_2 = \\left( \\begin{pmatrix} S_1 & 0 \\; 0 & S_2 \\end{pmatrix}, \\begin{pmatrix} L_1 \\; L_2 \\end{pmatrix}, H_1 + H_2 \\right)
 ```
 
 See also [`⊞`](@ref).

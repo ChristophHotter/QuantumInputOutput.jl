@@ -54,7 +54,7 @@ v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
 
 Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ`, width `σ`, and detuning `δ`:
 
-`` u(t) = 1/\\sqrt{ \\sigma*\\sqrt{\\pi} }*e^{-(t - \\tau)^2 / 2 \\sigma^2 )} * e^{i*\\delta*t} ``
+`` u(t) = 1/\\sqrt{ \\sigma \\sqrt{\\pi} } e^{-(t - \\tau)^2 / 2 \\sigma^2 )}  e^{i \\delta t} ``
 
 
 Returns a callable `t -> g_u(t)`.
@@ -72,9 +72,9 @@ end
 """
     v_to_gv_Gauss(τ, σ; δ=0)
 
-Compute ``g_v(t)` for a Gaussian output mode `v(t)` with delay `τ`, width `σ`, and detuning `δ`:
+Compute ``g_v(t)`` for a Gaussian output mode `v(t)` with delay `τ`, width `σ`, and detuning `δ`:
 
-`` v(t) = 1/\\sqrt{ \\sigma*\\sqrt{\\pi} }*e^{-(t - \\tau)^2 / 2 \\sigma^2 )} * e^{i*\\delta*t} ``
+`` v(t) = 1/\\sqrt{ \\sigma \\sqrt{\\pi} } e^{-(t - \\tau)^2 / 2 \\sigma^2 )}  e^{i \\delta t} ``
 
 Returns a callable `t -> g_v(t)`.
 """
@@ -93,13 +93,13 @@ end
     v_eff(v_fcts, gv_fcts, T_ls, i)
     v_eff(v_fcts, T_ls, i)
 
-Compute the effective output mode ``v_i^{eff}(t)`` for a system with multiple output modes, 
+Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` for a system with multiple output modes, 
 due to the pulse distortion from the preceding output cavities.  
 The returned mode function is the relevant one for ``g_{v_i}``. 
 The output modes in the list `v_fcts` need to be sorted starting with the first 
 output cavity after the system. 
 
-Further kwargs are passed on to the ODE solver.     
+All kwargs are passed on to the ODE solver.     
 """
 function v_eff(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
@@ -123,13 +123,13 @@ v_eff(v_fcts, T_ls, i) = v_eff(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_l
     u_eff(u_fcts, gu_fcts, T_ls, i)
     u_eff(u_fcts, T_ls, i)
 
-Compute the effective input mode ``u_i^{eff}(t)`` for a system with multiple input modes, 
+Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` for a system with multiple input modes, 
 due to the pulse distortion from the subsequent input cavities.  
 The returned mode function is the relevant one for ``g_{u_i}``. 
 The input modes in the list `u_fcts` need to be sorted starting with the first 
 input cavity before the system. 
 
-Further kwargs are passed on to the ODE solver.   
+All kwargs are passed on to the ODE solver.   
 """
 function u_eff(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1

@@ -2,7 +2,7 @@
     two_time_corr_matrix(T, ρt, f, Ls; kwargs...)
     two_time_corr_matrix(T, ρt, H, J, Ls; kwargs...)
 
-Compute the two-time correlation matrix ``g^{1}(t_1, t_2)`` on the time grid `T`.
+Compute the two-time correlation matrix ``g^{(1)}(t_1, t_2)`` on the time grid `T`.
 The first method supports time-dependent generators; the second is for time-independent `H` and `J`.
 """
 function two_time_corr_matrix(T::Vector, ρt::Vector, f::Function, Ls::Function; kwargs...)

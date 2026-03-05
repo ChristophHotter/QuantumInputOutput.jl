@@ -51,7 +51,7 @@ H = get_hamiltonian(G_cas)
 L = get_lindblad(G_cas)[1] # only one Lindblad term in this example
 ````
 
-To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. To do so, we define the numerical parameters and operator basis.
+To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 # numerical parameters
@@ -280,7 +280,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
     mode = PKGMODE_MANIFEST,
 )
 ````

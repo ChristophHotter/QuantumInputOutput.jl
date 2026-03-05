@@ -1,6 +1,9 @@
 # MAIN TODO - LIST:
 
-- [ ] clean up code (types, ...)
+- [ ] clean up code (types, docu, examples)
+  - [ ] Implementation more code snippet 
+  - [ ] concatenate docstring
+  - [ ] 
 - [ ] docu
   - [ ] examples
     - [x] .jl file conversion (see QC.jl, Orjan)

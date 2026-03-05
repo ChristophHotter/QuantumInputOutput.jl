@@ -1,6 +1,8 @@
 # # Cavity Scattering of a Single Photon
 
-# In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). We start by loading the needed packages and specifying the model. 
+# In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). 
+
+# We start by loading the needed packages and specifying the model. 
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -43,7 +45,7 @@ H = get_hamiltonian(G_cas)
 
 L = get_lindblad(G_cas)[1] # only one Lindblad term in this example
 
-# To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOpitcs.jl. To do so, we define the numerical parameters and operator basis. 
+# To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis. 
 
 ## numerical parameters 
 γ_ = 1.0
@@ -71,7 +73,7 @@ bv1 = FockBasis(1)
 b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 
-# We now use the function `translate()` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
+# We now use the function `translate` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
 
 H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
 L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
@@ -94,7 +96,7 @@ end;
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1) 
 nothing # hide
 
-# To calculate expectation values we create the desired numerical operators.
+# We create the desired numerical operators to calculate expectation values.
 
 au_qo = translate(au, b)
 c_qo = translate(c, b)
@@ -152,6 +154,7 @@ end;
 ## time evolution for the system including the output cavity
 t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
 
+## mean photon number in the output mode
 n_v1_t = real.(expect(av_qo'*av_qo, ρt_2))
 nothing # hide
 
@@ -254,6 +257,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
     mode = PKGMODE_MANIFEST,
 )

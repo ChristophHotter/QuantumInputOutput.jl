@@ -224,6 +224,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOpitcs", "PyPlot", "DataInterpolations"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot", "DataInterpolations"],
     mode = PKGMODE_MANIFEST,
 )

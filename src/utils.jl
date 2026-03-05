@@ -16,7 +16,7 @@ expect(op::SQA.QNumber, state; kwargs...) = numeric_average(op, state; kwargs...
 
 Like `substitute(op, dict::Dict)` but with special handling for `QMul` and `QAdd`.
 This is needed if an operator is substitute by a `QMul` or `QAdd`, e.g. 
-    ``a_1 -> g_2*a_2 + g_3*a_3``
+    ``a_1 \rightarrow g_2 a_2 + g_3 a_3``
 
 If `replace_adjoint=true`, the dictionary is extended with adjoint substitutions
 for all key/value pairs, i.e. `adjoint(key) => adjoint(value)`.

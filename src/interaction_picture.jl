@@ -6,7 +6,7 @@
     interaction_picture_M(A, T; alg = Tsit5(), kwargs...)
 
 Solve the Heisenberg coefficient-matrix equation for an interaction picture,
-`dM/dt = A(t) * M(t)` with `M(T[1]) = I`, and return the ODE solution.
+`dM/dt = A(t) * M(t)` with `M(0) = I`, and return the ODE solution.
 
 The function `A(t)` must return an `N × N` complex matrix describing the linear
 mode coupling in the interaction picture. The returned solution supports
@@ -26,12 +26,21 @@ end
 """
     interaction_picture_M_2modes_equal(u, T)
 
-Analytic interaction-picture coefficient matrix for two modes when `u(t) = v(t)`,
-as described in Christiansen et al. (PRA 107, 013706). The matrix is
+Analytic interaction-picture coefficient matrix for two modes when `u(t) = v(t)`.
+The matrix is
 
-`M(t) = [cos θ(t)  -sin θ(t); sin θ(t)  cos θ(t)]`,
+```math
+M(t) = \\begin{bmatrix}
+\\cos \\theta(t) & -\\sin \\theta(t) \\\\
+\\sin \\theta(t) & \\cos \\theta(t)
+\\end{bmatrix},
+```
 
-where `sin^2 θ(t) = ∫_0^t |u(t')|^2 dt'`.
+where
+
+```math
+\\sin^2 \\theta(t) = \\int_0^t |u(t')|^2\\,dt'.
+```
 """
 function interaction_picture_M_2modes_equal(u, T)
     u_vals = u isa Function ? u.(T) : u
@@ -56,8 +65,28 @@ _as_time_function(x) = x isa Function ? x : (_ -> x)
 
 Coefficient matrix `A(t)` for two virtual modes `(1, 2)`, where
 
-`d/dt [a1; a2] = A(t) * [a1; a2]` and
-`A(t) = 1/2 * [0, g1(t) * conj(g2(t)); -conj(g1(t)) * g2(t), 0]`.
+```math
+\\frac{d}{dt}
+\\begin{bmatrix}
+a_1 \\\\
+a_2
+\\end{bmatrix}
+= A(t)
+\\begin{bmatrix}
+a_1 \\\\
+a_2
+\\end{bmatrix},
+```
+
+with
+
+```math
+A(t) = \\frac{1}{2}
+\\begin{bmatrix}
+0 & g_1(t) g_2^*(t) \\\\
+-g_1^*(t) g_2(t) & 0
+\\end{bmatrix}.
+```
 
 All couplings may be time-dependent or constant.
 """
@@ -77,6 +106,15 @@ Coefficient matrix `A(t)` for three interacting modes ordered as `(1, 2, 3)`,
 with couplings `g1(t)`, `g2(t)` and `g3(t)` corresponding to Eq. (25) of
 Christiansen et al. (PRA 107, 013706).
 
+```math
+A(t) = \\frac{1}{2}
+\\begin{bmatrix}
+0 & g_1(t) g_2^*(t) & g_1(t) g_3^*(t) \\\\
+-g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) \\\\
+-g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0
+\\end{bmatrix}.
+```
+
 All couplings may be time-dependent or constant.
 """
 function interaction_picture_A_3modes(g1, g2, g3)
@@ -94,6 +132,16 @@ end
 
 Coefficient matrix `A(t)` for four interacting modes ordered as `(1, 2, 3, 4)`.
 All couplings may be time-dependent or constant.
+
+```math
+A(t) = \\frac{1}{2}
+\\begin{bmatrix}
+0 & g_1(t) g_2^*(t) & g_1(t) g_3^*(t) & g_1(t) g_4^*(t) \\\\
+-g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) & g_2(t) g_4^*(t) \\\\
+-g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0 & g_3(t) g_4^*(t) \\\\
+-g_1^*(t) g_4(t) & -g_2^*(t) g_4(t) & -g_3^*(t) g_4(t) & 0
+\\end{bmatrix}.
+```
 """
 function interaction_picture_A_4modes(g1, g2, g3, g4)
     g1f = _as_time_function(g1)
@@ -106,5 +154,3 @@ function interaction_picture_A_4modes(g1, g2, g3, g4)
         -conj(g1f(t)) * g4f(t) -conj(g2f(t)) * g4f(t) -conj(g3f(t)) * g4f(t) 0]
     return A 
 end
-
-# TODO: check minus signs, general function
