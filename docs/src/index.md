@@ -14,9 +14,9 @@ The typical workflow is:
 
 - SLH modeling with cascade and concatenate rules
 - Symbolic-to-numeric translation (including time-dependent couplings)
-- Utilities for pulse modes and virtual cavities
+- Utilities for pulse modes, virtual cavities, interaction picture and pulse delay
 - Two-time correlation functions and output-mode extraction
-- Compatibility with `QuantumOptics.jl` solvers
+- Compatibility with `QuantumOptics.jl` and `QuantumCumulants.jl`
 
 ## Installation
 
@@ -30,4 +30,4 @@ The typical workflow is:
 - [Theory](@ref) for the input-output formalism with quantum pulses
 - [Implementation](@ref) for the symbolic-to-numeric pipeline
 - [API](@ref) for the full list of functions
-- `Examples` for multiple different usage illustrations # TODO: reference?
+- [Examples](examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3.md) for multiple different usage illustrations

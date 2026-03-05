@@ -30,9 +30,9 @@
   - [x] directly QO.jl objects
   - [x] padding
   - [ ] feedback reduction
-  - [ ] gu_to_Gauss
-    - [ ] add Δ as kwarg
-    - [ ] arg u not needed?! 
+  - [x] gu_to_Gauss
+    - [x] add Δ as kwarg
+    - [x] arg u not needed?! 
 - [ ] More tests
   - [ ] codecov
   - [ ] interaction picture: test general A(t)
@@ -64,5 +64,4 @@
   - [ ] AbstractVector{<:QTerm}
 - [x] SLH for QO.jl objects directly
 - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
-- [ ] time_parameter allow for (linear) interpolations (not only functions)
 - [ ] directly use gu(t) without substitution? (think about iscall)

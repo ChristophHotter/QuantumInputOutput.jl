@@ -38,7 +38,8 @@ t0 = 4σt  # pulse peak
 Tend = 3t0
 T = [0:0.005:1;]*Tend
 ΔT = T[2]-T[1]
-u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
+## u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
+u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
 
 gu_t = u_to_gu(u1, T)
 nothing # hide
