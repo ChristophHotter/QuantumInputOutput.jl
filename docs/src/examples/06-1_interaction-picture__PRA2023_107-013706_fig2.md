@@ -47,7 +47,7 @@ H = get_hamiltonian(G_cas)
 L = get_lindblad(G_cas)[1]
 ````
 
-Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the rotating frame of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$.
+Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$.
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
 H_uv = get_hamiltonian(▷(G_u, G_v))
@@ -100,12 +100,6 @@ gv_t = v_to_gv(u, T) # identical output mode v(t) = u(t)
 A_uv = interaction_picture_A_2modes(gu_t, gv_t)
 M_t = interaction_picture_M(A_uv, T)
 
-# numerical basis
-bu = FockBasis(n_photons, n_photons-5)
-ba = NLevelBasis(2)
-bv = FockBasis(5)
-b = bu ⊗ ba ⊗ bv
-
 # constant and time-dependent parameters
 dict_p = Dict(γ => γ_)
 M_ls = [M(i,j) for i=1:la for j=1:la]
@@ -117,6 +111,12 @@ nothing # hide
 ````
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
+# numerical basis
+bu = FockBasis(n_photons, n_photons-5)
+ba = NLevelBasis(2)
+bv = FockBasis(5)
+b = bu ⊗ ba ⊗ bv
+
 H_int_QO = translate(H_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
 L_QO = translate(L_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
 
@@ -146,6 +146,8 @@ nothing # hide
 ````
 
 We can see that the mean photon number of the initial temporal mode $u$ is reduced by less than two photons.
+This allows us to significantly reduce the numerical Hilbert space dimension.
+If the interaction picture is not used, the input cavity $u$ completely empties and the output cavity almost completely fills again.
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
 close("interaction picture fig2") # hide

@@ -4,8 +4,10 @@ EditURL = "../../../examples/05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 
 # Quantum Pulse Bi-Directional Waveguide
 
-This example mirrors the example `Bi-Directional Waveguide` but uses the numeric SLH struct [`SLHqo`](@ref) directly to circumvent the symbolic derivation part.
+This example mirrors the example `Bi-Directional Waveguide` but uses the numeric SLH struct [`SLHqo`](@ref), to circumvent the symbolic derivation part.
 Furthermore it drives the system with a *quantum* single-photon pulse via a virtual cavity.
+
+As usual, we start by loading the packages and defining the operators and parameters of the system.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 using QuantumInputOutput
@@ -50,7 +52,7 @@ gu_t = u_to_gu(u1, T)
 nothing # hide
 ````
 
-We use the [`SLHqo`](@ref) to directly use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and function to the model the system.
+We use the [`SLHqo`](@ref) to directly use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions to the model the system.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 G_u = SLHqo(1, t -> gu_t(t) * a_u, 0*one(b))
@@ -64,13 +66,13 @@ G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
 
 # Cascade left-moving channel (reverse order)
 # cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
-G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
+G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1)
 
 G_t = G_R_t ⊞ G_L_t
 nothing # hide
 ````
 
-The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be a time-dependent.
+The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be time-dependent.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 H = get_hamiltonian(G_t)
@@ -85,6 +87,7 @@ function input_output(t, ρ)
     J = [L_R(t), L_L(t), J_add...]
     return Ht, J, dagger.(J)
 end
+nothing # hide
 ````
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo

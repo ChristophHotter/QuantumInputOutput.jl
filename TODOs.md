@@ -1,74 +1,91 @@
 # MAIN TODO - LIST:
 
-- [ ] clean up code (types, ...)
-- [ ] Docu review
-  - [x] Implementation.md more code snippet 
-  - [ ] concatenate docstring
-  - [x] check interaction_picture_A_4modes docstrings
-  - [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
-- [ ] docu
-  - [ ] examples
-    - [x] .jl file conversion (see QC.jl, Orjan)
-    - [x] interaction picture example (Victor paper)
-    - [ ] Multi-mode Dicke state superradiance
-    - [ ] SUPER example (Johannes)
-    - [x] g2 for waveguide example
-    - [ ] pulse delay (Victor paper)
-    - [x] beam splitter loss
-    - [x] beam splitter HOM
-  - [x] theory
-  - [x] introduction
-  - [x] API
-  - [x] tutorial
-  - [ ] implementation
+- [ ] clean up code
+  - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
+  - [ ] types
+
+- [ ] examples
+  - [ ] Multi-mode Dicke state superradiance
+  - [ ] SUPER example (Johannes)
+  - [ ] pulse delay (Victor paper)
+  - [ ] feedback reduction (?)  
+  
 - [ ] create more tests (cov +80%)
   - [x] simple full example
   - [ ] translate.jl
   - [ ] utils.jl
-- [ ] more functionalities
-  - [ ] better method for u_eff and v_eff (Victor)
-  - [x] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
-  - [ ] interaction picture (Victor)
-    - [x] analytic expression for u=v
-    - [x] kwarg for adjoint replacement in substitute_operators
-    - [ ] general expression for A(t)
-  - [ ] pulse delay (Victor paper)
-  - [x] directly QO.jl objects
-  - [x] padding
-  - [ ] feedback reduction
-  - [x] gu_to_Gauss
-    - [x] add Δ as kwarg
-    - [x] arg u not needed?! 
-- [ ] More tests
   - [ ] codecov
   - [ ] interaction picture: test general A(t)
   - [ ] cumulants: comparison example 04-1 and 04-2
-  - [ ] u_Gaussian, V_GAussian; slower?
+  - [ ] u_Gaussian, v_Gaussian; slower?
+
+- [ ] more functionalities
+  - [ ] feedback reduction
+  - [ ] better method for u_eff and v_eff (Victor)
+  - [ ] interaction picture (Victor)
+    - [ ] general expression for A(t)
+  - [ ] pulse delay (Victor paper)
+
 - [ ] Formatter/SpellCheck
+
 - [ ] JET
+
 - [ ] Aqua
 
 
 ## Additional TODOs
 
+- [ ] SLH more specific types
+  - [ ] AbstractVector{<:QTerm}
+- [ ] directly use gu(t) without substitution? (think about iscall)
+- [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
+
+
+
+## DONE
+
 - [x] Translate function: 
     - [x] Try TimeDependentSums again (after solving the gu(t) mistake/problem) [~factor 2 slower!]
     - [x] Be careful with other operations for time-dependent functions (power, conj, ...) 
     - [x] Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
+  
 - [x] Parameter equal to 1.0 
 - [x] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
 - [x] Kwarg to provide substitution operators 
 - [x] level_map 
 - [x] output_functions name - test if name matters [names matter!]
 
-
-- [ ] rename functions:
+- [x] rename functions:
   - [x] concatenation -> concatenate
-  - [ ] u_eff, v_eff
+  - [x] u_eff, v_eff
   - [x] time_dep_param -> time_parameter
+
 - [x] change README.me
-- [ ] SLH more specific types
-  - [ ] AbstractVector{<:QTerm}
 - [x] SLH for QO.jl objects directly
-- [ ] Is QC.jl needed for the package? (or only SQA.jl?)
-- [ ] directly use gu(t) without substitution? (think about iscall)
+
+- [x] Docu review
+  - [x] Implementation.md more code snippet 
+  - [x] concatenate docstring
+  - [x] check interaction_picture_A_4modes docstrings
+
+- [x] examples
+  - [x] g2 for waveguide example
+  - [x] .jl file conversion (see QC.jl, Orjan)
+  - [x] interaction picture example (Victor paper)
+  - [x] beam splitter loss
+  - [x] beam splitter HOM
+- [x] theory
+- [x] introduction
+- [x] API
+- [x] tutorial
+- [x] implementation
+
+- [x] more functionalities
+  - [x] conj() and sqrt() automatically (maybe also ()^x, exp(), sin(), cos(), tan(), etc)
+  - [x] directly QO.jl objects
+  - [x] padding
+  - [x] gu_to_Gauss
+    - [x] add Δ as kwarg
+    - [x] arg u not needed?! 
+  - [x] analytic expression for u=v
+  - [x] kwarg for adjoint replacement in substitute_operators

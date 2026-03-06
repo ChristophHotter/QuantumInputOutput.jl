@@ -6,7 +6,8 @@ EditURL = "../../../examples/04-1_two-sided-cavity_with-atom_coh-drive.jl"
 
 In this example, we first simulate a continuously coherently driven empty two-sided cavity where we see the transmission and reflection spectrum. Afterwards, we couple $N=2$ two-level system resonantly to the cavity to investigate the transmission and reflection of a weak coherent pulse.
 
-As usual, we start by loading the packages and specifying the system. We already include the Hilbert space for $N$ atoms here. However, for the numerical simulation of the empty cavity we provide a dictionary of the actual QuantumOptics.jl operators we want to use.
+As usual, we start by loading the packages and specifying the system. We already include the Hilbert space for $N$ atoms here.
+However, for the numerical simulation of the empty cavity we provide a dictionary of the actual QuantumOptics.jl operators we want to use.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 using QuantumInputOutput
@@ -34,7 +35,8 @@ nothing # hide
 
 ## Empty two-sided cavity
 
-We couple a classical drive into the cavity through the left mirror $(\kappa_L)$. The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
+We couple a classical drive into the cavity through the left mirror $(\kappa_L)$.
+The decay through the right mirror can be added in several ways: with the `concatenate` rule, including it already in the initial cavity SLH triple with a second Lindblad term or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 G_d = SLH(1, E, 0) # classical drive
@@ -62,7 +64,7 @@ L1_L = get_lindblad(G_cav_L_R_drive)[1]
 L1_R = get_lindblad(G_cav_L_R_drive)[2]
 ````
 
-The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of QuantumCumulants.jl. We could, in principle, also proceed by solving this equation, see e.g. example `Mean-field Two-sided Cavity`.
+Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl). We could, in principle, also proceed by solving this equation, see e.g. the example `Mean-field Two-sided Cavity`.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
@@ -114,14 +116,12 @@ nothing # hide
 close("time evolution") # hide
 figure("time evolution")
 subplot(2,1,1)
-title("n(t)")
 plot(t_, n_cavity)
 xlabel("t")
 ylabel("cavity photons")
 grid(true)
 
 subplot(2,1,2)
-title("transmission - reflection")
 plot(t_, n_ref; label="reflection")
 plot(t_, n_trans; label="transmission", ls="--")
 xlabel("t")
@@ -164,7 +164,7 @@ gcf()
 
 ## Two-sided cavity with atoms
 
-In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
+In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 H_ac = -Δ*(a'a + ∑σ(2,2)) + g*(a'∑σ(1,2) + a*∑σ(2,1))

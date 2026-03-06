@@ -125,19 +125,21 @@ tight_layout()
 gcf()
 ````
 
+We can see that the pulse is perfectly absorbed by the delayed output mode $v(t) = u(t-\tau)$
+
 ## Interaction picture for the input and delay cavities
 
-Introducing a separate cavity to delay the pulse is a big disadvantage if one has multiple modes.
+Introducing a separate cavity to delay the pulse can be a big disadvantage if one has multiple modes.
 To eliminate the delay cavity, we can transform into the interaction picture of the output and delay cavity coupling.
 This is, however, only possible if the delay is larger than the pulse, because only then we have $g_{in}(t) \approx g_{v=u}(t)$. Nevertheless, since in most cases only the relative
-delay between different modes is crucial, e.g. for two arms of an interferometer, we can simply add a constant delay `Tc >> σ` to all modes.
+delay between different modes is crucial, e.g. for two arms of an interferometer, we can simply add a constant delay $T_c \gg \sigma$ to all modes.
 
 ````@example 08-1_pulse-delay__simple
 G_d_in = SLH(S2, [gin*ad, 0], 0)
 H_ud = get_hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
-M(i,j) = cnumber("M_{$(i)$(j)}") # TODO: real? analytic expression
+M(i,j) = cnumber("M_{$(i)$(j)}")
 a0_ls = [au, ad]
 la = length(a0_ls)
 a_int_ls = [sum(M(i,j)*a0_ls[j] for j=1:la) for i=1:la]
@@ -176,7 +178,7 @@ nothing # hide
 ````@example 08-1_pulse-delay__simple
 # interaction-picture coefficient matrix M(t) for u ↔ d
 A_ud = interaction_picture_A_2modes(gu_, gin_)
-M_t = interaction_picture_M(A_ud, T) # TODO: analytic M
+M_t = interaction_picture_M(A_ud, T)
 
 M_ls = [M(i,j) for i=1:la for j=1:la]
 M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
@@ -187,16 +189,19 @@ p_t_num = [gu_, gin_, gout_, gv_, M_t_ls...]
 dict_p_t_int = Dict(p_t_sym .=> p_t_num)
 
 au_int = destroy(bu) ⊗ one(bv)
-ad_int = one(bu ⊗ bv) # this is amazing
+# This is amazing! # hide
+ad_int = one(bu ⊗ bv)
 av_int = one(bu) ⊗ destroy(bv)
 operators = Dict( [au, au', ad, ad', av, av'] .=>  [au_int, au_int', ad_int, ad_int', av_int, av_int'])
 
 H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int, operators)
 L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int, operators) for i=1:length(L_int_sym)]
-# H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int)
-# L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)]
+# H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int) # hide
+# L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
 nothing # hide
+````
 
+````@example 08-1_pulse-delay__simple
 function input_output_int(t, ρ)
     Ht = H_int_QO(t)
     Jt = [L_int_QO[i](t) for i=1:length(L_int_QO)]
@@ -212,6 +217,9 @@ nv_int = real.(expect(dagger(av_int)*av_int, ρt_int))
 # @show maximum(nd_int) # hide
 nothing # hide
 ````
+
+Above we introduced the unity matrix for the delay cavity operators which guarantees that it does not have an effect.
+We can see that the delayed pulse is perfectly absorbed.
 
 ````@example 08-1_pulse-delay__simple
 close("delay int. picture") # hide
