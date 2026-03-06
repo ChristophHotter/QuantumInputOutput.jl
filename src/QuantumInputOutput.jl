@@ -4,7 +4,8 @@ using SecondQuantizedAlgebra
 using QuantumCumulants
 using QuantumOpticsBase
 using QuantumOptics
-using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
+using SymbolicUtils:
+    SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
 using Symbolics #?
 # using ModelingToolkit #?
 using SpecialFunctions: erf
@@ -23,12 +24,12 @@ export SLH, # SLH.jl
     get_lindblad,
     get_hamiltonian,
     ▷,
-    cascade, 
+    cascade,
     ⊞,
-    concatenate, 
+    concatenate,
     translate, # translate.jl
     u_to_gu, # utils.jl
-    v_to_gv, 
+    v_to_gv,
     u_to_gu_Gauss,
     v_to_gv_Gauss,
     u_eff,

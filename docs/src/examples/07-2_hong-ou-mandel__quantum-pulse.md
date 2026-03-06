@@ -62,7 +62,7 @@ L = get_lindblad(G)
 T_p = 1 / γ_
 T_end = 12T_p
 σ = sqrt(0.5) * T_p
-u(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+u(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
 
 T = [0:0.002:1;] * T_end
 ΔT = T[2] - T[1]
@@ -85,7 +85,7 @@ dict_p_t = Dict(gu1 => gu1_t, gu2 => gu2_t, gv1 => gv1_t, gv2 => gv2_t)
 r_ = sqrt(η)
 t_ = sqrt(1 - η)
 
-dict_p = Dict([t,r] .=> [t_,r_])
+dict_p = Dict([t, r] .=> [t_, r_])
 nothing # hide
 ````
 
@@ -103,8 +103,8 @@ av1_qo = one(bu1) ⊗ one(bu2) ⊗ destroy(bv1) ⊗ one(bv2)
 av2_qo = one(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ destroy(bv2)
 
 # translate to numeric operators
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = [translate(Li, b; parameter=dict_p, time_parameter=dict_p_t) for Li in L]
+H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = [translate(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
@@ -125,9 +125,10 @@ nothing # hide
 # output observables
 n_v1 = real.(expect(av1_qo' * av1_qo, ρt[end]))
 n_v2 = real.(expect(av2_qo' * av2_qo, ρt[end]))
-g2_v1 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits=4)
-g2_v2 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits=4)
-v1_v2_coinc = round(real.(expect((av1_qo' * av1_qo) * (av2_qo' * av2_qo), ρt[end])), digits=4)
+g2_v1 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits = 4)
+g2_v2 = round(real.(expect((av1_qo')^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits = 4)
+v1_v2_coinc =
+    round(real.(expect((av1_qo' * av1_qo) * (av2_qo' * av2_qo), ρt[end])), digits = 4)
 
 @show g2_v1
 @show g2_v2
@@ -153,13 +154,13 @@ end
 
 Random.seed!(1) # hide
 Ntraj = 20
-n_v1_mc_ls = [zeros(length(T)) for i=1:Ntraj]
+n_v1_mc_ls = [zeros(length(T)) for i = 1:Ntraj]
 n_v2_mc_ls = deepcopy(n_v1_mc_ls)
 nothing # hide
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
-for it=1:Ntraj
+for it = 1:Ntraj
     t_mc, ψt_mc = timeevolution.mcwf_dynamic(T, ψ0, input_output_mc)
     n_v1_mc = real.(expect(av1_qo' * av1_qo, ψt_mc))
     n_v2_mc = real.(expect(av2_qo' * av2_qo, ψt_mc))
@@ -172,16 +173,16 @@ nothing # hide
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 close("HOM mcwf") # hide
-figure("HOM mcwf", figsize=(6.5, 4.5))
+figure("HOM mcwf", figsize = (6.5, 4.5))
 subplot(211)
-for it=1:Ntraj
+for it = 1:Ntraj
     plot(T, n_v1_mc_ls[it])
 end
 ylabel(L"\langle a^\dagger_{v_1} a_{v_1} \rangle")
 grid(true)
 
 subplot(212)
-for it=1:Ntraj
+for it = 1:Ntraj
     plot(T, n_v2_mc_ls[it])
 end
 xlabel("time")

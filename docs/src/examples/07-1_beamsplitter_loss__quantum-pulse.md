@@ -65,7 +65,7 @@ L = get_lindblad(G)
 γ_ = 1.0
 σ = 1 / γ_
 T_end = 12σ
-u(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+u(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
 
 T = [0:0.004:1;] * T_end
 ΔT = T[2] - T[1]
@@ -79,7 +79,7 @@ dict_p_t = Dict(gu => gu_t, gv => gv_t)
 η = 0.2 # loss
 r_ = sqrt(η) # reflection
 t_ = sqrt(1 - η) # transmission
-dict_p = Dict([t,r] .=> [t_, r_])
+dict_p = Dict([t, r] .=> [t_, r_])
 nothing # hide
 ````
 
@@ -95,8 +95,8 @@ au_qo = destroy(bu) ⊗ one(bv)
 av_qo = one(bu) ⊗ destroy(bv)
 
 # translate to numeric operators
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = [translate(Li, b; parameter=dict_p, time_parameter=dict_p_t) for Li in L]
+H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = [translate(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
@@ -118,7 +118,7 @@ n_u_t = real(expect(au_qo'au_qo, ρt))
 n_v_t = real(expect(av_qo'av_qo, ρt))
 
 ρv_end = ptrace(ρt[end], 1)
-pop_n_ls = [ρv_end.data[i,i] for i=1:n_ph+1]
+pop_n_ls = [ρv_end.data[i, i] for i = 1:(n_ph+1)]
 nothing # hide
 ````
 
@@ -127,14 +127,14 @@ We can see that the mean photon number is reduced by $\eta = 20 \%$.
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
 close("beam splitter loss") # hide
-figure("beam splitter loss", figsize=(5.4, 4.2))
-subplot(2,1,1)
+figure("beam splitter loss", figsize = (5.4, 4.2))
+subplot(2, 1, 1)
 plot(T, n_u_t .+ n_v_t)
 xlabel("time")
 ylabel("photon number")
 grid(true)
 
-subplot(2,1,2)
+subplot(2, 1, 2)
 bar([0:n_ph;], pop_n_ls)
 xlabel("Fock state component n")
 ylabel("population")

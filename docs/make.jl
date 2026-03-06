@@ -23,7 +23,7 @@ pages = [
         "examples/06-1_interaction-picture__PRA2023_107-013706_fig2.md",
         "examples/07-1_beamsplitter_loss__quantum-pulse.md",
         "examples/07-2_hong-ou-mandel__quantum-pulse.md",
-        "examples/08-1_pulse-delay__simple.md"
+        "examples/08-1_pulse-delay__simple.md",
     ],
 ]
 

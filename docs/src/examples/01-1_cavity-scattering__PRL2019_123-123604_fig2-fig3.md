@@ -24,9 +24,9 @@ hv1 = FockSpace(:v1)
 h = hu1 ⊗ hc1 ⊗ hv1
 
 # symbolic operators
-au = Destroy(h,:a_u,1)
-c = Destroy(h,:c,2)
-av = Destroy(h,:a_v,3)
+au = Destroy(h, :a_u, 1)
+c = Destroy(h, :c, 2)
+av = Destroy(h, :a_v, 3)
 
 # symbolic parameters
 gu, Δ, γ = rnumbers("g_u Δ γ")
@@ -60,15 +60,15 @@ To solve the dynamics of the system we translate the symbolic expressions into n
 γ_ = 1.0
 Δ_ = 0.0
 
-p_sym = [γ , Δ , gv]
-p_num = [γ_, Δ_, 0 ] # gv=0
+p_sym = [γ, Δ, gv]
+p_num = [γ_, Δ_, 0] # gv=0
 dict_p = Dict(p_sym .=> p_num);
 
 # Gaussian input mode
 σ = 1/γ_
 T_end = 12σ
 # u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 )) # hide
-u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
@@ -86,8 +86,8 @@ nothing # hide
 We now use the function [`translate`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
+H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 ````
 
@@ -95,14 +95,14 @@ To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 # time-dependent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
-function input_output_1(t,ρ)
+function input_output_1(t, ρ)
     H = H_QO(t)
     J = [L_QO(t)]
     return H, J, dagger.(J)
 end;
 
 # initial state
-ψ0 = fockstate(bu1,1) ⊗ fockstate(bc1,0) ⊗ fockstate(bv1,0)
+ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
 
 # time evolution
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1)
@@ -131,12 +131,12 @@ nothing # hide
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 close("all") # hide
-figure("g1(t1,t2) matrix", figsize=(4,3.5))
-pcolormesh(T, T, real.(g1_m), cmap="inferno")
+figure("g1(t1,t2) matrix", figsize = (4, 3.5))
+pcolormesh(T, T, real.(g1_m), cmap = "inferno")
 xlabel(L"\gamma t_2")
 ylabel(L"\gamma t_1")
 tight_layout()
-colorbar(label=L"g^{(1)}(t_1,t_2)")
+colorbar(label = L"g^{(1)}(t_1,t_2)")
 gcf()
 ````
 
@@ -144,18 +144,18 @@ The eigenvalues and corresponding eigenvectors are sorted in ascending order, wh
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 F = eigen(g1_m)
-n_avg = round.(real.(F.values)*ΔT; digits=3)
+n_avg = round.(real.(F.values)*ΔT; digits = 3)
 modes = F.vectors
-v_mode = (modes[:,end]) / sqrt(ΔT)
+v_mode = (modes[:, end]) / sqrt(ΔT)
 
-@show n_avg[end-1:end]
+@show n_avg[(end-1):end]
 nothing # hide
 ````
 
 We use now the mode with the highest mean photon number as our out-mode to determine its quantum state.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-p_sym_2 = [γ , Δ ]
+p_sym_2 = [γ, Δ]
 p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
@@ -164,9 +164,9 @@ gv_t = v_to_gv(v_mode, T)
 
 dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 
-H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-function input_output_2(t,ρ)
+H_QO_2 = translate(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_2 = translate(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+function input_output_2(t, ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]
     return H, J, dagger.(J)
@@ -182,31 +182,31 @@ nothing # hide
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 figure("modes")
-subplot(2,1,1)
-plot(T, u1.(T), ls="--", label="u", color="red")
-fill_between(T, 0., u1.(T), alpha=0.5, color="red")
+subplot(2, 1, 1)
+plot(T, u1.(T), ls = "--", label = "u", color = "red")
+fill_between(T, 0.0, u1.(T), alpha = 0.5, color = "red")
 
-plot(T, real.(v_mode), color="blue", label="v")
-fill_between(T, 0., real.(v_mode), alpha=0.5, color="blue")
-xlim(0,12)
-ylim(-0.8,0.8)
-yticks([-0.8,0,0.8])
+plot(T, real.(v_mode), color = "blue", label = "v")
+fill_between(T, 0.0, real.(v_mode), alpha = 0.5, color = "blue")
+xlim(0, 12)
+ylim(-0.8, 0.8)
+yticks([-0.8, 0, 0.8])
 ylabel("modes")
 legend()
 
 twinx()
-xlim(0,12)
-ylim(0,8)
-plot(T, abs2.(gu_t.(T)), color="red")
-plot(T[3:end], abs2.(gv_t.(T))[3:end], color="blue", ls="--")
+xlim(0, 12)
+ylim(0, 8)
+plot(T, abs2.(gu_t.(T)), color = "red")
+plot(T[3:end], abs2.(gv_t.(T))[3:end], color = "blue", ls = "--")
 ylabel("Rates (γ)")
 
-subplot(2,1,2)
-plot(T, n_u1_t, label=L"\langle a^\dagger a \rangle_u", color="red")
-plot(T, n_c_t, label=L"\langle c^\dagger c \rangle", color="green")
-plot(T, n_v1_t, label=L"\langle a^\dagger a \rangle_v", color="blue")
-xlim(0,12)
-ylim(0,1)
+subplot(2, 1, 2)
+plot(T, n_u1_t, label = L"\langle a^\dagger a \rangle_u", color = "red")
+plot(T, n_c_t, label = L"\langle c^\dagger c \rangle", color = "green")
+plot(T, n_v1_t, label = L"\langle a^\dagger a \rangle_v", color = "blue")
+xlim(0, 12)
+ylim(0, 1)
 xlabel("time (1/γ)")
 ylabel("Exciations")
 legend()
@@ -223,7 +223,7 @@ We slightly adapt the above example by assuming the intial pulse to be in a cohe
 bu1_3 = FockBasis(12)
 bc1_3 = FockBasis(6)
 bv1_3 = FockBasis(6)
-b_3 = tensor(bu1_3,bc1_3,bv1_3)
+b_3 = tensor(bu1_3, bc1_3, bv1_3)
 
 # new operators of the system
 au_3 = embed(b_3, 1, destroy(bu1_3))
@@ -232,9 +232,9 @@ av_3 = embed(b_3, 3, destroy(bv1_3))
 cdc_3 = c_3'c_3
 
 # we use the same Hamiltonian as before but add a depasing term to the dissipation
-H_QO_3 = translate(H, b_3; parameter=dict_p_2, time_parameter=dict_p_t_2)
-L_QO_3 = translate(L, b_3; parameter=dict_p_2, time_parameter=dict_p_t_2)
-function input_output_3(t,ρ)
+H_QO_3 = translate(H, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_3 = translate(L, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
+function input_output_3(t, ρ)
     H = H_QO_3(t)
     J = [L_QO_3(t), √(γ_)*cdc_3]
     return H, J, dagger.(J)
@@ -245,14 +245,14 @@ nothing #hide
 Due to the larger Hilbert space the time evolution takes a few seconds.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-ψ0_3 = coherentstate(bu1_3,2) ⊗ fockstate(bc1_3,0) ⊗ fockstate(bv1_3,0)
+ψ0_3 = coherentstate(bu1_3, 2) ⊗ fockstate(bc1_3, 0) ⊗ fockstate(bv1_3, 0)
 t_3, ρt_3 = timeevolution.master_dynamic(T, ψ0_3, input_output_3)
 nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 L0(t) = √(γ_)*c_3 + gu_t(t)*au_3 + gv_t(t)*av_3
-I_out = [expect(dagger(L0(t_3[i]))*L0(t_3[i]), ρt_3[i]) for i=1:length(t_3)]
+I_out = [expect(dagger(L0(t_3[i]))*L0(t_3[i]), ρt_3[i]) for i = 1:length(t_3)]
 
 n_u1_t_3 = real.(expect(au'*au, ρt_3))
 n_v1_t_3 = real.(expect(av'*av, ρt_3))
@@ -260,12 +260,12 @@ nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-figure("dephasing", figsize=(6,3))
-plot(t_3, n_u1_t_3, label=L"\langle a^\dagger a \rangle_u", color="red")
-plot(t_3, n_v1_t_3, label=L"\langle a^\dagger a \rangle_v", color="blue", ls="--")
-plot(t_3, I_out, label=L"I_{out}", color="black", ls="dotted")
-xlim(0,12)
-ylim(0,4)
+figure("dephasing", figsize = (6, 3))
+plot(t_3, n_u1_t_3, label = L"\langle a^\dagger a \rangle_u", color = "red")
+plot(t_3, n_v1_t_3, label = L"\langle a^\dagger a \rangle_v", color = "blue", ls = "--")
+plot(t_3, I_out, label = L"I_{out}", color = "black", ls = "dotted")
+xlim(0, 12)
+ylim(0, 4)
 xlabel("time (1/γ)")
 ylabel("expectation values")
 legend()

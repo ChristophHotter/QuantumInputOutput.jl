@@ -25,7 +25,7 @@ h = hu1 ⊗ hu2 ⊗ hs1 ⊗ hv1 ⊗ hv2
 ## symbolic operators
 au1 = Destroy(h, :au_1, 1)
 au2 = Destroy(h, :au_2, 2)
-σ(i,j) = Transition(h, :σ, i, j, 3)
+σ(i, j) = Transition(h, :σ, i, j, 3)
 av1 = Destroy(h, :av_1, 4)
 av2 = Destroy(h, :av_2, 5)
 
@@ -40,7 +40,7 @@ gu1, gu2, gv1, gv2 = cnumbers("gu_1 gu_2 gv_1 gv_2")
 
 G_u2 = SLH(1, gu2*au2, 0)            # input cavity 2
 G_u1 = SLH(1, gu1*au1, 0)            # input cavity 1
-G_tl = SLH(1, √(γ)*σ(1,2), Δ*σ(2,2)) # two-level scatterer
+G_tl = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # two-level scatterer
 G_v1 = SLH(1, gv1*av1, 0)            # output cavity 1
 G_v2 = SLH(1, gv2*av2, 0)            # output cavity 2
 
@@ -92,8 +92,8 @@ T = [T0:dt:Tend;]
 τ1_ = 12.0
 τ2_ = 11.27
 
-u1(t_) = 1/(√(σ1_)*π^(1/4)) * exp( -(t_ - τ1_)^2 / (2*σ1_^2) ) * exp(-1im*Δ1_*t_)
-u2(t_) = 1/(√(σ2_)*π^(1/4)) * exp( -(t_ - τ2_)^2 / (2*σ2_^2) ) * exp(-1im*Δ2_*t_)
+u1(t_) = 1/(√(σ1_)*π^(1/4)) * exp(-(t_ - τ1_)^2 / (2*σ1_^2)) * exp(-1im*Δ1_*t_)
+u2(t_) = 1/(√(σ2_)*π^(1/4)) * exp(-(t_ - τ2_)^2 / (2*σ2_^2)) * exp(-1im*Δ2_*t_)
 
 gu1_t_ = u_to_gu_Gauss(τ1_, σ1_)
 gu1_t(t) = gu1_t_(t) # TODO: needed?
@@ -117,8 +117,8 @@ gv2_c_t(t) = conj(gv2_t(t))
 # Mean-field equations (first order) and time evolution with QuantumCumulants.jl.
 
 order = 1
-ops = [au1, au2, σ(2,2), σ(2,1), av1, av2]
-eqs = meanfield(ops, H_t, [L_t]; Jdagger=[Ld_t], order=order)
+ops = [au1, au2, σ(2, 2), σ(2, 1), av1, av2]
+eqs = meanfield(ops, H_t, [L_t]; Jdagger = [Ld_t], order = order)
 complete!(eqs)
 
 #
@@ -136,7 +136,7 @@ function QuantumOpticsBase.coherentstate!(ket::Ket, b::FockBasis, alpha::Number)
     λ = abs2(alpha)
     ϕ = angle(alpha)
     offset = b.offset
-    @inbounds for n=offset:b.N
+    @inbounds for n = offset:b.N
         i = n - offset + 1
         data[i] = sqrt(poisson(n, λ)) * exp(1im*ϕ*n)
     end
@@ -172,7 +172,8 @@ nothing # hide
 
 #
 
-abstol = 1e-10; reltol = 1e-10
+abstol = 1e-10;
+reltol = 1e-10
 sol = solve(prob, Tsit5(); abstol, reltol)
 nothing # hide
 
@@ -181,7 +182,7 @@ nothing # hide
 # Plot population and photon number transfer between input and output modes.
 
 t_ = sol.t
-s22 = real.(sol[σ(2,2)])
+s22 = real.(sol[σ(2, 2)])
 nu1 = abs2.(sol[au1])
 nu2 = abs2.(sol[au2])
 nv1 = abs2.(sol[av1])
@@ -189,7 +190,7 @@ nv2 = abs2.(sol[av2])
 
 close("population") # hide
 figure("population")
-plot(t_, s22, label=L"\langle \sigma^{22} \rangle")
+plot(t_, s22, label = L"\langle \sigma^{22} \rangle")
 xlabel("time")
 ylabel("population")
 grid(true)
@@ -201,29 +202,29 @@ gcf()
 
 # pygui(true)
 close("modes") # hide
-figure("modes", figsize=(5,8))
+figure("modes", figsize = (5, 8))
 subplot(311)
-plot(t_, nu1, ls="--", label=L"\langle a^\dagger a \rangle_{u_1}")
-plot(t_, nv1, ls="-", label=L"\langle a^\dagger a \rangle_{v_1}")
+plot(t_, nu1, ls = "--", label = L"\langle a^\dagger a \rangle_{u_1}")
+plot(t_, nv1, ls = "-", label = L"\langle a^\dagger a \rangle_{v_1}")
 grid(true)
 ylabel("photons")
-legend(loc="center right")
+legend(loc = "center right")
 
 subplot(312)
-plot(t_, nu2, ls="--", label=L"\langle a^\dagger a \rangle_{u_2}")
-plot(t_, nv2, ls="-", label=L"\langle a^\dagger a \rangle_{v_2}")
+plot(t_, nu2, ls = "--", label = L"\langle a^\dagger a \rangle_{u_2}")
+plot(t_, nv2, ls = "-", label = L"\langle a^\dagger a \rangle_{v_2}")
 grid(true)
 xlabel("time")
 ylabel("photons")
-legend(loc="center right")
+legend(loc = "center right")
 
 subplot(313)
-plot(t_, nu1 .+ nv1 .- nu1[1], label="mode 1")
-plot(t_, nu2 .+ nv2 .- nu2[1], label="mode 2")
+plot(t_, nu1 .+ nv1 .- nu1[1], label = "mode 1")
+plot(t_, nu2 .+ nv2 .- nu2[1], label = "mode 2")
 grid(true)
 xlabel("time")
 ylabel("photons")
-legend(loc="lower right")
+legend(loc = "lower right")
 tight_layout()
 display(gcf())
 
@@ -238,6 +239,12 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumCumulants", "OrdinaryDiffEq", "PyPlot"],
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumCumulants",
+        "OrdinaryDiffEq",
+        "PyPlot",
+    ],
     mode = PKGMODE_MANIFEST,
 )

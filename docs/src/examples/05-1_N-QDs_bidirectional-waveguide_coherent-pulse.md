@@ -45,11 +45,11 @@ G_L(i) = SLH(1, √(γL(i)) * σ(i, 1, 2), 0) # left-moving decay
 
 # Cascade right-moving channel
 # G_R_t = G_d ▷ cascade([G_R(i) ▷ G_ϕ(i, i + 1) for i=1:N-1]...) ▷ G_R(N) # for N > 1 # hide
-G_R_t = G_d ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
+G_R_t = G_d ▷ G_R(1) ▷ G_ϕ(1, 2) ▷ G_R(2)
 
 # Cascade left-moving channel (reverse order)
 # cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
-G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1)
+G_L_t = G_L(2) ▷ G_ϕ(1, 2) ▷ G_L(1)
 
 # Concatenate both channels
 G_t = G_R_t ⊞ G_L_t
@@ -85,14 +85,16 @@ Next, the numerical parameters and functions of the system are defined, and we t
 t0 = 4σt # pulse peak
 Tend = 3t0
 # u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
-u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
+u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp(-(t - t0)^2 / (2*σt^2))
 Ein_t(t) = α0*u1(t)
 
-p_sym = [ [γR(i) for i = 1:N];
-          [γL(i) for i = 1:N];
-          [Δ(i) for i = 1:N];
-          [ϕ(i, i + 1) for i = 1:N-1] ]
-p_num = [ γRn; γLn; Δn; ϕn ]
+p_sym = [
+    [γR(i) for i = 1:N];
+    [γL(i) for i = 1:N];
+    [Δ(i) for i = 1:N];
+    [ϕ(i, i + 1) for i = 1:(N-1)]
+]
+p_num = [γRn; γLn; Δn; ϕn]
 dict_p = Dict(p_sym .=> p_num)
 dict_p_t = Dict(Ein => Ein_t)
 nothing # hide
@@ -103,12 +105,12 @@ nothing # hide
 ba = NLevelBasis(2)
 b = tensor([ba for i = 1:N]...)
 
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_R_QO = translate(L_R, b; parameter=dict_p, time_parameter=dict_p_t)
-L_L_QO = translate(L_L, b; parameter=dict_p, time_parameter=dict_p_t)
+H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_R_QO = translate(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+L_L_QO = translate(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
-σ_qo(α,i,j) = translate(σ(α,i,j), b)
-J_add = [√(γ_add[i])*σ_qo(i,1,2) for i=1:N]
+σ_qo(α, i, j) = translate(σ(α, i, j), b)
+J_add = [√(γ_add[i])*σ_qo(i, 1, 2) for i = 1:N]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
@@ -145,7 +147,7 @@ close("time evolution")
 figure("time evolution", figsize = (5, 3.2))
 plot(t, I_R, label = "Transmission")
 plot(t, I_L, label = "Reflection")
-plot(t, abs2.(Ein_t.(t)), color="grey", ls="--", label = "Input")
+plot(t, abs2.(Ein_t.(t)), color = "grey", ls = "--", label = "Input")
 xlabel("time")
 ylabel("intensity")
 legend()
@@ -169,11 +171,14 @@ L0_dag(t) = dagger(L0(t))
 L0_ref(t) = L_L_QO(t)
 L0_ref_dag(t) = dagger(L0_ref(t))
 
-for it1 = 1:lT-1
+for it1 = 1:(lT-1)
     ρ_t1 = ρt[it1]
 
     t_2, ρ_2 = timeevolution.master_dynamic(
-        T[it1:end], L0(T[it1]) * ρ_t1 * L0_dag(T[it1]), input_output)
+        T[it1:end],
+        L0(T[it1]) * ρ_t1 * L0_dag(T[it1]),
+        input_output,
+    )
 
     # transmission
     G2_ls = real.([expect(L0_dag(t_2[j]) * L0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
@@ -181,10 +186,15 @@ for it1 = 1:lT-1
     G2[it1:end, it1] = G2_ls
 
     t_2_r, ρ_2_r = timeevolution.master_dynamic(
-        T[it1:end], L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]), input_output)
+        T[it1:end],
+        L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]),
+        input_output,
+    )
 
     # reflection
-    G2_ls_r = real.([expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)])
+    G2_ls_r = real.([
+        expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)
+    ])
     G2_ref[it1, it1:end] = G2_ls_r
     G2_ref[it1:end, it1] = G2_ls_r
 end

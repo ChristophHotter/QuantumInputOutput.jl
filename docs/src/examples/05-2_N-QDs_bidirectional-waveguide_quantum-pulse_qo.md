@@ -46,7 +46,7 @@ Tend = 3t0
 T = [0:0.005:1;]*Tend
 ΔT = T[2]-T[1]
 # u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
-u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
+u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp(-(t - t0)^2 / (2*σt^2))
 
 gu_t = u_to_gu(u1, T)
 nothing # hide
@@ -62,11 +62,11 @@ G_L(i) = SLHqo(1, √(γLn[i]) * σ(i, 1, 2), 0*one(b))
 
 # Cascade right-moving channel
 # G_R_t = G_d ▷ cascade([G_R(i) ▷ G_ϕ(i, i + 1) for i=1:N-1]...) ▷ G_R(N) # for N > 1 # hide
-G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
+G_R_t = G_u ▷ G_R(1) ▷ G_ϕ(1, 2) ▷ G_R(2)
 
 # Cascade left-moving channel (reverse order)
 # cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
-G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1)
+G_L_t = G_L(2) ▷ G_ϕ(1, 2) ▷ G_L(1)
 
 G_t = G_R_t ⊞ G_L_t
 nothing # hide
@@ -134,10 +134,7 @@ using InteractiveUtils
 versioninfo()
 
 using Pkg
-Pkg.status(
-    ["QuantumInputOutput", "QuantumOptics", "PyPlot"],
-    mode = PKGMODE_MANIFEST,
-)
+Pkg.status(["QuantumInputOutput", "QuantumOptics", "PyPlot"], mode = PKGMODE_MANIFEST)
 ````
 
 ---

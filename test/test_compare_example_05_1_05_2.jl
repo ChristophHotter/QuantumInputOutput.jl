@@ -13,7 +13,7 @@ using Test
     Tend = 3t0
     T = collect(0.0:0.005:1.0) .* Tend
     # u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2))
-    u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp( -(t - t0)^2 / (2*σt^2) )
+    u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp(-(t - t0)^2 / (2*σt^2))
     gu_t = u_to_gu(u1, T)
 
     # -------- Example 05-1 style (symbolic -> numeric) --------
@@ -56,9 +56,9 @@ using Test
 
     ba = NLevelBasis(2)
     b = tensor([ba for _ = 1:N]...)
-    H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-    L_R_QO = translate(L_R, b; parameter=dict_p, time_parameter=dict_p_t)
-    L_L_QO = translate(L_L, b; parameter=dict_p, time_parameter=dict_p_t)
+    H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_R_QO = translate(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_L_QO = translate(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
     σ_qo(α, i, j) = translate(σ(α, i, j), b)
     J_add = [√(γ_add[i]) * σ_qo(i, 1, 2) for i = 1:N]

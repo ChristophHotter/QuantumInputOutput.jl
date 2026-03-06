@@ -59,14 +59,14 @@ Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ`, width `σ`,
 
 Returns a callable `t -> g_u(t)`.
 """
-function u_to_gu_Gauss(τ, σ; δ=0) # slower than u_to_gu
+function u_to_gu_Gauss(τ, σ; δ = 0) # slower than u_to_gu
     if δ==0 # type stable
-        u = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 )
+        u = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2)
     else
-        u = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 ) * exp(1im*δ*t)
+        u = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2) * exp(1im*δ*t)
     end
     ∫u_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    f = t_ -> u(t_)' / √(abs(1 - ∫u_2_t(t_)) + _ϵu) 
+    f = t_ -> u(t_)' / √(abs(1 - ∫u_2_t(t_)) + _ϵu)
     return f
 end
 """
@@ -78,14 +78,14 @@ Compute ``g_v(t)`` for a Gaussian output mode `v(t)` with delay `τ`, width `σ`
 
 Returns a callable `t -> g_v(t)`.
 """
-function v_to_gv_Gauss(τ, σ; δ=0) # slower than v_to_gv
+function v_to_gv_Gauss(τ, σ; δ = 0) # slower than v_to_gv
     if δ==0 # type stable
-        v = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 )
+        v = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2)
     else
-        v = t -> 1/(√(σ)*π^(1/4)) *exp( -0.5*(t - τ)^2/σ^2 ) * exp(1im*δ*t)
+        v = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2) * exp(1im*δ*t)
     end
-    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ)) 
-    f = t_ -> -v(t_)' / √(∫v_2_t(t_) + _ϵv) 
+    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
+    f = t_ -> -v(t_)' / √(∫v_2_t(t_) + _ϵv)
     return f
 end
 
@@ -101,20 +101,21 @@ output cavity after the system.
 
 All kwargs are passed on to the ODE solver.     
 """
-function v_eff(v_fcts, gv_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function v_eff(v_fcts, gv_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
-        for j = 1:i-1
-            dα[j] = -gv_fcts[j](t) * (v_fcts[i](t) +
-                sum((gv_fcts[k](t))' * α[k] for k = 1:j-1; init = 0.0)) -
+        for j = 1:(i-1)
+            dα[j] =
+                -gv_fcts[j](t) *
+                (v_fcts[i](t) + sum((gv_fcts[k](t))' * α[k] for k = 1:(j-1); init = 0.0)) -
                 0.5 * abs2(gv_fcts[j](t)) * α[j]
         end
     end
     u0 = zeros(ComplexF64, i-1)
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_outputs_α, u0, tspan)
-    sol_α = solve(prob, alg; kwargs...) 
-    v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
+    sol_α = solve(prob, alg; kwargs...)
+    v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
     return v_i_im1
 end
 v_eff(v_fcts, T_ls, i) = v_eff(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_ls, i)
@@ -131,12 +132,13 @@ input cavity before the system.
 
 All kwargs are passed on to the ODE solver.   
 """
-function u_eff(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function u_eff(u_fcts, gu_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
-        for j = 1:i-1
-            dα[j] = -gu_fcts[j](t) * (u_fcts[i](t) -
-                sum((gu_fcts[i](t))' * α[k] for k = 1:j-1; init = 0.0)) +
+        for j = 1:(i-1)
+            dα[j] =
+                -gu_fcts[j](t) *
+                (u_fcts[i](t) - sum((gu_fcts[i](t))' * α[k] for k = 1:(j-1); init = 0.0)) +
                 0.5 * abs2(gu_fcts[j](t)) * α[j]
         end
         # 2 Typos in PRA2020-Kiilerich Eq.(A15): last term "-" → "+" and |g_ui|² → |g_uj|²
@@ -145,7 +147,7 @@ function u_eff(u_fcts, gu_fcts, T_ls, i; alg=Tsit5(), kwargs...) # TODO: v_data,
     tspan = (T_ls[1], T_ls[end])
     prob = ODEProblem(multiple_inputs_α, u0, tspan)
     sol_α = solve(prob, alg; kwargs...)
-    u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:i-1)
+    u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
     return u_i_im1
 end
 u_eff(u_fcts, T_ls, i) = u_eff(u_fcts, [u_to_gu(u_, T_ls) for u_ in u_fcts], T_ls, i)
@@ -172,7 +174,8 @@ function uv_to_gout(u::Vector, v::Vector, T::Vector)
     return t -> gout_int(t)
 end
 uv_to_gout(u::Function, v::Function, T::Vector) = uv_to_gout(u.(T), v.(T), T)
-uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gout(u.(T), v.(T), T)
+uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
+    uv_to_gout(u.(T), v.(T), T)
 
 """
     uv_to_gin(u, v, T)
@@ -196,4 +199,5 @@ function uv_to_gin(u::Vector, v::Vector, T::Vector)
     return t -> gin_int(t)
 end
 uv_to_gin(u::Function, v::Function, T::Vector) = uv_to_gin(u.(T), v.(T), T)
-uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) = uv_to_gin(u.(T), v.(T), T)
+uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
+    uv_to_gin(u.(T), v.(T), T)

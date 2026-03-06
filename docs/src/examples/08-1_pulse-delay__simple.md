@@ -60,7 +60,7 @@ nothing # hide
 σ = 1.0
 tp = 6*σ
 τ = 0.5σ # pulse delay
-u(t) = 1/(√(σ)*π^(1/4)) * exp( -(t - tp)^2 / (2*σ^2) )
+u(t) = 1/(√(σ)*π^(1/4)) * exp(-(t - tp)^2 / (2*σ^2))
 u_del(t_) = u(t_ - τ)
 
 Tend = 2tp + τ
@@ -84,12 +84,12 @@ bd = FockBasis(n)
 bv = FockBasis(n)
 b = bu ⊗ bd ⊗ bv
 
-H_QO = translate(H, b; time_parameter=dict_p_t)
-L_QO = [translate(L[i], b; time_parameter=dict_p_t) for i=1:length(L)]
+H_QO = translate(H, b; time_parameter = dict_p_t)
+L_QO = [translate(L[i], b; time_parameter = dict_p_t) for i = 1:length(L)]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
-    Jt = [L_QO[i](t) for i=1:length(L_QO)]
+    Jt = [L_QO[i](t) for i = 1:length(L_QO)]
     return Ht, Jt, dagger.(Jt)
 end
 nothing # hide
@@ -113,10 +113,10 @@ nothing # hide
 
 ````@example 08-1_pulse-delay__simple
 close("delay short pulse") # hide
-figure("delay short pulse", figsize=(5,3))
-plot(T, nu, label=L"\langle a_u^\dagger a_u \rangle")
-plot(T, nd, label=L"\langle a_d^\dagger a_d \rangle")
-plot(T, nv, label=L"\langle a_v^\dagger a_v \rangle")
+figure("delay short pulse", figsize = (5, 3))
+plot(T, nu, label = L"\langle a_u^\dagger a_u \rangle")
+plot(T, nd, label = L"\langle a_d^\dagger a_d \rangle")
+plot(T, nv, label = L"\langle a_v^\dagger a_v \rangle")
 xlabel("time")
 ylabel("mean photon number")
 grid(true)
@@ -139,10 +139,10 @@ G_d_in = SLH(S2, [gin*ad, 0], 0)
 H_ud = get_hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
-M(i,j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = cnumber("M_{$(i)$(j)}")
 a0_ls = [au, ad]
 la = length(a0_ls)
-a_int_ls = [sum(M(i,j)*a0_ls[j] for j=1:la) for i=1:la]
+a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
 
 int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; adjoint.(a_int_ls)])
 nothing # hide
@@ -161,7 +161,7 @@ L_int_sym = simplify.(substitute_operators.(L, Ref(int_dict)))
 σ = 1.0
 tp = 6*σ
 τ = 6σ # pulse delay
-u(t) = 1/(√(σ)*π^(1/4)) * exp( -(t - tp)^2 / (2*σ^2) )
+u(t) = 1/(√(σ)*π^(1/4)) * exp(-(t - tp)^2 / (2*σ^2))
 u_del(t_) = u(t_ - τ)
 
 Tend = 2tp + τ
@@ -180,8 +180,8 @@ nothing # hide
 A_ud = interaction_picture_A_2modes(gu_, gin_)
 M_t = interaction_picture_M(A_ud, T)
 
-M_ls = [M(i,j) for i=1:la for j=1:la]
-M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 nothing # hide
 
 p_t_sym = [gu, gin, gout, gv, M_ls...]
@@ -192,10 +192,15 @@ au_int = destroy(bu) ⊗ one(bv)
 # This is amazing! # hide
 ad_int = one(bu ⊗ bv)
 av_int = one(bu) ⊗ destroy(bv)
-operators = Dict( [au, au', ad, ad', av, av'] .=>  [au_int, au_int', ad_int, ad_int', av_int, av_int'])
+operators = Dict(
+    [au, au', ad, ad', av, av'] .=> [au_int, au_int', ad_int, ad_int', av_int, av_int'],
+)
 
-H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int, operators)
-L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int, operators) for i=1:length(L_int_sym)]
+H_int_QO = translate(H_int_sym, b; time_parameter = dict_p_t_int, operators)
+L_int_QO = [
+    translate(L_int_sym[i], b; time_parameter = dict_p_t_int, operators) for
+    i = 1:length(L_int_sym)
+]
 # H_int_QO = translate(H_int_sym, b; time_parameter=dict_p_t_int) # hide
 # L_int_QO = [translate(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
 nothing # hide
@@ -204,11 +209,11 @@ nothing # hide
 ````@example 08-1_pulse-delay__simple
 function input_output_int(t, ρ)
     Ht = H_int_QO(t)
-    Jt = [L_int_QO[i](t) for i=1:length(L_int_QO)]
+    Jt = [L_int_QO[i](t) for i = 1:length(L_int_QO)]
     return Ht, Jt, dagger.(Jt)
 end
 
-ψ0_int = fockstate(bu,3) ⊗ fockstate(bv,0)
+ψ0_int = fockstate(bu, 3) ⊗ fockstate(bv, 0)
 t_int, ρt_int = timeevolution.master_dynamic(T, ψ0_int, input_output_int)
 
 nu_int = real.(expect(dagger(au_int)*au_int, ρt_int))
@@ -223,10 +228,10 @@ We can see that the delayed pulse is perfectly absorbed.
 
 ````@example 08-1_pulse-delay__simple
 close("delay int. picture") # hide
-figure("delay int. picture", figsize=(5,3))
-plot(T, nu_int, label=L"\langle a_u^\dagger a_u \rangle_{IP}")
+figure("delay int. picture", figsize = (5, 3))
+plot(T, nu_int, label = L"\langle a_u^\dagger a_u \rangle_{IP}")
 # plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
-plot(T, nv_int, label=L"\langle a_v^\dagger a_v \rangle_{IP}")
+plot(T, nv_int, label = L"\langle a_v^\dagger a_v \rangle_{IP}")
 xlabel("time")
 ylabel("mean photon number")
 grid(true)

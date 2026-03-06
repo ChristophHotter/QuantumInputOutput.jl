@@ -27,7 +27,7 @@ h = hu ⊗ hd1 ⊗ hd2 ⊗ hs
 au = Destroy(h, :au, 1)
 ad1 = Destroy(h, :ad_1, 2)
 ad2 = Destroy(h, :ad_2, 3)
-σ(i,j) = Transition(h, :σ, i, j, 4)
+σ(i, j) = Transition(h, :σ, i, j, 4)
 
 ## symbolic parameters
 @rnumbers γ Δ r t
@@ -45,7 +45,7 @@ S_bs = [r t; t -r]
 G_bs = SLH(S_bs, [0, 0], 0)
 
 I2 = Matrix(I, 2, 2)
-G_u_bs = concatenate(G_u ▷ G_bs, SLH(I2, [0,0], 0))
+G_u_bs = concatenate(G_u ▷ G_bs, SLH(I2, [0, 0], 0))
 
 I4 = Matrix(I, 4, 4)
 G_d1_d2 = SLH(I4, [gd1in*ad1, gd2in*ad2, gd1out*ad1, gd2out*ad2], 0) # input at port 1 & 2, output at port 3 & 4
@@ -55,8 +55,8 @@ nothing #hide
 
 #
 
-L_atom = [0, 0, √(γ/2)*σ(1,2), √(γ/2)*σ(1,2)]
-G_atom = SLH(I4, L_atom, Δ*σ(2,2))
+L_atom = [0, 0, √(γ/2)*σ(1, 2), √(γ/2)*σ(1, 2)]
+G_atom = SLH(I4, L_atom, Δ*σ(2, 2))
 
 G_u_bs_d1_d2_atom = G_u_bs_d1_d2 ▷ G_atom
 H = get_hamiltonian(G_u_bs_d1_d2_atom)
@@ -69,10 +69,10 @@ H_pulse = G_u_bs_d1_d2.hamiltonian
 H_int_ = simplify(H - H_pulse)
 
 ## symbolic coefficient matrix $M(t)$
-M(i,j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = cnumber("M_{$(i)$(j)}")
 a_ls = [au, ad1, ad2]
 la = length(a_ls)
-a_int_ls = [sum(M(i,j)*a_ls[j] for j=1:la) for i=1:la]
+a_int_ls = [sum(M(i, j)*a_ls[j] for j = 1:la) for i = 1:la]
 int_dict = Dict(a_ls .=> a_int_ls)
 
 
@@ -100,11 +100,11 @@ n = 5#9
 tw = π^(3/2) / (8*γ_*n)
 tp = 4*tw
 
-u(t) = 1/(√(tw)*π^(1/4)) * exp( -(t - tp)^2 / (2*tw^2) ) 
-ud1(t) = u(t-tp) 
-ud2(t) = u(t-tp-τ) 
+u(t) = 1/(√(tw)*π^(1/4)) * exp(-(t - tp)^2 / (2*tw^2))
+ud1(t) = u(t-tp)
+ud2(t) = u(t-tp-τ)
 
-Tend = 2tp + τ + 2tw 
+Tend = 2tp + τ + 2tw
 dt = tw/30
 T = [0:dt:Tend;]
 t1 = 2tp + τ + 2tw
@@ -116,22 +116,26 @@ gu_ = u_to_gu(u, T)
 gd1in_ = v_to_gv(u, T)
 gd1out_ = u_to_gu(ud1, T)
 gd2in_ = v_to_gv(u, T)
-gd2out_ =  u_to_gu(ud2, T)
-dict_p_t = Dict([gu, gd1in, gd1out, gd2in, gd2out] .=> [gu_, gd1in_, gd1out_, gd2in_, gd2out_])
+gd2out_ = u_to_gu(ud2, T)
+dict_p_t =
+    Dict([gu, gd1in, gd1out, gd2in, gd2out] .=> [gu_, gd1in_, gd1out_, gd2in_, gd2out_])
 nothing # hide
 
-function interaction_picture_A_3modes(g1, g2, g3) 
-    A(t) = 0.5 * [0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
+function interaction_picture_A_3modes(g1, g2, g3)
+    A(t) =
+        0.5 * [
+            0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
             -g2(t) * conj(g1(t)) 0 0;
-            -conj(g1(t)) * g3(t) 0 0]
+            -conj(g1(t)) * g3(t) 0 0
+        ]
     return A
 end
 
 A_ud = interaction_picture_A_3modes(gu_, gd1in_, gd2in_)
-M_t = interaction_picture_M(A_ud, T) 
+M_t = interaction_picture_M(A_ud, T)
 
-M_ls = [M(i,j) for i=1:la for j=1:la]
-M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 
 p_t_sym = [gu, gd1in, gd1out, gd2in, gd2out, M_ls...]
 p_t_num = [gu_, gd1in_, gd1out_, gd2in_, gd2out_, M_t_ls...]
@@ -149,8 +153,11 @@ b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
-H_QO_Δ(Δn) = translate(H_int, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t_int)
-L_QO_Δ(Δn) = [translate(L_int[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t_int) for i=1:length(L)]
+H_QO_Δ(Δn) = translate(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
+L_QO_Δ(Δn) = [
+    translate(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
+    i = 1:length(L)
+]
 # H_QO_Δ(Δn) = translate(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
 # L_QO_Δ(Δn) = [translate(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
 nothing # hide
@@ -160,7 +167,7 @@ nothing # hide
 
 #
 
-σ22_QO = translate(σ(2,2), b)
+σ22_QO = translate(σ(2, 2), b)
 au_QO = translate(au, b)
 ad1_QO = translate(ad1, b)
 ad2_QO = translate(ad2, b)
@@ -169,7 +176,12 @@ ad2_QO = translate(ad2, b)
 H_QO = H_QO_Δ(Δn)
 L_QO = L_QO_Δ(Δn)
 
-input_output = (t, ρ) -> (H_QO(t), [L_QO[i](t) for i in 1:length(L_QO)], [dagger(L_QO[i](t)) for i in 1:length(L_QO)])
+input_output =
+    (t, ρ) -> (
+        H_QO(t),
+        [L_QO[i](t) for i = 1:length(L_QO)],
+        [dagger(L_QO[i](t)) for i = 1:length(L_QO)],
+    )
 t_, ρt = timeevolution.master_dynamic(T, ψ0_fock, input_output)
 
 expect(au_QO'au_QO, ρt)
@@ -185,8 +197,8 @@ expect(σ22_QO, ρt[end])
 ## TODO: the simulation is correct; next step: use operators b1 and b2 to eliminate one mode (see paper, ask Victor)
 
 ## Detuning scan and excited-state population at t1.
-Δ_ls = range(-20γ_, 20γ_, length=80)
-Δ_ls = range(0γ_, 20γ_, length=40)
+Δ_ls = range(-20γ_, 20γ_, length = 80)
+Δ_ls = range(0γ_, 20γ_, length = 40)
 pop_fock = zeros(length(Δ_ls))
 pop_coh = zeros(length(Δ_ls))
 idx_t1 = findmin(abs.(T .- t1))[2]
@@ -199,7 +211,12 @@ for (it, Δn) in enumerate(Δ_ls)
     H_QO = H_QO_Δ(Δn)
     L_QO = L_QO_Δ(Δn)
 
-    input_output = (t, ρ) -> (H_QO(t), [L_QO[i](t) for i in 1:length(L_QO)], [dagger(L_QO[i](t)) for i in 1:length(L_QO)])
+    input_output =
+        (t, ρ) -> (
+            H_QO(t),
+            [L_QO[i](t) for i = 1:length(L_QO)],
+            [dagger(L_QO[i](t)) for i = 1:length(L_QO)],
+        )
 
     t_, ρt = timeevolution.master_dynamic([T[1], T[end]], ψ0_fock, input_output)
     # pop_fock[it] = real(expect(σ22_QO, ρt[idx_t1]))
@@ -216,7 +233,7 @@ nothing # hide
 pygui(true)
 close("ramsey-population") # hide
 figure("ramsey-population")
-plot(Δ_ls, pop_fock, label="Fock, n=$(n)")
+plot(Δ_ls, pop_fock, label = "Fock, n=$(n)")
 ## plot([-Δ_ls; Δ_ls], [pop_fock; pop_fock], label="Fock, n=$(n)")
 ## plot(Δ_ls, pop_coh, ls="--", label="coherent, ⟨n⟩=9")
 xlabel("detuning Δ/γ")

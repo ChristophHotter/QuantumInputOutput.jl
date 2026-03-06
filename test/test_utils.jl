@@ -20,8 +20,8 @@ using Test
     @test sum(abs.(gu_num2.(T) - gu_num.(T))) < 1e-9
     @test sum(abs.(gv_num2.(T) - gv_num.(T))) < 1e-9
 
-    gu_ana = u_to_gu_Gauss(τ, σ; δ=δ)
-    gv_ana = v_to_gv_Gauss(τ, σ; δ=δ)
+    gu_ana = u_to_gu_Gauss(τ, σ; δ = δ)
+    gv_ana = v_to_gv_Gauss(τ, σ; δ = δ)
 
     gv_err = maximum(abs.(gv_num.(T[2:end]) .- gv_ana.(T[2:end])))
     gu_err = maximum(abs.(gu_num.(T[2:end]) .- gu_ana.(T[2:end])))

@@ -23,8 +23,8 @@ hc1 = FockSpace(:c1)
 h = hu1 ⊗ hc1
 
 # symbolic operators
-au = Destroy(h,:a_u,1)
-c = Destroy(h,:c,2)
+au = Destroy(h, :a_u, 1)
+c = Destroy(h, :c, 2)
 
 # symbolic parameters
 @rnumbers γ Δ γ_p
@@ -56,13 +56,14 @@ L = get_lindblad(G_cas)[1] # only one Lindblad in this example
 γ_p_ = 1.5γ_
 Δ_ = 0.0
 
-p_sym = [γ , Δ , γ_p ]
+p_sym = [γ, Δ, γ_p]
 p_num = [γ_, Δ_, γ_p_]
 dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input pulse
-τ = 1.0; tp = 4τ
-u(t) = 1/(sqrt(τ)*π^(1/4)) * exp( -(t - tp)^2 / (2*τ^2) )
+τ = 1.0;
+tp = 4τ
+u(t) = 1/(sqrt(τ)*π^(1/4)) * exp(-(t - tp)^2 / (2*τ^2))
 T = [0:0.002:1;]*14τ
 ΔT = T[2] - T[1]
 
@@ -74,27 +75,27 @@ bu1 = FockBasis(1)
 bc1 = FockBasis(1)
 b = bu1 ⊗ bc1
 
-au_qo = to_numeric(au,b)
-c_qo = to_numeric(c,b)
+au_qo = to_numeric(au, b)
+c_qo = to_numeric(c, b)
 cdc_qo = c_qo'c_qo
 
 # translate to numeric Hamiltonian and Lindblad
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
+H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 ````
 
 We additionally include a cavity dephasing term and solve the dynamics.
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-function input_output(t,ρ)
+function input_output(t, ρ)
     H = H_QO(t)
     J = [L_QO(t), √(γ_p_)*cdc_qo]
     return H, J, dagger.(J)
 end;
 
 # time evolution
-ψ0 = fockstate(bu1,1) ⊗ fockstate(bc1,0)
+ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0)
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
 ````
@@ -109,11 +110,11 @@ nothing # hide
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 close("all") # hide
-figure("g1(t1,t2) matrix", figsize=(4.5,3.5))
-pcolormesh(T, T, real.(g1_m), cmap="inferno")
+figure("g1(t1,t2) matrix", figsize = (4.5, 3.5))
+pcolormesh(T, T, real.(g1_m), cmap = "inferno")
 xlabel(L"\gamma t_2")
 ylabel(L"\gamma t_1")
-colorbar(label=L"g^{(1)}(t_1,t_2)")
+colorbar(label = L"g^{(1)}(t_1,t_2)")
 tight_layout()
 gcf()
 ````
@@ -122,17 +123,17 @@ The eigenvalues and corresponding eigenvectors are sorted in ascending order, wh
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 F = eigen(g1_m)
-n_avg = round.(real.(F.values)*ΔT; digits=2)
+n_avg = round.(real.(F.values)*ΔT; digits = 2)
 modes = F.vectors
-v_t(i) = modes[:,end-i+1] / √(ΔT)
+v_t(i) = modes[:, end-i+1] / √(ΔT)
 nothing # hide
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 colors = ["blue", "red", "green", "black"]
 figure("modes")
-for i=1:4
-    plot(T, real.(v_t(i)), color=colors[i], label="n$(i)=$(n_avg[end-i+1])")
+for i = 1:4
+    plot(T, real.(v_t(i)), color = colors[i], label = "n$(i)=$(n_avg[end-i+1])")
 end
 xlabel("time (1/γ)")
 legend()

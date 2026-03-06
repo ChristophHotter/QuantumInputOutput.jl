@@ -13,10 +13,10 @@ function two_time_corr_matrix(T::Vector, ρt::Vector, f::Function, Ls::Function;
     ρ0_ = [Ls_ls[i] * ρt[i] for i = 1:l_T]
 
     g1_m = zeros(ComplexF64, l_T, l_T)
-    for it = 1:l_T-1
+    for it = 1:(l_T-1)
         τ_, ρ_bar_τ = timeevolution.master_dynamic(T[it:end], ρ0_[it], f; kwargs...)
 
-        g1 = [expect(Ls_ls_dag[it + i - 1], ρ_bar_τ[i]) for i = 1:length(τ_)]
+        g1 = [expect(Ls_ls_dag[it+i-1], ρ_bar_τ[i]) for i = 1:length(τ_)]
         g1_m[it, it:end] = g1
         g1_m[it:end, it] = adjoint.(g1)
     end
@@ -31,7 +31,7 @@ function two_time_corr_matrix(T::Vector, ρt::Vector, H, J::Vector, Ls; kwargs..
     ρ0_ = [Ls * ρt[i] for i = 1:l_T]
 
     g1_m = zeros(ComplexF64, l_T, l_T)
-    for it = 1:l_T-1
+    for it = 1:(l_T-1)
         τ_, ρ_bar_τ = timeevolution.master(T[it:end], ρ0_[it], H, J; kwargs...)
 
         g1 = [expect(Ls_dag, ρ_bar_τ[i]) for i = 1:length(τ_)]

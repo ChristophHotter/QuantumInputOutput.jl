@@ -21,17 +21,22 @@ This is needed if an operator is substitute by a `QMul` or `QAdd`, e.g.
 If `replace_adjoint=true`, the dictionary is extended with adjoint substitutions
 for all key/value pairs, i.e. `adjoint(key) => adjoint(value)`.
 """
-function substitute_operators(op, dict::Dict; replace_adjoint=true)
+function substitute_operators(op, dict::Dict; replace_adjoint = true)
     dict_ = replace_adjoint ? _extend_with_adjoint(dict) : dict
     return substitute(op, dict_)
 end
-function substitute_operators(op::SQA.QAdd, dict::Dict; replace_adjoint=true)
+function substitute_operators(op::SQA.QAdd, dict::Dict; replace_adjoint = true)
     dict_ = replace_adjoint ? _extend_with_adjoint(dict) : dict
-    return SQA.QAdd([substitute_operators(arg, dict_; replace_adjoint=false) for arg in op.arguments])
+    return SQA.QAdd([
+        substitute_operators(arg, dict_; replace_adjoint = false) for arg in op.arguments
+    ])
 end
-function substitute_operators(op::SQA.QMul, dict::Dict; replace_adjoint=true)
+function substitute_operators(op::SQA.QMul, dict::Dict; replace_adjoint = true)
     dict_ = replace_adjoint ? _extend_with_adjoint(dict) : dict
-    return substitute(op.arg_c, dict_)*prod([substitute(arg, dict::Dict) for arg ∈ op.args_nc])
+    return substitute(
+        op.arg_c,
+        dict_,
+    )*prod([substitute(arg, dict::Dict) for arg ∈ op.args_nc])
 end
 
 function _extend_with_adjoint(dict::Dict)

@@ -8,9 +8,8 @@ names = [
     "test_utils.jl"
 ]
 
-detected_tests = filter(
-    name->startswith(name, "test_") && endswith(name, ".jl"), readdir(".")
-)
+detected_tests =
+    filter(name->startswith(name, "test_") && endswith(name, ".jl"), readdir("."))
 
 unused_tests = setdiff(detected_tests, names)
 if length(unused_tests) != 0

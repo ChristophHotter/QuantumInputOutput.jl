@@ -35,7 +35,7 @@ using Test
     T_end = 12T_p
     σ = sqrt(0.5)*T_p
     # u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
-    u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp( -(t - 4σ)^2 / (2*σ^2) )
+    u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
     T = [0:0.004:1;]*T_end
     ΔT = T[2] - T[1]
 
@@ -47,8 +47,8 @@ using Test
     bv1 = FockBasis(2)
     b = bu1 ⊗ bc1 ⊗ bv1
 
-    H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-    L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
+    H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output_1(t, ρ)
         Ht = H_QO(t)
@@ -74,37 +74,37 @@ using Test
     g1_m = two_time_corr_matrix(T, ρt, input_output_1, Ls)
 
     F = eigen(g1_m)
-    n_avg = round.(real.(F.values)*ΔT; digits=3)
+    n_avg = round.(real.(F.values)*ΔT; digits = 3)
     modes = F.vectors
-    v_mode = (modes[:,end]) / sqrt(ΔT)
-    
+    v_mode = (modes[:, end]) / sqrt(ΔT)
+
     @test abs(n_avg[end] - 1) < 1e-2
     @test abs(n_avg[end-1]) < 1e-2
 
     # output mode
-    p_sym_2 = [γ , Δ ]
+    p_sym_2 = [γ, Δ]
     p_num_2 = [γ_, Δ_]
     dict_p_2 = Dict(p_sym_2 .=> p_num_2);
-    
+
     # time-dependent coupling for the output mode $v(t)$
     gv_t = v_to_gv(v_mode, T)
-    
+
     # gvc_t = t -> conj(gv_t(t))
     # dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
     dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
 
-    H_QO_2 = translate(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-    L_QO_2 = translate(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-    function input_output_2(t,ρ)
+    H_QO_2 = translate(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+    L_QO_2 = translate(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+    function input_output_2(t, ρ)
         H = H_QO_2(t)
         J = [L_QO_2(t)]
         return H, J, dagger.(J)
     end;
-    
+
     # time evolution for the system including the output cavity
     t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
-    
+
     n_v1_t = real.(expect(av_qo'*av_qo, ρt_2))
     @test abs(n_v1_t[end] - 1) < 1e-2
     @test abs(sum(n_v1_t .* abs2.(gv_t.(T)))*ΔT - 1) < 1e-2
-end   
+end

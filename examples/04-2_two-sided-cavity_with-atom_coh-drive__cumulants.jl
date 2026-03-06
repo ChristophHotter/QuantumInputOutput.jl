@@ -16,12 +16,12 @@ using PyPlot
 Natoms = 2
 
 hc = FockSpace(:cavity)
-ha(i) = NLevelSpace("a_$i",2)
-h = hc ⊗ tensor([ha(i) for i in 1:Natoms]...);
+ha(i) = NLevelSpace("a_$i", 2)
+h = hc ⊗ tensor([ha(i) for i = 1:Natoms]...);
 
-a = Destroy(h,:a,1) # cavity 
-σ(α,i,j) = Transition(h,"σ_$(α)",i,j,1+α) # two-level atom α
-∑σ(i,j) = sum(σ(α,i,j) for α=1:Natoms) # collective atomic operator
+a = Destroy(h, :a, 1) # cavity 
+σ(α, i, j) = Transition(h, "σ_$(α)", i, j, 1+α) # two-level atom α
+∑σ(i, j) = sum(σ(α, i, j) for α = 1:Natoms) # collective atomic operator
 nothing # hide 
 
 # ## Empty two-sided cavity
@@ -30,10 +30,10 @@ nothing # hide
 
 G_d = SLH(1, E, 0) # classical drive
 H_cavity = -Δ*a'a
-G_c_L = SLH(1,[√(κ_L)*a], H_cavity)
+G_c_L = SLH(1, [√(κ_L)*a], H_cavity)
 
 G_cav_L_drive = G_d ▷ G_c_L
-G_c_R = SLH(1,[√(κ_R)*a], 0)
+G_c_R = SLH(1, [√(κ_R)*a], 0)
 
 G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R
 nothing # hide 
@@ -63,28 +63,29 @@ En = 0.5
 κ_Rn = 1.0
 κ_Ln = 1.0
 Δn = 0.0
-Δn_ls = [-5.0:0.1:5.0;]; lΔ=length(Δn_ls)
+Δn_ls = [-5.0:0.1:5.0;];
+lΔ=length(Δn_ls)
 
 p_sym = [E, κ_R, κ_L, Δ]
 p_num = [En, κ_Rn, κ_Ln, Δn]
 dict_p1 = Dict(p_sym .=> p_num)
 
 ## initial state
-u0 = [0.0im] 
+u0 = [0.0im]
 nothing # hide
 
 #
 
 ## numerical system
 T = [0:0.01:1;]*20
-@named sys_a = System(eqs_a) 
+@named sys_a = System(eqs_a)
 dict = merge(Dict(p_sym .=> p_num), Dict(unknowns(sys_a) .=> u0))
 prob_a = ODEProblem(sys_a, dict, (0.0, T[end]))
 nothing # hide
 
 #
 
-sol_a = solve(prob_a, Tsit5(); saveat=T)
+sol_a = solve(prob_a, Tsit5(); saveat = T)
 nothing # hide
 
 #
@@ -98,15 +99,15 @@ nothing # hide
 
 close("time evolution") # hide
 figure("time evolution")
-subplot(2,1,1)
+subplot(2, 1, 1)
 plot(T, n_cavity)
 xlabel("t")
 ylabel("cavity photons")
 grid(true)
 
-subplot(2,1,2)
-plot(T, n_ref; label="reflection")
-plot(T, n_trans; label="transmission", ls="--")
+subplot(2, 1, 2)
+plot(T, n_ref; label = "reflection")
+plot(T, n_trans; label = "transmission", ls = "--")
 xlabel("t")
 ylabel("intensity rate")
 grid(true)
@@ -120,11 +121,11 @@ dict_p_Δ(Δn) = merge(Dict(p_sym .=> [En, κ_Rn, κ_Ln, Δn]), Dict(unknowns(sy
 n_ref_Δ = zeros(lΔ)
 n_trans_Δ = zeros(lΔ)
 
-for it=1:lΔ
+for it = 1:lΔ
     Δn_ = Δn_ls[it]
     prob_ = ODEProblem(sys_a, dict_p_Δ(Δn_), (0.0, T[end]))
-    sol_ = solve(prob_, Tsit5(); saveat=T)
-        
+    sol_ = solve(prob_, Tsit5(); saveat = T)
+
     n_ref_Δ[it] = abs2.(get_solution(sol_, √(κ_Ln)*a) .+ En)[end]
     n_trans_Δ[it] = abs2.(get_solution(sol_, √(κ_Ln)*a))[end]
 end
@@ -134,8 +135,8 @@ nothing # hide
 
 close("spectrum") # hide
 figure("spectrum")
-plot(Δn_ls, n_ref_Δ; label="reflection")
-plot(Δn_ls, n_trans_Δ; label="transmission", ls="--")
+plot(Δn_ls, n_ref_Δ; label = "reflection")
+plot(Δn_ls, n_trans_Δ; label = "transmission", ls = "--")
 xlabel("Δ")
 grid(true)
 legend()
@@ -149,7 +150,7 @@ gcf()
 @register_symbolic Et(t)
 
 G_d_t = SLH(1, Et(t), 0)
-H_ac = -Δ*(a'a + ∑σ(2,2)) + g*(a'∑σ(1,2) + a*∑σ(2,1))
+H_ac = -Δ*(a'a + ∑σ(2, 2)) + g*(a'∑σ(1, 2) + a*∑σ(2, 1))
 G_ac = SLH(1, √κ_L*a, H_ac)
 G_ac_drive = (G_d_t ▷ G_ac) ⊞ SLH(1, √κ_R*a, 0)
 nothing # hide
@@ -168,8 +169,8 @@ L2_R = G_ac_drive.lindblad[2]
 
 # We derive the equations of motion for system with a second-order mean-field approximation. 
 
-J_add = [√(γ)*σ(α,1,2) for α=1:Natoms]
-eqs2 = meanfield([a'a, σ(1,2,2)], H2, [L2_L, L2_R, J_add...]; order=2)
+J_add = [√(γ)*σ(α, 1, 2) for α = 1:Natoms]
+eqs2 = meanfield([a'a, σ(1, 2, 2)], H2, [L2_L, L2_R, J_add...]; order = 2)
 
 #
 
@@ -191,14 +192,14 @@ p_num2 = [κ_Rn2, κ_Ln2, Δn2, gn2, γn]
 Tp = 4σp # pulse peak 
 Tend = 3Tp
 α0 = √(0.1) # √ of total photon number
-Ω0 = α0*2*√(κ_Ln2)/(π^(1/4)*√(σp)) 
-Ω1(t) = Ω0/2*exp( -(t-Tp)^2 / (2*σp^2) )
+Ω0 = α0*2*√(κ_Ln2)/(π^(1/4)*√(σp))
+Ω1(t) = Ω0/2*exp(-(t-Tp)^2 / (2*σp^2))
 Et(t) = Ω1(t)/√(κ_Ln2)
 
 T2 = [0:0.001:1;]*Tend
 ΔT = T2[2] - T2[1]
-n_pulse = round(sum(abs2.(Et.(T2)))*ΔT, digits=7)
-@show n_pulse 
+n_pulse = round(sum(abs2.(Et.(T2)))*ΔT, digits = 7)
+@show n_pulse
 
 dict_p2 = Dict(p_sym2 .=> p_num2)
 nothing # hide
@@ -208,8 +209,8 @@ nothing # hide
 ## initial state
 bc1 = FockBasis(4)
 ba = NLevelBasis(2)
-b = bc1 ⊗ tensor([ba for i=1:Natoms]...)
-ψ0 = LazyKet(b, (fockstate(bc1, 0), [nlevelstate(ba, 1) for i=1:Natoms]...))
+b = bc1 ⊗ tensor([ba for i = 1:Natoms]...)
+ψ0 = LazyKet(b, (fockstate(bc1, 0), [nlevelstate(ba, 1) for i = 1:Natoms]...))
 u0_2 = initial_values(eqs2_c, ψ0) # initial state
 nothing # hide
 
@@ -222,19 +223,19 @@ nothing # hide
 
 #
 
-sol2 = solve(prob2, Tsit5(); saveat=T2)
+sol2 = solve(prob2, Tsit5(); saveat = T2)
 nothing # hide
 
 #
 
-n_ref2 = abs2.(get_solution(sol2, √(κ_Ln2)*a) + Et.(T2)) 
-n_trans2 = abs2.(get_solution(sol2, √(κ_Rn2)*a)) 
+n_ref2 = abs2.(get_solution(sol2, √(κ_Ln2)*a) + Et.(T2))
+n_trans2 = abs2.(get_solution(sol2, √(κ_Rn2)*a))
 nothing # hide
 
 close("time evolution") # hide
 figure("time evolution")
-plot(T2, n_trans2, label="transmission = $(round(sum(n_trans2)*ΔT/n_pulse*100))%")
-plot(T2, n_ref2, ls="--", label="reflection = $(round(sum(n_ref2)*ΔT/n_pulse*100))%")
+plot(T2, n_trans2, label = "transmission = $(round(sum(n_trans2)*ΔT/n_pulse*100))%")
+plot(T2, n_ref2, ls = "--", label = "reflection = $(round(sum(n_ref2)*ΔT/n_pulse*100))%")
 xlabel("t")
 legend()
 grid(true)
@@ -252,6 +253,14 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumCumulants", "ModelingToolkit", "OrdinaryDiffEq", "QuantumOpticsBase", "PyPlot"], 
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumCumulants",
+        "ModelingToolkit",
+        "OrdinaryDiffEq",
+        "QuantumOpticsBase",
+        "PyPlot",
+    ],
     mode = PKGMODE_MANIFEST,
 )

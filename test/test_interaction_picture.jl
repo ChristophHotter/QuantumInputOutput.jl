@@ -84,8 +84,8 @@ using Test
     p_t_num = [gu_t, gv_t, M_t_ls...]
     dict_p_t = Dict(p_t_sym .=> p_t_num)
 
-    H_int_QO = translate(H_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
-    L_QO = translate(L_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
+    H_int_QO = translate(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = translate(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output_I(t, ρ)
         Ht = H_int_QO(t)
@@ -108,8 +108,8 @@ using Test
     dict_p_s = Dict(γ_sym => γ)
     dict_p_t_s = Dict(gu_sym => gu_t, gv_sym => gv_t)
 
-    H_QO = translate(H, b; parameter=dict_p_s, time_parameter=dict_p_t_s)
-    L_QO_S = translate(L, b; parameter=dict_p_s, time_parameter=dict_p_t_s)
+    H_QO = translate(H, b; parameter = dict_p_s, time_parameter = dict_p_t_s)
+    L_QO_S = translate(L, b; parameter = dict_p_s, time_parameter = dict_p_t_s)
 
     function input_output_S(t, ρ)
         Ht = H_QO(t)
@@ -125,8 +125,10 @@ using Test
     # Small gamma limit
     γ_small = 1e-4
     dict_p_small = Dict(γ_sym => γ_small)
-    H_int_QO_small = translate(H_int_sym, b; parameter=dict_p_small, time_parameter=dict_p_t)
-    L_QO_small = translate(L_int_sym, b; parameter=dict_p_small, time_parameter=dict_p_t)
+    H_int_QO_small =
+        translate(H_int_sym, b; parameter = dict_p_small, time_parameter = dict_p_t)
+    L_QO_small =
+        translate(L_int_sym, b; parameter = dict_p_small, time_parameter = dict_p_t)
 
     function input_output_I_small(t, ρ)
         Ht = H_int_QO_small(t)

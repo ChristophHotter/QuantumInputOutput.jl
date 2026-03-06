@@ -59,10 +59,10 @@ To do so, we first subtract $H_{uv}$ from $H$ and then replace the virtual cavit
 H_int_sym_ = simplify(H - H_uv)
 
 # symbolic coefficient matrix $M(t)$
-M(i,j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = cnumber("M_{$(i)$(j)}")
 a0_ls = [au_sym, av_sym]
 la = length(a0_ls)
-a_int_ls = [sum(M(i,j)*a0_ls[j] for j=1:la) for i=1:la]
+a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
 
 # substitute interaction picture operators
 int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; adjoint.(a_int_ls)])
@@ -102,8 +102,8 @@ M_t = interaction_picture_M(A_uv, T)
 
 # constant and time-dependent parameters
 dict_p = Dict(γ => γ_)
-M_ls = [M(i,j) for i=1:la for j=1:la]
-M_t_ls = [t -> M_t(t)[i,j] for i=1:la for j=1:la]
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 p_t_sym = [gu, gv, M_ls...]
 p_t_num = [gu_t, gv_t, M_t_ls...]
 dict_p_t = Dict(p_t_sym .=> p_t_num)
@@ -117,8 +117,8 @@ ba = NLevelBasis(2)
 bv = FockBasis(5)
 b = bu ⊗ ba ⊗ bv
 
-H_int_QO = translate(H_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = translate(L_int_sym, b; parameter=dict_p, time_parameter=dict_p_t)
+H_int_QO = translate(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     Ht = H_int_QO(t)
@@ -182,7 +182,13 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "QuantumOptics", "SecondQuantizedAlgebra", "SymbolicUtils", "PyPlot"],
+    [
+        "QuantumInputOutput",
+        "QuantumOptics",
+        "SecondQuantizedAlgebra",
+        "SymbolicUtils",
+        "PyPlot",
+    ],
     mode = PKGMODE_MANIFEST,
 )
 ````
