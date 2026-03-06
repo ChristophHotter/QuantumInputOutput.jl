@@ -34,7 +34,7 @@ Ein = rnumber("E_{in}") # coherent drive in the right-moving input
 nothing # hide
 ````
 
-We use the symbolic operators and paramters to define the SLH triples, cascade the left and right moving channels, and concatenate them to obtain the Hamiltonian and Lindblad for the system.
+We use the symbolic operators and parameters to define the SLH triples, cascade the left and right moving channels, and concatenate them to obtain the Hamiltonian and Lindblad for the system.
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
 G_d = SLH(1, Ein, 0) # coherent drive in the right-moving input

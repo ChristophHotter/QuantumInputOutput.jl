@@ -113,7 +113,7 @@ end
 
 function translate(arg_c_, b::QuantumOpticsBase.Basis; 
     parameter=Dict(), time_parameter=Dict(), level_map=nothing, operators=Dict(), op_type=sparse)  
-    # should only be needed for numbers and symbolic paramters
+    # should only be needed for numbers and symbolic parameters
 
     arg_c = substitute(arg_c_, parameter)
     one_b = _translate_one(b, operators, op_type)

@@ -2,7 +2,7 @@
 
 # We simulate the emission of an atom stimulated by an incident quantum pulse. In particular, how efficiently such stimulated emission occurs into the mode occupied by the incident photons. This system is described in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). The initially excited atom has a decay rate $\Gamma$ and the incident quantum pulse is a single photon in an exponentially decaying mode $u(t) = \sqrt{\Gamma} e^{-\Gamma t/2}$. 
 
-# We start by loading the packages and defining the symbolic operators and paramters. 
+# We start by loading the packages and defining the symbolic operators and parameters. 
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -27,7 +27,7 @@ av = Destroy(h,:a_v,3)
 gv = rnumber("g_v")
 nothing # hide
 
-# We use the symbolic operators and paramters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
+# We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
 G_u = SLH(1, √(Γ)*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*σ(1,2), Δ*σ(2,2)) # two-level atom
@@ -61,7 +61,7 @@ T = [0.001:0.001:1;]*4.0
 ΔT = T[2] - T[1]
 nothing # hide
 
-# We use the function `translate()` to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic()` in  QuantumOptics.jl. 
+# We use the function [`translate`](@ref) to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic` in  QuantumOptics.jl. 
 
 ## numeric bases
 bu1 = FockBasis(1)

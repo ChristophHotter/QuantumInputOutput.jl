@@ -28,7 +28,7 @@ gu, Δ, γ = rnumbers("g_u Δ γ")
 gv = cnumber("g_v")
 nothing # hide
 
-# We use the symbolic operators and paramters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
+# We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
 G_u = SLH(1, gu*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
@@ -80,9 +80,9 @@ L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
 nothing # hide
 
 
-# To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master_dynamic()`. 
+# To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master_dynamic`. 
 
-## time-depedent function for timeevolution.master_dynamic() that returns H(t), J(t) and Jd(t)
+## time-depedent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
 function input_output_1(t,ρ)
     H = H_QO(t)
     J = [L_QO(t)]

@@ -29,7 +29,7 @@ av1 = Destroy(h,:av_2,4)
 @rnumbers γ Δ
 gu1, gu2, gv1 = cnumbers("gu_1 gu_2 gv_1"); 
 
-# We use the symbolic operators and paramters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
+# We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
 G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
 G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
@@ -169,7 +169,7 @@ g_sym = [gu1, gu2, gv1]
 g_num = [gu1_, gu2_, gv1_]
 dict_p_t_out = Dict(g_sym .=> g_num)
 
-## dictionary for the constant paramters
+## dictionary for the constant parameters
 p_sym_out = [γ , Δ ]
 p_num_out = [γ_, Δ_]
 dict_p_out = Dict(p_sym_out .=> p_num_out)
