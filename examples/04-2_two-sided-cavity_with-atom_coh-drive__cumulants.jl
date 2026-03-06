@@ -1,6 +1,6 @@
 # # Mean-field Two-sided Cavity
 
-# Here we show how to solve the dynamics of the example `Two-sided Cavity with Atoms` in the Heisenberg picture with a higher-order mean-field approach (cumulant expansion), which is done with the package `QuantumCumulants.jl`.    
+# Here we show how to solve the dynamics of the example `Two-sided Cavity with Atoms` in the Heisenberg picture with a higher-order mean-field approach (cumulant expansion), which is done with the package [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl).    
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra

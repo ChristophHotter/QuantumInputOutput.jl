@@ -2,7 +2,7 @@
 
 - [ ] clean up code (types, ...)
 - [ ] Docu review
-  - [ ] Implementation.md more code snippet 
+  - [x] Implementation.md more code snippet 
   - [ ] concatenate docstring
   - [x] check interaction_picture_A_4modes docstrings
   - [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation

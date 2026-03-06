@@ -83,7 +83,7 @@ b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 ````
 
-We now use the function `translate` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
+We now use the function [`translate`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
@@ -291,4 +291,3 @@ Pkg.status(
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-

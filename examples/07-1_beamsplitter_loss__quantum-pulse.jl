@@ -75,7 +75,7 @@ t_ = sqrt(1 - η) # transmission
 dict_p = Dict([t,r] .=> [t_, r_])
 nothing # hide
 
-# As usual, we translate the symbolic system into numeric expressions and solve the dynamics with `QuantumOptics.jl`. 
+# As usual, we translate the symbolic system into numeric expressions and solve the dynamics with [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). 
 
 ## numeric basis
 n_ph = 4

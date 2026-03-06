@@ -121,7 +121,7 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 
 The functions [`interaction_picture_A_2modes`](@ref), [`interaction_picture_A_3modes`](@ref), and [`interaction_picture_A_4modes`](@ref) build the coupling matrices for two, three and four modes. For two equal modes ($u(t) = v(t)$) the analytic solution of $M(t)$ is provided by [`interaction_picture_M_2modes_equal`](@ref).
 
-Using the interaction picture for scattering with a Fock state $| n=20 \rangle$ on a two-level system, is  demonstrated in the example [Interaction Picture Scattering with a Quantum Pulse](06-1_interaction-picture__PRA2023_107-013706_fig2). 
+Using the interaction picture for scattering with a Fock state $| n=20 \rangle$ on a two-level system, is  demonstrated in the example [Interaction Picture Scattering with a Quantum Pulse](examples/06-1_interaction-picture__PRA2023_107-013706_fig2.md). 
 
 ## Pulse delay
 

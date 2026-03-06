@@ -154,7 +154,7 @@ subplot(2, 1, 1)
 plot(T, n_u, label = L"\langle n_u \rangle")
 xlabel("tγ")
 ylabel("excitations")
-ylim(17, 20.2)
+ylim(17.8, 20.2)
 grid(true)
 legend()
 

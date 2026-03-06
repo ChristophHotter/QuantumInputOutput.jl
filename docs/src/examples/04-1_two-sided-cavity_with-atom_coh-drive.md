@@ -69,7 +69,7 @@ eqs_a = meanfield([a], H1, [L1_L, L1_R])
 # TODO: Latexify? # hide
 ````
 
-To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function `translate`.
+To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`translate`](@ref).
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 # numerical parameters
@@ -287,4 +287,3 @@ Pkg.status(
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-

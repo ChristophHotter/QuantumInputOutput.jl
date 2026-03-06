@@ -87,7 +87,7 @@ dict_p = Dict([t,r] .=> [t_, r_])
 nothing # hide
 ````
 
-As usual, we translate the symbolic system into numeric expressions and solve the dynamics with `QuantumOptics.jl`.
+As usual, we translate the symbolic system into numeric expressions and solve the dynamics with [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl).
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
 # numeric basis
@@ -166,4 +166,3 @@ Pkg.status(
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
