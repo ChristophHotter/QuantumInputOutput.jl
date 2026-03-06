@@ -42,7 +42,7 @@ G_R_t = G_d ▷ G_R(1) ▷ G_ϕ(1,2) ▷ G_R(2)
 
 ## Cascade left-moving channel (reverse order)
 ## cascade([G_R(i) ▷ G_ϕ(i-1, i) for i=N:-1:2]...) ▷ G_R(1) # hide
-G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) # hide
+G_L_t = G_L(2) ▷ G_ϕ(1,2) ▷ G_L(1) 
 
 ## Concatenate both channels
 G_t = G_R_t ⊞ G_L_t
@@ -59,7 +59,9 @@ L_R = L[1]
 
 L_L = L[2]
 
-# Next, the numerical parameters and functions of the system are defined, and we translate the symbolic expression to `QuantumOptics` operators to numerically solve the dynamics. 
+# Note that this Hamiltonian and Lindblad terms (without the drive) describe the collective decay of the quantum dots. 
+
+# Next, the numerical parameters and functions of the system are defined, and we translate the symbolic expression to [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators to numerically solve the dynamics. 
 
 γ_ = 1.0
 β = 0.9 # waveguide coupling fraction
@@ -148,8 +150,8 @@ gcf()
 
 ## two-time correlation function G2(t1, t2)
 lT = length(T)
-G2 = zeros(lT, lT)
-G2_ref = zeros(lT, lT)
+G2 = zeros(lT, lT) # transmission
+G2_ref = zeros(lT, lT) # reflection
 
 L0(t) = L_R_QO(t) 
 L0_dag(t) = dagger(L0(t))
@@ -162,6 +164,7 @@ for it1 = 1:lT-1
     t_2, ρ_2 = timeevolution.master_dynamic(
         T[it1:end], L0(T[it1]) * ρ_t1 * L0_dag(T[it1]), input_output)
 
+    ## transmission
     G2_ls = real.([expect(L0_dag(t_2[j]) * L0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
     G2[it1, it1:end] = G2_ls
     G2[it1:end, it1] = G2_ls
@@ -169,6 +172,7 @@ for it1 = 1:lT-1
     t_2_r, ρ_2_r = timeevolution.master_dynamic(
         T[it1:end], L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]), input_output)
 
+    ## reflection
     G2_ls_r = real.([expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)])
     G2_ref[it1, it1:end] = G2_ls_r
     G2_ref[it1:end, it1] = G2_ls_r
