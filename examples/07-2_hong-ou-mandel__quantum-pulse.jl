@@ -1,6 +1,7 @@
 # # Hong-Ou-Mandel Effect
 #
-# Two single photons in identical temporal modes impinge on a 50/50 beam splitter. The photons bunch into one output port.
+# In this example, we simulate the Hong-Ou-Mandel effect, where two single photons in identical temporal modes impinge on a 50/50 beam splitter, which leads to bunching of the photons into one output port. 
+# We perform Monte-Carlo wave function trajectories which show this behavior. 
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -127,8 +128,10 @@ v1_v2_coinc = round(real.(expect((av1_qo' * av1_qo) * (av2_qo' * av2_qo), ρt[en
 @show v1_v2_coinc
 nothing # hide
 
-# In the following, we show Monte-Carlo wave funtion simulations to show the bunching of photons into one of the two output ports in each realization. 
-# To this end, we collapse the photon number at the end of the time evolution ($t > 0.9 T_{end}$) with the photon detection operator in each output mode $ a^{\dagger}_{v} a_{v} $.
+# We can see that the two-photon correlation for each port is one and that the correlation between the two ports is zero. 
+
+# In the following, we show Monte-Carlo wave function simulations to show the bunching of photons into one of the two output ports in each realization. 
+# To this end, we collapse the photon number at the end of the time evolution ($t > 0.9 T_{end}$) with the photon detection operator in each output mode $a^{+}_{v} a_{v}$.
 
 R = 1 # collapse rate
 n_v1_coll(t) = (t > 0.9*T[end])*R*av1_qo'av1_qo

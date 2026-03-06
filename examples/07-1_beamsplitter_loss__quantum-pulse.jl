@@ -24,8 +24,8 @@ av = Destroy(h, :a_v, 2)
 @rnumbers gu gv r t
 nothing # hide
 
-# In our example, we only have one intput mode and one output mode, however, the beam splitter has two input and two output ports. 
-# Since the number of input and output ports needs to match to cascade a system we need to create a padding element and add concatenate it to the corresponding SLH elements. The padding element `(1,0,0)` represents vacuum input and a non-tracked output, respectively. 
+# In our example, we only have one input mode and one output mode, however, the beam splitter has two input and two output ports. 
+# Since the number of input and output ports needs to match to cascade a system we need to create a padding element and add concatenate it to the corresponding SLH elements. The padding element `(1,0,0)` represents vacuum input but also a non-tracked output, respectively. 
 
 ## padding element for the unused port
 G_p = SLH(1, 0, 0)
@@ -38,7 +38,7 @@ G_u = SLH(1, gu * au, 0)
 G_in = G_u ⊞ G_p
 G_bs = SLH(S_bs, [0, 0], 0)
 G_v = SLH(1, gv * av, 0)
-# G_out = G_v ⊞ G_p # reflection is tracked 
+## G_out = G_v ⊞ G_p # reflection is tracked 
 G_out = G_p ⊞ G_v # transmission is tracked 
 
 G = G_in ▷ G_bs ▷ G_out
@@ -113,7 +113,7 @@ pop_n_ls = [ρv_end.data[i,i] for i=1:n_ph+1]
 nothing # hide
 
 # We plot the mean photon number and the distribution of the Fock state components after the beam splitter interaction. 
-# We can see that the mean photon number is reduced by $\eta = 20%$. 
+# We can see that the mean photon number is reduced by $\eta = 20 \%$. 
 
 
 close("beam splitter loss") # hide
