@@ -1,9 +1,11 @@
 # MAIN TODO - LIST:
 
-- [ ] clean up code (types, docu, examples)
-  - [ ] Implementation more code snippet 
+- [ ] clean up code (types, ...)
+- [ ] Docu review
+  - [ ] Implementation.md more code snippet 
   - [ ] concatenate docstring
-  - [ ] check interaction_picture_A_4modes docstrings
+  - [x] check interaction_picture_A_4modes docstrings
+  - [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
 - [ ] docu
   - [ ] examples
     - [x] .jl file conversion (see QC.jl, Orjan)
@@ -16,7 +18,7 @@
     - [x] beam splitter HOM
   - [x] theory
   - [x] introduction
-  - [ ] API
+  - [x] API
   - [x] tutorial
   - [ ] implementation
 - [ ] create more tests (cov +80%)

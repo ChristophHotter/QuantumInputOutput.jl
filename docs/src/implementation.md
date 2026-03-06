@@ -19,7 +19,16 @@ av = Destroy(h, :a_v, 3)
 γ, gu, gv = rnumbers("γ g_u g_v")
 ```
 
-An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref) and concatenation [`⊞`](@ref) rules implement the standard network composition from the SLH framework. The resulting effective operators are accessed by [`get_hamiltonian`](@ref) and [`get_lindblad`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture. 
+An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref) and concatenation [`⊞`](@ref) rules implement the standard network composition from the SLH framework.
+
+The resulting effective operators are accessed by [`get_hamiltonian`](@ref) and [`get_lindblad`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture. 
+
+```julia
+G_cas = ▷(G_u, G_s, G_v)
+
+H = get_hamiltonian(G_cas)
+L = get_lindblad(G_cas)
+```
 
 If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, the [`SLHqo`](@ref) type skips the symbolic layer and allows time-dependent `L` or `H` as callables while still using the same cascade and concatenate rules.
 
@@ -32,10 +41,6 @@ This can be done with [`translate`](@ref), which converts symbolic operators int
 - `time_parameter`: time-dependent parameters, given as functions of `t` 
 
 If `time_parameter` is non-empty, [`translate`](@ref) returns a callable `t -> op(t)` so that the Hamiltonian and jump operators can be supplied to `timeevolution.master_dynamic`. 
-
-In some cases it can be useful to define your own set of numeric operators which should replace the symbolic expressions, e.g. to reduce the Hilbert space if the output cavities are not analyzed but they are already included in the symbolic derivation. Such a list of operators can be provide with the dictionary `operators`.
-
-If the dynamics of the system should be solved with a higher-order mean-field approximation, the symbolic Hamiltonian and Lindblad terms can be directly used in [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl)
 
 ```julia
 bu = FockBasis(2)
@@ -51,6 +56,10 @@ H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
 L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
 ```
 
+In some cases it can be useful to define your own set of numeric operators which should replace the symbolic expressions, e.g. to reduce the Hilbert space if the output cavities are not analyzed but they are already included in the symbolic derivation. Such a list of operators can be provide with the dictionary `operators`.
+
+If the dynamics of the system should be solved with a higher-order mean-field approximation, the symbolic Hamiltonian and Lindblad terms can be directly used in [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl)
+
 ## Field coupling terms
 
 Quantum pulses are encoded through virtual cavities. Given a normalized input mode `u(t)` and output mode `v(t)`, the package constructs time-dependent couplings
@@ -63,28 +72,25 @@ The implementation uses cumulative numerical integration on a time grid `T` and 
 - [`u_to_gu`](@ref) and [`v_to_gv`](@ref) build interpolated couplings from sampled modes
 - [`u_to_gu_Gauss`](@ref) and [`v_to_gv_Gauss`](@ref) provide analytic expressions for Gaussian pulses 
 
-For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. 
-
-For multiple pulses, the effective input mode ``u_i^{\\mathrm{eff}}(t)`` and output mode ``v_i^{\\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`u_eff`](@ref) and [`v_eff`](@ref).  
-TODO: explain more; show equation; 
-
 ```julia
-T = 0:0.002:12
+T = [0:0.002:1;]*12
 σ = 1.0
 τ = 4.0
 u(t) = 1/(√(σ)*π^(1/4)) * exp(-0.5 * ((t - τ) / σ)^2)
 
 gu_t = u_to_gu(u, T)
 gv_t = v_to_gv(u, T)
-gu_g = u_to_gu_Gauss(τ, σ)
-gv_g = v_to_gv_Gauss(τ, σ)
 ```
+
+For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. The effective input mode ``u_i^{\mathrm{eff}}(t)`` and output mode ``v_i^{\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`u_eff`](@ref) and [`v_eff`](@ref).  
 
 ## Output modes and the correlation function
 
 The dominant output modes are extracted by computing the two-time correlation matrix
 
-``g^{(1)}(t_1, t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle``
+```math
+g^{(1)}(t_1, t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle
+```
 
 and diagonalizing it. In this package, [`two_time_corr_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $L_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $L_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
 
@@ -115,11 +121,7 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 
 The functions [`interaction_picture_A_2modes`](@ref), [`interaction_picture_A_3modes`](@ref), and [`interaction_picture_A_4modes`](@ref) build the coupling matrices for two, three and four modes. For two equal modes ($u(t) = v(t)$) the analytic solution of $M(t)$ is provided by [`interaction_picture_M_2modes_equal`](@ref).
 
-```julia
-A_uv = interaction_picture_A_2modes(gu_t, gv_t)
-M_t = interaction_picture_M(A_uv, T)
-M_ana = interaction_picture_M_2modes_equal(u, T)
-```
+Using the interaction picture for scattering with a Fock state $| n=20 \rangle$ on a two-level system, is  demonstrated in the example [Interaction Picture Scattering with a Quantum Pulse](06-1_interaction-picture__PRA2023_107-013706_fig2). 
 
 ## Pulse delay
 
@@ -139,9 +141,3 @@ compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for 
 The implementation mirrors [`u_to_gu`](@ref) and [`v_to_gv`](@ref): compute cumulative integrals on a time grid and return interpolated time-dependent couplings. 
 
 A simple single-pulse case is demonstrated in the example [Simple Pulse Delay with a Virtual Cavity](examples/08-1_pulse-delay__simple.md), where an input pulse is emitted, delayed by a virtual cavity, and captured into an output cavity. 
-
-```julia
-u_del(t) = u(t - 0.5)
-gout_t = uv_to_gout(u_del, u, T)
-gin_t = uv_to_gin(u_del, u, T)
-```
