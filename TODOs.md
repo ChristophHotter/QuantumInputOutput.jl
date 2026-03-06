@@ -3,7 +3,7 @@
 - [ ] clean up code (types, docu, examples)
   - [ ] Implementation more code snippet 
   - [ ] concatenate docstring
-  - [ ] 
+  - [ ] check interaction_picture_A_4modes docstrings
 - [ ] docu
   - [ ] examples
     - [x] .jl file conversion (see QC.jl, Orjan)

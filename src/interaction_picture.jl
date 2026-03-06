@@ -63,29 +63,14 @@ _as_time_function(x) = x isa Function ? x : (_ -> x)
 """
     interaction_picture_A_2modes(g1, g2)
 
-Coefficient matrix `A(t)` for two virtual modes `(1, 2)`, where
-
-```math
-\\frac{d}{dt}
-\\begin{bmatrix}
-a_1 \\\\
-a_2
-\\end{bmatrix}
-= A(t)
-\\begin{bmatrix}
-a_1 \\\\
-a_2
-\\end{bmatrix},
-```
-
-with
+Coefficient matrix `A(t)` for two virtual modes `(1, 2)`,
 
 ```math
 A(t) = \\frac{1}{2}
 \\begin{bmatrix}
 0 & g_1(t) g_2^*(t) \\\\
 -g_1^*(t) g_2(t) & 0
-\\end{bmatrix}.
+\\end{bmatrix}
 ```
 
 All couplings may be time-dependent or constant.
@@ -102,9 +87,7 @@ interaction_picture_A_2modes(g_ls) = interaction_picture_A_2modes(g_ls...)
 """
     interaction_picture_A_3modes(g1, g2, g3)
 
-Coefficient matrix `A(t)` for three interacting modes ordered as `(1, 2, 3)`,
-with couplings `g1(t)`, `g2(t)` and `g3(t)` corresponding to Eq. (25) of
-Christiansen et al. (PRA 107, 013706).
+Coefficient matrix `A(t)` for three interacting modes ordered as `(1, 2, 3)`
 
 ```math
 A(t) = \\frac{1}{2}
@@ -112,7 +95,7 @@ A(t) = \\frac{1}{2}
 0 & g_1(t) g_2^*(t) & g_1(t) g_3^*(t) \\\\
 -g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) \\\\
 -g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0
-\\end{bmatrix}.
+\\end{bmatrix}
 ```
 
 All couplings may be time-dependent or constant.
@@ -130,8 +113,7 @@ end
 """
     interaction_picture_A_4modes(g1, g2, g3, g4)
 
-Coefficient matrix `A(t)` for four interacting modes ordered as `(1, 2, 3, 4)`.
-All couplings may be time-dependent or constant.
+Coefficient matrix `A(t)` for four interacting modes ordered as `(1, 2, 3, 4)`
 
 ```math
 A(t) = \\frac{1}{2}
@@ -140,8 +122,10 @@ A(t) = \\frac{1}{2}
 -g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) & g_2(t) g_4^*(t) \\\\
 -g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0 & g_3(t) g_4^*(t) \\\\
 -g_1^*(t) g_4(t) & -g_2^*(t) g_4(t) & -g_3^*(t) g_4(t) & 0
-\\end{bmatrix}.
+\\end{bmatrix}
 ```
+
+All couplings may be time-dependent or constant.
 """
 function interaction_picture_A_4modes(g1, g2, g3, g4)
     g1f = _as_time_function(g1)

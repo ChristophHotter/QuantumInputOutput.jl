@@ -4,7 +4,9 @@ EditURL = "../../../examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig
 
 # Cavity Scattering of a Single Photon
 
-In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). We start by loading the needed packages and specifying the model.
+In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604).
+
+We start by loading the needed packages and specifying the model.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 using QuantumInputOutput
@@ -81,7 +83,7 @@ b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 ````
 
-We now use the function `translate()` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
+We now use the function `translate` to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
@@ -107,7 +109,7 @@ t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1)
 nothing # hide
 ````
 
-To calculate expectation values we create the desired numerical operators.
+We create the desired numerical operators to calculate expectation values.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 au_qo = translate(au, b)
@@ -173,6 +175,7 @@ end;
 # time evolution for the system including the output cavity
 t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
 
+# mean photon number in the output mode
 n_v1_t = real.(expect(av_qo'*av_qo, ρt_2))
 nothing # hide
 ````
