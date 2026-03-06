@@ -56,6 +56,8 @@ L1_R = get_lindblad(G_cav_L_R_drive)[2]
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
 ## TODO: Latexify? # hide
 
+# We defined the numerical parameters and the initial state of the system, create the ODE problem and solve the dynamics.
+
 ## numerical parameters
 En = 0.5
 κ_Rn = 1.0
@@ -67,9 +69,14 @@ p_sym = [E, κ_R, κ_L, Δ]
 p_num = [En, κ_Rn, κ_Ln, Δn]
 dict_p1 = Dict(p_sym .=> p_num)
 
+## initial state
+u0 = [0.0im] 
+nothing # hide
+
+#
+
 ## numerical system
 T = [0:0.01:1;]*20
-u0 = [0.0im] # initial state
 @named sys_a = System(eqs_a) 
 dict = merge(Dict(p_sym .=> p_num), Dict(unknowns(sys_a) .=> u0))
 prob_a = ODEProblem(sys_a, dict, (0.0, T[end]))
@@ -92,14 +99,12 @@ nothing # hide
 close("time evolution") # hide
 figure("time evolution")
 subplot(2,1,1)
-title("n(t)")
 plot(T, n_cavity)
 xlabel("t")
 ylabel("cavity photons")
 grid(true)
 
 subplot(2,1,2)
-title("transmission - reflection")
 plot(T, n_ref; label="reflection")
 plot(T, n_trans; label="transmission", ls="--")
 xlabel("t")
@@ -138,7 +143,7 @@ gcf()
 
 # ## Two-sided cavity with atoms
 
-# In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
+# In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
 
 @syms t::Real
 @register_symbolic Et(t)
@@ -171,7 +176,7 @@ eqs2 = meanfield([a'a, σ(1,2,2)], H2, [L2_L, L2_R, J_add...]; order=2)
 eqs2_c = complete(eqs2)
 length(eqs2_c)
 
-#
+# Again, we defined the numerical parameters and the initial state of the system, create the ODE problem and solve the dynamics.
 
 ## numerical parameter
 κ_Rn2 = κ_Ln2 = 2π*1
@@ -196,6 +201,9 @@ n_pulse = round(sum(abs2.(Et.(T2)))*ΔT, digits=7)
 @show n_pulse 
 
 dict_p2 = Dict(p_sym2 .=> p_num2)
+nothing # hide
+
+#
 
 ## initial state
 bc1 = FockBasis(4)
@@ -203,6 +211,9 @@ ba = NLevelBasis(2)
 b = bc1 ⊗ tensor([ba for i=1:Natoms]...)
 ψ0 = LazyKet(b, (fockstate(bc1, 0), [nlevelstate(ba, 1) for i=1:Natoms]...))
 u0_2 = initial_values(eqs2_c, ψ0) # initial state
+nothing # hide
+
+#
 
 @named sys2 = System(eqs2_c) # initial state
 dict2 = merge(Dict(p_sym2 .=> p_num2), Dict(unknowns(sys2) .=> u0_2))
@@ -230,7 +241,7 @@ grid(true)
 tight_layout()
 gcf()
 
-
+# We can see that all results agree with the full quantum dynamics of the example `Two-sided Cavity with Atoms`, which means the second order cumulant expansion is good approximation here. 
 
 # ## Package versions
 

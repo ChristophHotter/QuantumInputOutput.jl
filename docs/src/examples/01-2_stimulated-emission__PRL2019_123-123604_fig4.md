@@ -69,7 +69,7 @@ T = [0.001:0.001:1;]*4.0
 nothing # hide
 ````
 
-We use the function `translate()` to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic` in  QuantumOptics.jl.
+We use the function [`translate`](@ref) to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic` in  QuantumOptics.jl.
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
 # numeric bases

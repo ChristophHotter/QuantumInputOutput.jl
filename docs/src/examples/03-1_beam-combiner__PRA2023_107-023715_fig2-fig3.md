@@ -4,8 +4,11 @@ EditURL = "../../../examples/03-1_beam-combiner__PRA2023_107-023715_fig2-fig3.jl
 
 # Perfect Splitting and Combining of a Two-photon Pulse
 
-In this example, simulate the perfect splitting of a two-photon pulse into two orthogonal temporal modes with one photon each.
+In this example, we simulate the perfect splitting of a two-photon pulse into two orthogonal temporal modes with one photon each.
 We then show the reverse process to combine the two orthogonal photons into a single temporal mode with two photons.
+The system is described in [M. Lund , et al., Phys. Rev. A 107, 023715 (2023)](https://doi.org/10.1103/PhysRevA.107.023715).
+
+As usual, we start by loading the packages and defining the symbolic operators and parameters.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 using QuantumInputOutput
@@ -81,8 +84,8 @@ We translate the symbolic expressions to numerical operators and solve the time-
 
 To obtain the output modes we do not use the second input mode and the output mode cavity.
 However, to keep the example short we include them already from the beginning since they are needed later.
-To perform time consuming parameter scans one should merely use the necessary Hilbert spaces. In this case this would correspond to one input cavity and the two-level system.
-The kwarg `operators` of the function [translate](@ref) provides a convenient to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
+To perform time consuming parameter scans one should merely use the necessary Hilbert spaces. In this case, this would correspond to one input cavity and the two-level system.
+The kwarg `operators` of the function [translate](@ref) provides a convenient way to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # numeric bases
@@ -109,7 +112,7 @@ t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
 ````
 
-Now we analyze the output modes with two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$.
+Now we analyze the output modes with the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 au1_qo = translate(au1,b)
@@ -128,7 +131,7 @@ tight_layout()
 gcf()
 ````
 
-The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of around for each.
+The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of one.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 F = eigen(g1_m)
@@ -151,9 +154,8 @@ ylabel("output mode")
 gcf()
 ````
 
-As described in the paper, we can define a rotated basis in which the two modes are not entangled and equally populated by a single photon Fock-state. In the following, we define these rotated modes and use them to combine two single photons into a two photon Fock state. The temporal output mode of this two photon Fock state needs to be the same as the previous input mode which separated the two single photons before.
-
-TODO: analyse state of the output mode with v1 - one more mode - operator dictionary in translate # hide
+As described in the paper, we can define a rotated basis in which the two modes are not entangled and equally populated by a single photon Fock state.
+In the following, we define these rotated modes and use them to combine two single photons into a two photon Fock state. The temporal output mode of this two photon Fock state is the same as the previous input mode which separated the two single photons before.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 v1_p = 1/√(2) * ( v1_mode - v2_mode )
@@ -165,19 +167,24 @@ v1_new(t) = (u(T[end]-t))'
 # new input modes
 u1_new = conj.(reverse(v1_p))
 u2_new = conj.(reverse(v2_p))
+nothing # hide
+````
 
-# order of the input functions needs to be in ascending order [1, 2, 3, ...]
-# [cascaded from right to left] # TODO
-u_new_data = [u1_new, u2_new]
-u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
+The pulse from input cavity $u_2$ is scattered on the cavity $u_1$. This distortion needs to be taken into account for the coupling of $u_2$,
+which is done with the function [`u_eff`](@ref).
+The coupling of the $u_1$ cavity needs no adaptation, since it directly couples to the two-level system.
 
-# the coupling of the $u_1$ cavity needs no adaptation
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 gu1_ = u_to_gu(u1_new, T)
 
-# TODO: explain more!
-# $g_{u_2} needs to take into account to scatter also at the $u_1$ cavity
-# the last argument in u_eff (=2) describes the number of the input cavity
-u2_for_gu2 =  u_eff(u_new_fct, T, 2) # TODO: name and description
+u_new_data = [u1_new, u2_new]
+u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
+````
+
+effective u2 mode and corresponding coupling
+
+````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
+u2_for_gu2 =  u_eff(u_new_fct, T, 2)
 gu2_ = u_to_gu(u2_for_gu2,T)
 
 # coupling of the output mode
@@ -194,6 +201,8 @@ p_num_out = [γ_, Δ_]
 dict_p_out = Dict(p_sym_out .=> p_num_out)
 nothing # hide
 ````
+
+The time-dependent couplings are used to define the numeric Hamiltonian and Lindblad term, and then solve the dynamics of the system.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 H_QO_2 = translate(H, b; parameter=dict_p_out, time_parameter=dict_p_t_out)
