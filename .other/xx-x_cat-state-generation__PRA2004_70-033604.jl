@@ -136,7 +136,7 @@ v1_mode = (modes[:,end]) / √(ΔT)
 single_mode = n_avg[end]/n_out
 @show single_mode
 
-# time-depedent coupling for the output mode $v(t)$
+# time-dependent coupling for the output mode $v(t)$
 gv_t = v_to_gv(v1_mode, T)
 gvc_t = t -> conj(gv_t(t))
 dict_t_2 = Dict( [η, conj(η), gv, conj(gv)] .=> [η_t, ηc_t, gv_t, gvc_t] )

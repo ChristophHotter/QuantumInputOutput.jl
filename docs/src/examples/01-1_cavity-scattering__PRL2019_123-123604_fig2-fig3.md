@@ -4,7 +4,7 @@ EditURL = "../../../examples/01-1_cavity-scattering__PRL2019_123-123604_fig2-fig
 
 # Cavity Scattering of a Single Photon
 
-In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et. al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604).
+In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604).
 
 We start by loading the needed packages and specifying the model.
 
@@ -94,7 +94,7 @@ nothing # hide
 To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master_dynamic`.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-# time-depedent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
+# time-dependent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
 function input_output_1(t,ρ)
     H = H_QO(t)
     J = [L_QO(t)]
@@ -159,7 +159,7 @@ p_sym_2 = [γ , Δ ]
 p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
-# time-depedent coupling for the output mode $v(t)$
+# time-dependent coupling for the output mode $v(t)$
 gv_t = v_to_gv(v_mode, T)
 
 dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])

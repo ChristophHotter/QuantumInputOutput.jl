@@ -140,7 +140,7 @@ tight_layout()
 gcf()
 ````
 
-We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et. al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a mistake in their numerical model.
+We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a mistake in their numerical model.
 
 ## Package versions
 

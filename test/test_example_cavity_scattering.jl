@@ -86,7 +86,7 @@ using Test
     p_num_2 = [γ_, Δ_]
     dict_p_2 = Dict(p_sym_2 .=> p_num_2);
     
-    # time-depedent coupling for the output mode $v(t)$
+    # time-dependent coupling for the output mode $v(t)$
     gv_t = v_to_gv(v_mode, T)
     
     # gvc_t = t -> conj(gv_t(t))
