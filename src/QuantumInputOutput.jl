@@ -5,7 +5,7 @@ using QuantumOpticsBase
 using QuantumOptics
 using SymbolicUtils:
     SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
-using Symbolics 
+using Symbolics
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate
