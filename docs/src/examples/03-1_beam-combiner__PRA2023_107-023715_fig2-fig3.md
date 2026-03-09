@@ -14,7 +14,7 @@ As usual, we start by loading the packages and defining the symbolic operators a
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 using LinearAlgebra
 using DataInterpolations
 ````
@@ -122,14 +122,17 @@ au1_qo = translate(au1, b)
 Ls(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1, 2)
 g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
 
-close("g1(t1,t2) matrix") # hide
-figure("g1(t1,t2) matrix", figsize = (4.5, 3.5))
-pcolormesh(T, T, real.(g1_m), cmap = "inferno")
-xlabel(L"\gamma t_2")
-ylabel(L"\gamma t_1")
-colorbar(label = L"g^{(1)}(t_1,t_2)")
-tight_layout()
-gcf()
+p = heatmap(
+    T,
+    T,
+    real.(g1_m);
+    c = :inferno,
+    xlabel = L"\gamma t_2",
+    ylabel = L"\gamma t_1",
+    colorbar_title = L"g^{(1)}(t_1,t_2)",
+    size = (450, 350),
+)
+p
 ````
 
 The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$. We find two modes with a mean photon number of one.
@@ -146,13 +149,10 @@ nothing # hide
 ````
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-close("modes") # hide
-figure("modes")
-plot(t_, -real.(v1_mode), color = "black")
-plot(t_, real.(v2_mode), color = "red", ls = "--")
-xlabel("time (1/γ)")
-ylabel("output mode")
-gcf()
+p = plot(t_, -real.(v1_mode); color = :black, label = "")
+plot!(p, t_, real.(v2_mode); color = :red, ls = :dash, label = "")
+plot!(p; xlabel = "time (1/γ)", ylabel = "output mode", size = (500, 350))
+p
 ````
 
 As described in the paper, we can define a rotated basis in which the two modes are not entangled and equally populated by a single photon Fock state.
@@ -231,19 +231,20 @@ nothing # hide
 We can see that the two single photons combine to a two photon Fock-state in one temporal mode.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-close("beam combiner") # hide
-figure("beam combiner")
-plot(T, nu2_t_comb, color = "red", ls = "--", label = L"\langle a^\dagger a \rangle_{u_2}")
-plot(T, nu1_t_comb, color = "blue", ls = "-.", label = L"\langle a^\dagger a \rangle_{u_1}")
-plot(T, s22_t_comb, color = "black", ls = "dotted", label = L"\langle \sigma^{22} \rangle")
-plot(T, nv1_t_comb, color = "green", ls = "-", label = L"\langle a^\dagger a \rangle_{v_1}")
-ylim(0, 2)
-xlim(10, 18)
-xlabel("time (1/γ)")
-ylabel("Mean Excitation")
-legend()
-tight_layout()
-gcf()
+p = plot(T, nu2_t_comb; color = :red, ls = :dash, label = L"\langle a^\dagger a \rangle_{u_2}")
+plot!(p, T, nu1_t_comb; color = :blue, ls = :dashdot, label = L"\langle a^\dagger a \rangle_{u_1}")
+plot!(p, T, s22_t_comb; color = :black, ls = :dot, label = L"\langle \sigma^{22} \rangle")
+plot!(p, T, nv1_t_comb; color = :green, ls = :solid, label = L"\langle a^\dagger a \rangle_{v_1}")
+plot!(
+    p;
+    ylims = (0, 2),
+    xlims = (10, 18),
+    xlabel = "time (1/γ)",
+    ylabel = "Mean Excitation",
+    legend = :best,
+    size = (600, 350),
+)
+p
 ````
 
 ## Package versions
@@ -260,7 +261,7 @@ Pkg.status(
         "QuantumInputOutput",
         "SecondQuantizedAlgebra",
         "QuantumOptics",
-        "PyPlot",
+        "Plots",
         "DataInterpolations",
     ],
     mode = PKGMODE_MANIFEST,

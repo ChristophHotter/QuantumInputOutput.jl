@@ -12,7 +12,7 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
-using PyPlot
+using Plots
 
 #
 
@@ -186,10 +186,10 @@ t_, ρt = timeevolution.master_dynamic(T, ψ0_fock, input_output)
 
 expect(au_QO'au_QO, ρt)
 
-figure(111)
-plot(T, expect(au_QO'au_QO, ρt))
-plot(T, expect(ad1_QO'ad1_QO, ρt))
-plot(T, expect(ad2_QO'ad2_QO, ρt))
+p = plot(T, expect(au_QO' * au_QO, ρt); label = "")
+plot!(p, T, expect(ad1_QO' * ad1_QO, ρt); label = "")
+plot!(p, T, expect(ad2_QO' * ad2_QO, ρt); label = "")
+p
 
 
 expect(σ22_QO, ρt[end])
@@ -230,17 +230,18 @@ nothing # hide
 
 #
 
-pygui(true)
-close("ramsey-population") # hide
-figure("ramsey-population")
-plot(Δ_ls, pop_fock, label = "Fock, n=$(n)")
+p = plot(Δ_ls, pop_fock; label = "Fock, n=$(n)")
 ## plot([-Δ_ls; Δ_ls], [pop_fock; pop_fock], label="Fock, n=$(n)")
 ## plot(Δ_ls, pop_coh, ls="--", label="coherent, ⟨n⟩=9")
-xlabel("detuning Δ/γ")
-ylabel(L"\langle \sigma^{22} \rangle (t_1)")
-grid(true)
-legend()
-tight_layout()
+plot!(
+    p;
+    xlabel = "detuning Δ/γ",
+    ylabel = L"\langle \sigma^{22} \rangle (t_1)",
+    grid = true,
+    legend = :best,
+    size = (600, 350),
+)
+p
 
 #
 
@@ -251,6 +252,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )

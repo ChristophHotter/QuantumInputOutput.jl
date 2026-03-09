@@ -12,7 +12,7 @@ We start by loading the packages and defining the symbolic operators and paramet
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 using LinearAlgebra
 ````
 
@@ -109,14 +109,17 @@ nothing # hide
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-close("all") # hide
-figure("g1(t1,t2) matrix", figsize = (4.5, 3.5))
-pcolormesh(T, T, real.(g1_m), cmap = "inferno")
-xlabel(L"\gamma t_2")
-ylabel(L"\gamma t_1")
-colorbar(label = L"g^{(1)}(t_1,t_2)")
-tight_layout()
-gcf()
+p = heatmap(
+    T,
+    T,
+    real.(g1_m);
+    c = :inferno,
+    xlabel = L"\gamma t_2",
+    ylabel = L"\gamma t_1",
+    colorbar_title = L"g^{(1)}(t_1,t_2)",
+    size = (450, 350),
+)
+p
 ````
 
 The eigenvalues and corresponding eigenvectors are sorted in ascending order, which means the last eigenvalue corresponds to the highest populated temporal mode.
@@ -130,15 +133,13 @@ nothing # hide
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-colors = ["blue", "red", "green", "black"]
-figure("modes")
+colors = [:blue, :red, :green, :black]
+p = plot()
 for i = 1:4
-    plot(T, real.(v_t(i)), color = colors[i], label = "n$(i)=$(n_avg[end-i+1])")
+    plot!(p, T, real.(v_t(i)); color = colors[i], label = "n$(i)=$(n_avg[end-i+1])")
 end
-xlabel("time (1/γ)")
-legend()
-tight_layout()
-gcf()
+plot!(p; xlabel = "time (1/γ)", legend = :best, size = (500, 350))
+p
 ````
 
 We want to note that the temporal modes and average photon numbers are different to the ones in the paper [A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717) due to a typo in their numerical model.
@@ -153,7 +154,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
 ````

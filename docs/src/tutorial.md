@@ -17,7 +17,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using LinearAlgebra
-using PyPlot
+using Plots
 ```
 
 ```@example tutorial
@@ -123,14 +123,17 @@ nothing # hide
 ```
 
 ```@example tutorial
-close("g1(t1,t2) matrix")
-figure("g1(t1,t2) matrix", figsize=(4,3.5))
-pcolormesh(T, T, real.(g1_m), cmap="inferno")
-xlabel(L"\gamma t_2")
-ylabel(L"\gamma t_1")
-tight_layout()
-colorbar(label=L"g^{(1)}(t_1,t_2)")
-gcf() 
+p = heatmap(
+    T,
+    T,
+    real.(g1_m);
+    c = :inferno,
+    xlabel = L"\gamma t_2",
+    ylabel = L"\gamma t_1",
+    colorbar_title = L"g^{(1)}(t_1,t_2)",
+    size = (400, 350),
+)
+p
 ```
 
 The dominant temporal output mode corresponds to the eigenvector with the largest eigenvalue. With the average photon number in each mode, we can see that the photon is scattered into a single temporal mode.
@@ -179,35 +182,35 @@ nothing # hide
 Due to the linearity of the system the photon is fully scattered into a single mode. 
 
 ```@example tutorial
-close("modes")
-figure("modes")
-subplot(2,1,1)
-plot(T, u1.(T), ls="--", label="u", color="red")
-fill_between(T, 0., u1.(T), alpha=0.5, color="red")
+p1 = plot(T, u1.(T); ls = :dash, label = "u", color = :red)
+plot!(p1, T, u1.(T); fillrange = 0, fillalpha = 0.5, color = :red, label = "")
+plot!(p1, T, real.(v_mode); color = :blue, label = "v")
+plot!(p1, T, real.(v_mode); fillrange = 0, fillalpha = 0.5, color = :blue, label = "")
+plot!(
+    p1;
+    xlims = (0, 12),
+    ylims = (-0.8, 0.8),
+    yticks = [-0.8, 0, 0.8],
+    ylabel = "modes",
+    legend = :best,
+)
 
-plot(T, real.(v_mode), color="blue", label="v")
-fill_between(T, 0., real.(v_mode), alpha=0.5, color="blue")
-xlim(0,12)
-ylim(-0.8,0.8)
-yticks([-0.8,0,0.8])
-ylabel("modes")
-legend()
+p1r = twinx(p1)
+plot!(p1r, T, abs2.(gu_t.(T)); color = :red, label = "")
+plot!(p1r, T[3:end], abs2.(gv_t.(T))[3:end]; color = :blue, ls = :dash, label = "")
+plot!(p1r; xlims = (0, 12), ylims = (0, 8), ylabel = "Rates (γ)")
 
-twinx()
-xlim(0,12)
-ylim(0,8)
-plot(T, abs2.(gu_t.(T)), color="red")
-plot(T[3:end], abs2.(gv_t.(T))[3:end], color="blue", ls="--")
-ylabel("Rates (γ)")
+p2 = plot(T, n_u_t; label = L"\langle a^\dagger a \rangle_u", color = :red)
+plot!(p2, T, n_c_t; label = L"\langle c^\dagger c \rangle", color = :green)
+plot!(p2, T, n_v_t; label = L"\langle a^\dagger a \rangle_v", color = :blue)
+plot!(
+    p2;
+    xlims = (0, 12),
+    ylims = (0, 1),
+    xlabel = "time (1/γ)",
+    ylabel = "Exciations",
+    legend = :best,
+)
 
-subplot(2,1,2)
-plot(T, n_u_t, label=L"\langle a^\dagger a \rangle_u", color="red")
-plot(T, n_c_t, label=L"\langle c^\dagger c \rangle", color="green")
-plot(T, n_v_t, label=L"\langle a^\dagger a \rangle_v", color="blue")
-xlim(0,12)
-ylim(0,1)
-xlabel("time (1/γ)")
-ylabel("Exciations")
-legend()
-gcf()
+plot(p1, p2; layout = (2, 1), size = (600, 550))
 ```

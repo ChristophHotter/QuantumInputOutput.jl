@@ -13,7 +13,7 @@ using QuantumInputOutput
 using QuantumOptics
 using SecondQuantizedAlgebra
 using SymbolicUtils
-using PyPlot
+using Plots
 ````
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
@@ -150,26 +150,14 @@ This allows us to significantly reduce the numerical Hilbert space dimension.
 If the interaction picture is not used, the input cavity $u$ completely empties and the output cavity almost completely fills again.
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
-close("interaction picture fig2") # hide
-figure("interaction picture fig2", figsize = (5.6, 4.2))
-subplot(2, 1, 1)
-plot(T, n_u, label = L"\langle n_u \rangle")
-xlabel("tγ")
-ylabel("excitations")
-ylim(17.8, 20.2)
-grid(true)
-legend()
+p1 = plot(T, n_u; label = L"\langle n_u \rangle")
+plot!(p1; xlabel = "tγ", ylabel = "excitations", ylims = (17.8, 20.2), grid = true, legend = :best)
 
-subplot(2, 1, 2)
-plot(T, P_e, label = L"\langle \sigma_{ee} \rangle")
-plot(T, n_v, label = L"\langle n_v \rangle", ls = "--")
-xlabel("tγ")
-ylabel("excitations")
-ylim(0, 1)
-grid(true)
-legend()
-tight_layout()
-gcf()
+p2 = plot(T, P_e; label = L"\langle \sigma_{ee} \rangle")
+plot!(p2, T, n_v; label = L"\langle n_v \rangle", ls = :dash)
+plot!(p2; xlabel = "tγ", ylabel = "excitations", ylims = (0, 1), grid = true, legend = :best)
+
+plot(p1, p2; layout = (2, 1), size = (560, 420))
 ````
 
 ## Package versions
@@ -187,7 +175,7 @@ Pkg.status(
         "QuantumOptics",
         "SecondQuantizedAlgebra",
         "SymbolicUtils",
-        "PyPlot",
+        "Plots",
     ],
     mode = PKGMODE_MANIFEST,
 )

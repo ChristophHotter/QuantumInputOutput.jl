@@ -12,7 +12,7 @@ As usual, we start by loading the packages and defining the operators and parame
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 using QuantumInputOutput
 using QuantumOptics
-using PyPlot
+using Plots
 ````
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
@@ -112,17 +112,18 @@ nothing # hide
 ````
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
-close("time evolution") # hide
-figure("time evolution", figsize = (5, 3.2))
-plot(t, I_R, label = "Transmission")
-plot(t, I_L, label = "Reflection")
-plot(t, abs2.(α0*u1.(t)), color = "grey", ls = "--", label = "Input")
-xlabel("time")
-ylabel("intensity")
-legend()
-grid(true)
-tight_layout()
-gcf()
+p = plot(t, I_R; label = "Transmission")
+plot!(p, t, I_L; label = "Reflection")
+plot!(p, t, abs2.(α0*u1.(t)); color = :grey, ls = :dash, label = "Input")
+plot!(
+    p;
+    xlabel = "time",
+    ylabel = "intensity",
+    legend = :best,
+    grid = true,
+    size = (500, 320),
+)
+p
 ````
 
 ## Package versions
@@ -134,7 +135,7 @@ using InteractiveUtils
 versioninfo()
 
 using Pkg
-Pkg.status(["QuantumInputOutput", "QuantumOptics", "PyPlot"], mode = PKGMODE_MANIFEST)
+Pkg.status(["QuantumInputOutput", "QuantumOptics", "Plots"], mode = PKGMODE_MANIFEST)
 ````
 
 ---

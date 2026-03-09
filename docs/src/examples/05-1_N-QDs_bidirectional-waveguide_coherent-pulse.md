@@ -12,7 +12,7 @@ mode), and we compute the time evolution of the transmitted and reflected intens
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 ````
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
@@ -143,17 +143,18 @@ nothing # hide
 ````
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
-close("time evolution")
-figure("time evolution", figsize = (5, 3.2))
-plot(t, I_R, label = "Transmission")
-plot(t, I_L, label = "Reflection")
-plot(t, abs2.(Ein_t.(t)), color = "grey", ls = "--", label = "Input")
-xlabel("time")
-ylabel("intensity")
-legend()
-grid(true)
-tight_layout()
-gcf()
+p = plot(t, I_R; label = "Transmission")
+plot!(p, t, I_L; label = "Reflection")
+plot!(p, t, abs2.(Ein_t.(t)); color = :grey, ls = :dash, label = "Input")
+plot!(
+    p;
+    xlabel = "time",
+    ylabel = "intensity",
+    legend = :best,
+    grid = true,
+    size = (500, 320),
+)
+p
 ````
 
 ## Quantum regression theorem
@@ -202,23 +203,27 @@ nothing # hide
 ````
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
-close("G2") # hide
-figure("G2", figsize = (7, 3))
-subplot(121)
-title("reflection")
-pcolormesh(T, T, G2_ref' / maximum(G2_ref), cmap = "inferno")
-xlabel(L"t_1")
-ylabel(L"t_2")
-colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
-
-subplot(122)
-title("transmission")
-pcolormesh(T, T, G2' / maximum(G2), cmap = "inferno")
-xlabel(L"t_1")
-ylabel(L"t_2")
-colorbar(label = L"G^{(2)}(t_1, t_2)"*"[a.u.]")
-tight_layout()
-gcf()
+p_ref = heatmap(
+    T,
+    T,
+    G2_ref' / maximum(G2_ref);
+    c = :inferno,
+    title = "reflection",
+    xlabel = L"t_1",
+    ylabel = L"t_2",
+    colorbar_title = L"G^{(2)}(t_1, t_2)[a.u.]",
+)
+p_trans = heatmap(
+    T,
+    T,
+    G2' / maximum(G2);
+    c = :inferno,
+    title = "transmission",
+    xlabel = L"t_1",
+    ylabel = L"t_2",
+    colorbar_title = L"G^{(2)}(t_1, t_2)[a.u.]",
+)
+plot(p_ref, p_trans; layout = (1, 2), size = (700, 300))
 ````
 
 ## Package versions
@@ -231,7 +236,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
 ````

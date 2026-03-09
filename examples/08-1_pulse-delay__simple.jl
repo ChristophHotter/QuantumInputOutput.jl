@@ -10,7 +10,7 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
-using PyPlot
+using Plots
 
 #
 
@@ -107,17 +107,11 @@ nothing # hide
 
 #
 
-close("delay short pulse") # hide
-figure("delay short pulse", figsize = (5, 3))
-plot(T, nu, label = L"\langle a_u^\dagger a_u \rangle")
-plot(T, nd, label = L"\langle a_d^\dagger a_d \rangle")
-plot(T, nv, label = L"\langle a_v^\dagger a_v \rangle")
-xlabel("time")
-ylabel("mean photon number")
-grid(true)
-legend()
-tight_layout()
-gcf()
+p = plot(T, nu; label = L"\langle a_u^\dagger a_u \rangle")
+plot!(p, T, nd; label = L"\langle a_d^\dagger a_d \rangle")
+plot!(p, T, nv; label = L"\langle a_v^\dagger a_v \rangle")
+plot!(p; xlabel = "time", ylabel = "mean photon number", grid = true, legend = :best, size = (500, 300))
+p
 
 # We can see that the pulse is perfectly absorbed by the delayed output mode $v(t) = u(t-\tau)$
 
@@ -218,17 +212,11 @@ nothing # hide
 # Above we introduced the unity matrix for the delay cavity operators which guarantees that it does not have an effect. 
 # We can see that the delayed pulse is perfectly absorbed. 
 
-close("delay int. picture") # hide
-figure("delay int. picture", figsize = (5, 3))
-plot(T, nu_int, label = L"\langle a_u^\dagger a_u \rangle_{IP}")
-## plot(T, nd_int, label=L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
-plot(T, nv_int, label = L"\langle a_v^\dagger a_v \rangle_{IP}")
-xlabel("time")
-ylabel("mean photon number")
-grid(true)
-legend()
-tight_layout()
-gcf()
+p = plot(T, nu_int; label = L"\langle a_u^\dagger a_u \rangle_{IP}")
+## plot!(p, T, nd_int; label = L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
+plot!(p, T, nv_int; label = L"\langle a_v^\dagger a_v \rangle_{IP}")
+plot!(p; xlabel = "time", ylabel = "mean photon number", grid = true, legend = :best, size = (500, 300))
+p
 
 #
 
@@ -239,6 +227,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )

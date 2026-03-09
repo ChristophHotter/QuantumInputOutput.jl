@@ -6,7 +6,7 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 using LinearAlgebra
 using Random #hide
 
@@ -164,23 +164,19 @@ nothing # hide
 
 #
 
-close("HOM mcwf") # hide
-figure("HOM mcwf", figsize = (6.5, 4.5))
-subplot(211)
+p1 = plot()
 for it = 1:Ntraj
-    plot(T, n_v1_mc_ls[it])
+    plot!(p1, T, n_v1_mc_ls[it]; label = "")
 end
-ylabel(L"\langle a^\dagger_{v_1} a_{v_1} \rangle")
-grid(true)
+plot!(p1; ylabel = L"\langle a^\dagger_{v_1} a_{v_1} \rangle", grid = true)
 
-subplot(212)
+p2 = plot()
 for it = 1:Ntraj
-    plot(T, n_v2_mc_ls[it])
+    plot!(p2, T, n_v2_mc_ls[it]; label = "")
 end
-xlabel("time")
-ylabel(L"\langle a^\dagger_{v_2} a_{v_2} \rangle")
-grid(true)
-gcf()
+plot!(p2; xlabel = "time", ylabel = L"\langle a^\dagger_{v_2} a_{v_2} \rangle", grid = true)
+
+plot(p1, p2; layout = (2, 1), size = (650, 450))
 
 # We can see that both photons always go together into one of the two detectors. 
 
@@ -193,6 +189,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )

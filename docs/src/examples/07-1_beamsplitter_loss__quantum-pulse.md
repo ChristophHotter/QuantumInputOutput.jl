@@ -12,7 +12,7 @@ input mode $u(t)$.
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 using LinearAlgebra
 ````
 
@@ -126,20 +126,9 @@ We plot the mean photon number and the distribution of the Fock state components
 We can see that the mean photon number is reduced by $\eta = 20 \%$.
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
-close("beam splitter loss") # hide
-figure("beam splitter loss", figsize = (5.4, 4.2))
-subplot(2, 1, 1)
-plot(T, n_u_t .+ n_v_t)
-xlabel("time")
-ylabel("photon number")
-grid(true)
-
-subplot(2, 1, 2)
-bar([0:n_ph;], pop_n_ls)
-xlabel("Fock state component n")
-ylabel("population")
-tight_layout()
-gcf()
+p1 = plot(T, n_u_t .+ n_v_t; xlabel = "time", ylabel = "photon number", grid = true)
+p2 = bar(0:n_ph, pop_n_ls; xlabel = "Fock state component n", ylabel = "population")
+plot(p1, p2; layout = (2, 1), size = (540, 420))
 ````
 
 Note that the calculation can also be performed in the interaction picture, which would be numerically beneficial and the loss of the input mode $u(t)$ can be directly observed.
@@ -154,7 +143,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
 ````

@@ -12,7 +12,7 @@ We start by loading the packages and defining the symbolic operators and paramet
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 ````
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
@@ -119,20 +119,21 @@ nothing # hide
 ````
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
-close("all") # hide
-figure("population", figsize = (6, 3))
-plot(t_, popu_u_n1, color = "red", label = L"| 1 \rangle_u")
-plot(t_, popu_e, color = "pink", ls = "--", label = L"| e \rangle")
-plot(t_, popu_v_n1, color = "blue", ls = "--", label = L"| 1 \rangle_v")
-plot(t_, popu_v_n2, color = "green", label = L"| 2 \rangle_v")
-plot(t_, I_out_int, color = "black", ls = "dotted", label = L"\int I_{out} dt")
-xlim(0, 4)
-ylim(0, 1)
-xlabel("time [1/γ]")
-ylabel("population")
-legend()
-tight_layout()
-gcf()
+p = plot(t_, popu_u_n1; color = :red, label = L"| 1 \rangle_u")
+plot!(p, t_, popu_e; color = :pink, ls = :dash, label = L"| e \rangle")
+plot!(p, t_, popu_v_n1; color = :blue, ls = :dash, label = L"| 1 \rangle_v")
+plot!(p, t_, popu_v_n2; color = :green, label = L"| 2 \rangle_v")
+plot!(p, t_, I_out_int; color = :black, ls = :dot, label = L"\\int I_{out} dt")
+plot!(
+    p;
+    xlims = (0, 4),
+    ylims = (0, 1),
+    xlabel = "time [1/γ]",
+    ylabel = "population",
+    legend = :best,
+    size = (600, 300),
+)
+p
 ````
 
 ## Package versions
@@ -145,7 +146,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
 ````

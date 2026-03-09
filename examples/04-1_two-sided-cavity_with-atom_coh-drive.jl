@@ -9,7 +9,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using QuantumCumulants
-using PyPlot
+using Plots
 using Latexify # hide
 set_default(double_linebreak = true) # hide
 
@@ -101,23 +101,11 @@ nothing # hide
 
 #
 
-close("time evolution") # hide
-figure("time evolution")
-subplot(2, 1, 1)
-plot(t_, n_cavity)
-xlabel("t")
-ylabel("cavity photons")
-grid(true)
-
-subplot(2, 1, 2)
-plot(t_, n_ref; label = "reflection")
-plot(t_, n_trans; label = "transmission", ls = "--")
-xlabel("t")
-ylabel("intensity rate")
-grid(true)
-legend()
-tight_layout()
-gcf()
+p1 = plot(t_, n_cavity; label = "", xlabel = "t", ylabel = "cavity photons", grid = true)
+p2 = plot(t_, n_ref; label = "reflection")
+plot!(p2, t_, n_trans; label = "transmission", ls = :dash)
+plot!(p2; xlabel = "t", ylabel = "intensity rate", grid = true, legend = :best)
+plot(p1, p2; layout = (2, 1), size = (600, 500))
 
 # Now we scan the laser-cavity detuning $\Delta$ to plot the transmission and reflection spectrum. 
 
@@ -138,14 +126,10 @@ nothing # hide
 
 #
 
-close("spectrum") # hide
-figure("spectrum")
-plot(Δn_ls, n_ref_Δ; label = "reflection")
-plot(Δn_ls, n_trans_Δ; label = "transmission", ls = "--")
-xlabel("Δ")
-grid(true)
-legend()
-gcf()
+p = plot(Δn_ls, n_ref_Δ; label = "reflection")
+plot!(p, Δn_ls, n_trans_Δ; label = "transmission", ls = :dash)
+plot!(p; xlabel = "Δ", grid = true, legend = :best, size = (600, 350))
+p
 
 # ## Two-sided cavity with atoms
 
@@ -240,15 +224,20 @@ for it = 1:l_t
 end
 nothing # hide
 
-close("time evolution") # hide
-figure("time evolution")
-plot(t2_, n_trans2, label = "transmission = $(round(sum(n_trans2)*ΔT/n_pulse*100))%")
-plot(t2_, n_ref2, ls = "--", label = "reflection = $(round(sum(n_ref2)*ΔT/n_pulse*100))%")
-xlabel("t")
-legend()
-grid(true)
-tight_layout()
-gcf()
+p = plot(
+    t2_,
+    n_trans2;
+    label = "transmission = $(round(sum(n_trans2) * ΔT / n_pulse * 100))%",
+)
+plot!(
+    p,
+    t2_,
+    n_ref2;
+    ls = :dash,
+    label = "reflection = $(round(sum(n_ref2) * ΔT / n_pulse * 100))%",
+)
+plot!(p; xlabel = "t", legend = :best, grid = true, size = (600, 350))
+p
 
 # We can see that only about 5% is transmitted and 71% are reflected. The rest is scattered into free space by the atoms.
 
@@ -266,7 +255,7 @@ Pkg.status(
         "SecondQuantizedAlgebra",
         "QuantumOptics",
         "QuantumCumulants",
-        "PyPlot",
+        "Plots",
     ],
     mode = PKGMODE_MANIFEST,
 )

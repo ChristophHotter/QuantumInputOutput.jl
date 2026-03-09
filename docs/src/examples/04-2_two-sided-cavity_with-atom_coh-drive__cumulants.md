@@ -13,7 +13,7 @@ using QuantumCumulants
 using ModelingToolkit
 using OrdinaryDiffEq
 using QuantumOpticsBase
-using PyPlot
+using Plots
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
@@ -110,23 +110,11 @@ nothing # hide
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-close("time evolution") # hide
-figure("time evolution")
-subplot(2, 1, 1)
-plot(T, n_cavity)
-xlabel("t")
-ylabel("cavity photons")
-grid(true)
-
-subplot(2, 1, 2)
-plot(T, n_ref; label = "reflection")
-plot(T, n_trans; label = "transmission", ls = "--")
-xlabel("t")
-ylabel("intensity rate")
-grid(true)
-legend()
-tight_layout()
-gcf()
+p1 = plot(T, n_cavity; label = "", xlabel = "t", ylabel = "cavity photons", grid = true)
+p2 = plot(T, n_ref; label = "reflection")
+plot!(p2, T, n_trans; label = "transmission", ls = :dash)
+plot!(p2; xlabel = "t", ylabel = "intensity rate", grid = true, legend = :best)
+plot(p1, p2; layout = (2, 1), size = (600, 500))
 ````
 
 Now we scan the laser-cavity detuning $\Delta$ to plot the transmission and reflection spectrum.
@@ -148,14 +136,10 @@ nothing # hide
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-close("spectrum") # hide
-figure("spectrum")
-plot(Δn_ls, n_ref_Δ; label = "reflection")
-plot(Δn_ls, n_trans_Δ; label = "transmission", ls = "--")
-xlabel("Δ")
-grid(true)
-legend()
-gcf()
+p = plot(Δn_ls, n_ref_Δ; label = "reflection")
+plot!(p, Δn_ls, n_trans_Δ; label = "transmission", ls = :dash)
+plot!(p; xlabel = "Δ", grid = true, legend = :best, size = (600, 350))
+p
 ````
 
 ## Two-sided cavity with atoms
@@ -253,15 +237,20 @@ n_ref2 = abs2.(get_solution(sol2, √(κ_Ln2)*a) + Et.(T2))
 n_trans2 = abs2.(get_solution(sol2, √(κ_Rn2)*a))
 nothing # hide
 
-close("time evolution") # hide
-figure("time evolution")
-plot(T2, n_trans2, label = "transmission = $(round(sum(n_trans2)*ΔT/n_pulse*100))%")
-plot(T2, n_ref2, ls = "--", label = "reflection = $(round(sum(n_ref2)*ΔT/n_pulse*100))%")
-xlabel("t")
-legend()
-grid(true)
-tight_layout()
-gcf()
+p = plot(
+    T2,
+    n_trans2;
+    label = "transmission = $(round(sum(n_trans2) * ΔT / n_pulse * 100))%",
+)
+plot!(
+    p,
+    T2,
+    n_ref2;
+    ls = :dash,
+    label = "reflection = $(round(sum(n_ref2) * ΔT / n_pulse * 100))%",
+)
+plot!(p; xlabel = "t", legend = :best, grid = true, size = (600, 350))
+p
 ````
 
 We can see that all results agree with the full quantum dynamics of the example `Two-sided Cavity with Atoms`, which means the second order cumulant expansion is good approximation here.
@@ -283,7 +272,7 @@ Pkg.status(
         "ModelingToolkit",
         "OrdinaryDiffEq",
         "QuantumOpticsBase",
-        "PyPlot",
+        "Plots",
     ],
     mode = PKGMODE_MANIFEST,
 )

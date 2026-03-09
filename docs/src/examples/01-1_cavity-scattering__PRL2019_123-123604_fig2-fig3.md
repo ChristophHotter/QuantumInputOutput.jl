@@ -12,7 +12,7 @@ We start by loading the needed packages and specifying the model.
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using PyPlot
+using Plots
 using LinearAlgebra
 ````
 
@@ -130,14 +130,17 @@ nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-close("all") # hide
-figure("g1(t1,t2) matrix", figsize = (4, 3.5))
-pcolormesh(T, T, real.(g1_m), cmap = "inferno")
-xlabel(L"\gamma t_2")
-ylabel(L"\gamma t_1")
-tight_layout()
-colorbar(label = L"g^{(1)}(t_1,t_2)")
-gcf()
+p = heatmap(
+    T,
+    T,
+    real.(g1_m);
+    c = :inferno,
+    xlabel = L"\gamma t_2",
+    ylabel = L"\gamma t_1",
+    colorbar_title = L"g^{(1)}(t_1,t_2)",
+    size = (400, 350),
+)
+p
 ````
 
 The eigenvalues and corresponding eigenvectors are sorted in ascending order, which means the last eigenvalue corresponds to the highest populated temporal mode.
@@ -181,37 +184,37 @@ nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-figure("modes")
-subplot(2, 1, 1)
-plot(T, u1.(T), ls = "--", label = "u", color = "red")
-fill_between(T, 0.0, u1.(T), alpha = 0.5, color = "red")
+p1 = plot(T, u1.(T); ls = :dash, label = "u", color = :red)
+plot!(p1, T, u1.(T); fillrange = 0, fillalpha = 0.5, color = :red, label = "")
+plot!(p1, T, real.(v_mode); color = :blue, label = "v")
+plot!(p1, T, real.(v_mode); fillrange = 0, fillalpha = 0.5, color = :blue, label = "")
+plot!(
+    p1;
+    xlims = (0, 12),
+    ylims = (-0.8, 0.8),
+    yticks = [-0.8, 0, 0.8],
+    ylabel = "modes",
+    legend = :best,
+)
 
-plot(T, real.(v_mode), color = "blue", label = "v")
-fill_between(T, 0.0, real.(v_mode), alpha = 0.5, color = "blue")
-xlim(0, 12)
-ylim(-0.8, 0.8)
-yticks([-0.8, 0, 0.8])
-ylabel("modes")
-legend()
+p1r = twinx(p1)
+plot!(p1r, T, abs2.(gu_t.(T)); color = :red, label = "")
+plot!(p1r, T[3:end], abs2.(gv_t.(T))[3:end]; color = :blue, ls = :dash, label = "")
+plot!(p1r; xlims = (0, 12), ylims = (0, 8), ylabel = "Rates (γ)")
 
-twinx()
-xlim(0, 12)
-ylim(0, 8)
-plot(T, abs2.(gu_t.(T)), color = "red")
-plot(T[3:end], abs2.(gv_t.(T))[3:end], color = "blue", ls = "--")
-ylabel("Rates (γ)")
+p2 = plot(T, n_u1_t; label = L"\langle a^\dagger a \rangle_u", color = :red)
+plot!(p2, T, n_c_t; label = L"\langle c^\dagger c \rangle", color = :green)
+plot!(p2, T, n_v1_t; label = L"\langle a^\dagger a \rangle_v", color = :blue)
+plot!(
+    p2;
+    xlims = (0, 12),
+    ylims = (0, 1),
+    xlabel = "time (1/γ)",
+    ylabel = "Exciations",
+    legend = :best,
+)
 
-subplot(2, 1, 2)
-plot(T, n_u1_t, label = L"\langle a^\dagger a \rangle_u", color = "red")
-plot(T, n_c_t, label = L"\langle c^\dagger c \rangle", color = "green")
-plot(T, n_v1_t, label = L"\langle a^\dagger a \rangle_v", color = "blue")
-xlim(0, 12)
-ylim(0, 1)
-xlabel("time (1/γ)")
-ylabel("Exciations")
-legend()
-tight_layout()
-gcf()
+plot(p1, p2; layout = (2, 1), size = (600, 550))
 ````
 
 ## Cavity with phase noise
@@ -260,17 +263,19 @@ nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-figure("dephasing", figsize = (6, 3))
-plot(t_3, n_u1_t_3, label = L"\langle a^\dagger a \rangle_u", color = "red")
-plot(t_3, n_v1_t_3, label = L"\langle a^\dagger a \rangle_v", color = "blue", ls = "--")
-plot(t_3, I_out, label = L"I_{out}", color = "black", ls = "dotted")
-xlim(0, 12)
-ylim(0, 4)
-xlabel("time (1/γ)")
-ylabel("expectation values")
-legend()
-tight_layout()
-gcf()
+p = plot(t_3, n_u1_t_3; label = L"\langle a^\dagger a \rangle_u", color = :red)
+plot!(p, t_3, n_v1_t_3; label = L"\langle a^\dagger a \rangle_v", color = :blue, ls = :dash)
+plot!(p, t_3, I_out; label = L"I_{out}", color = :black, ls = :dot)
+plot!(
+    p;
+    xlims = (0, 12),
+    ylims = (0, 4),
+    xlabel = "time (1/γ)",
+    ylabel = "expectation values",
+    legend = :best,
+    size = (600, 300),
+)
+p
 ````
 
 ## Package versions
@@ -283,7 +288,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "PyPlot"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
 ````
