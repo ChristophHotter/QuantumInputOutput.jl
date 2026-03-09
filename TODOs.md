@@ -47,10 +47,10 @@
 - [x] Translate function: 
     - [x] Try TimeDependentSums again (after solving the gu(t) mistake/problem) [~factor 2 slower!]
     - [x] Be careful with other operations for time-dependent functions (power, conj, ...) 
-    - [x] Use gu(t) in SLH expressions (destinguish with iscall -> arguments -> time )
+    - [x] Use gu(t) in SLH expressions (distinguish with iscall -> arguments -> time )
   
 - [x] Parameter equal to 1.0 
-- [x] to_numerics() Lazy or "normal" kwarg #(afer SQA.jl PR merge)
+- [x] to_numerics() Lazy or "normal" kwarg #(after SQA.jl PR merge)
 - [x] Kwarg to provide substitution operators 
 - [x] level_map 
 - [x] output_functions name - test if name matters [names matter!]
