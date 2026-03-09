@@ -1,6 +1,6 @@
 using Literate
 
-using QuantumInputOutput, Plots
+using QuantumInputOutput, PyPlot
 using QuantumCumulants
 default(; fmt = :png)
 
