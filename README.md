@@ -11,6 +11,12 @@ It combines a symbolic layer for the SLH formalism based on [SecondQuantizedAlge
 - Two-time correlation functions and output-mode extraction
 - Compatibility with [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) and [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl) solvers
 
+## Development status
+
+![CI](https://github.com/ChristophHotter/QuantumInputOutput.jl/workflows/CI/badge.svg) [![Codecov][codecov-img]][codecov-url] [![Documentation][docs-stable-img]][docs-stable-url] [![Documentation][docs-dev-img]][docs-dev-url]
+
+Note that **QuantumInputOutput.jl** is still at an early stage of development.
+
 ## Installation
 
 ```julia

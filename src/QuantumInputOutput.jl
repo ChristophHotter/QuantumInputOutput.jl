@@ -1,13 +1,11 @@
 module QuantumInputOutput
 
 using SecondQuantizedAlgebra
-using QuantumCumulants
 using QuantumOpticsBase
 using QuantumOptics
 using SymbolicUtils:
     SymbolicUtils, substitute, BasicSymbolic, operation, arguments, iscall, simplify, expand
-using Symbolics #?
-# using ModelingToolkit #?
+using Symbolics 
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate
@@ -37,7 +35,7 @@ export SLH, # SLH.jl
     uv_to_gout,
     uv_to_gin,
     two_time_corr_matrix,
-    interaction_picture_M,
+    interaction_picture_M, # interaction picture
     interaction_picture_M_2modes_equal,
     interaction_picture_A_2modes,
     interaction_picture_A_3modes,

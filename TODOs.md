@@ -7,11 +7,12 @@
 - [ ] examples
   - [ ] Multi-mode Dicke state superradiance
   - [ ] SUPER example (Johannes)
-  - [ ] pulse delay (Victor paper)
-  - [ ] feedback reduction (?)  
+  - [ ] pulse delay advanced example (Victor paper)
+  - [ ] feedback reduction (see SLH paper)  
   
 - [ ] create more tests (cov +80%)
   - [x] simple full example
+  - [ ] QC.jl: comparison cavity drive with full quantum (example)
   - [ ] translate.jl
   - [ ] utils.jl
   - [ ] codecov
@@ -26,7 +27,7 @@
     - [ ] general expression for A(t)
   - [ ] pulse delay (Victor paper)
 
-- [ ] Formatter/SpellCheck
+- [x] Formatter/SpellCheck
 
 - [ ] JET
 

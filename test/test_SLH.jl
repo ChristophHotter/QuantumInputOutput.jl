@@ -1,5 +1,5 @@
 using QuantumInputOutput
-using QuantumCumulants
+using SecondQuantizedAlgebra
 using SymbolicUtils
 using Test
 
