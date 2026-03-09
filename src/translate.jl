@@ -46,7 +46,7 @@ function _translate_prefactor(arg_c::Number, time_parameter)
 end
 
 """
-    translate(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),
+    translate_qo(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),
               level_map=nothing, operators=Dict(), op_type=sparse)
 
 Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator with the corresponding basis `b`. 
@@ -58,7 +58,7 @@ The operator type which should be returned can be set with the kwarg `op_type=sp
 a list of user-defined operators (e.g. on a different basis than `b`) can be provided with the 
 dictionary `operators=Dict()`. These operators will then be used to replace the symbolic expressions.  
 """
-function translate(
+function translate_qo(
     op::SQA.QMul,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -110,7 +110,7 @@ function translate(
     end
 end
 #
-function translate(
+function translate_qo(
     op::SQA.QAdd,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -137,7 +137,7 @@ function translate(
     ### static and time-dependent operators
     args = arguments(substitute(op, parameter))
     args_translated = [
-        translate(
+        translate_qo(
             arg,
             b;
             parameter = parameter,
@@ -152,7 +152,7 @@ function translate(
     return output_op_QAdd_QO
 end
 
-function translate(
+function translate_qo(
     op::QSym,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -186,7 +186,7 @@ function translate(
     return output_op_QSym_QO
 end
 
-function translate(
+function translate_qo(
     arg_c_,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -213,13 +213,13 @@ function translate(
     return t -> prod_c_nc_num
 end
 
-function translate(ops::Vector, b::QuantumOpticsBase.Basis; kwargs...)
-    return [translate(op, b; kwargs...) for op in ops]
+function translate_qo(ops::Vector, b::QuantumOpticsBase.Basis; kwargs...)
+    return [translate_qo(op, b; kwargs...) for op in ops]
 end
-function translate(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
+function translate_qo(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
     L = get_lindblad(G);
     H = get_hamiltonian(G)
-    H_QO = translate(H, b; kwargs...)
-    L_QO = [translate(L_, b; kwargs...) for L_ in L]
+    H_QO = translate_qo(H, b; kwargs...)
+    L_QO = [translate_qo(L_, b; kwargs...) for L_ in L]
     return H_QO, L_QO
 end

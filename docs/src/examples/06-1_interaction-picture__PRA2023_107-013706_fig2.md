@@ -117,8 +117,8 @@ ba = NLevelBasis(2)
 bv = FockBasis(5)
 b = bu ⊗ ba ⊗ bv
 
-H_int_QO = translate(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+H_int_QO = translate_qo(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate_qo(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     Ht = H_int_QO(t)

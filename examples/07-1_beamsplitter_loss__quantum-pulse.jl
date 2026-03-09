@@ -86,8 +86,8 @@ au_qo = destroy(bu) ⊗ one(bv)
 av_qo = one(bu) ⊗ destroy(bv)
 
 ## translate to numeric operators
-H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = [translate(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
+H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = [translate_qo(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
 
 function input_output(t, ρ)
     Ht = H_QO(t)

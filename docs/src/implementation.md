@@ -35,12 +35,12 @@ If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/Quantu
 ## Translate to numerics
 
 To solve the dynamics of the master equation we first need to create the corresponding numeric operators for the Hamilton and the Lindblad terms.  
-This can be done with [`translate`](@ref), which converts symbolic operators into [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators on a chosen basis. It accepts two parameter substitution dictionaries:
+This can be done with [`translate_qo`](@ref), which converts symbolic operators into [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators on a chosen basis. It accepts two parameter substitution dictionaries:
 
 - `parameter`: numeric parameters used in algebraic substitution
 - `time_parameter`: time-dependent parameters, given as functions of `t` 
 
-If `time_parameter` is non-empty, [`translate`](@ref) returns a callable `t -> op(t)` so that the Hamiltonian and jump operators can be supplied to `timeevolution.master_dynamic`. 
+If `time_parameter` is non-empty, [`translate_qo`](@ref) returns a callable `t -> op(t)` so that the Hamiltonian and jump operators can be supplied to `timeevolution.master_dynamic`. 
 
 ```julia
 bu = FockBasis(2)
@@ -52,8 +52,8 @@ dict_p = Dict(γ => 1.0, gv => 0.0)
 gu_t = u_to_gu(t -> exp(-t^2), 0:0.01:5)
 dict_p_t = Dict(gu => gu_t)
 
-H_QO = translate(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = translate(L, b; parameter=dict_p, time_parameter=dict_p_t)
+H_QO = translate_qo(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_QO = translate_qo(L, b; parameter=dict_p, time_parameter=dict_p_t)
 ```
 
 In some cases it can be useful to define your own set of numeric operators which should replace the symbolic expressions, e.g. to reduce the Hilbert space if the output cavities are not analyzed but they are already included in the symbolic derivation. Such a list of operators can be provide with the dictionary `operators`.

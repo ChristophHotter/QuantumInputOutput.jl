@@ -153,13 +153,13 @@ b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
-H_QO_Δ(Δn) = translate(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
+H_QO_Δ(Δn) = translate_qo(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
 L_QO_Δ(Δn) = [
-    translate(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
+    translate_qo(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
     i = 1:length(L)
 ]
-# H_QO_Δ(Δn) = translate(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
-# L_QO_Δ(Δn) = [translate(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
+# H_QO_Δ(Δn) = translate_qo(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
+# L_QO_Δ(Δn) = [translate_qo(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
 nothing # hide
 #
 
@@ -167,10 +167,10 @@ nothing # hide
 
 #
 
-σ22_QO = translate(σ(2, 2), b)
-au_QO = translate(au, b)
-ad1_QO = translate(ad1, b)
-ad2_QO = translate(ad2, b)
+σ22_QO = translate_qo(σ(2, 2), b)
+au_QO = translate_qo(au, b)
+ad1_QO = translate_qo(ad1, b)
+ad2_QO = translate_qo(ad2, b)
 
 Δn = 0
 H_QO = H_QO_Δ(Δn)

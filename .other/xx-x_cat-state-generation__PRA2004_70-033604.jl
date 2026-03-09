@@ -76,8 +76,8 @@ ops_sym = [a, a', σ(2, 2), σ(1, 2), σ(2, 1)]
 ops_QO = [a_QO, dagger(a_QO), σ_QO(2, 2), σ_QO(1, 2), σ_QO(2, 1)]
 ops_dict = Dict(ops_sym .=> ops_QO)
 
-H_QO = translate(H_ac, b; parameter = dict_p, time_parameter = dict_t, operators = ops_dict)
-L_QO = translate(√(κ)*a, b; parameter = dict_p, operators = ops_dict)
+H_QO = translate_qo(H_ac, b; parameter = dict_p, time_parameter = dict_t, operators = ops_dict)
+L_QO = translate_qo(√(κ)*a, b; parameter = dict_p, operators = ops_dict)
 J_add_QO = √(γ_)*σ_QO(1, 2)
 
 J = [L_QO, J_add_QO]
@@ -150,9 +150,9 @@ G_cas = G_ac ▷ G_v
 H_2 = G_cas.hamiltonian
 L_2 = G_cas.lindblad[1]
 
-H_QO_2 = translate(H_2, b; parameter = dict_p, time_parameter = dict_t_2)
-L_QO_2 = translate(L_2, b; parameter = dict_p, time_parameter = dict_t_2)
-J_add_QO_2 = translate(√(γ)*σ(1, 2), b; parameter = dict_p)
+H_QO_2 = translate_qo(H_2, b; parameter = dict_p, time_parameter = dict_t_2)
+L_QO_2 = translate_qo(L_2, b; parameter = dict_p, time_parameter = dict_t_2)
+J_add_QO_2 = translate_qo(√(γ)*σ(1, 2), b; parameter = dict_p)
 
 function input_output_2(t, ρ)
     H = H_QO_2(t)
@@ -163,7 +163,7 @@ end
 ψ0_2 = ψ0 ⊗ fockstate(bv, 0)
 t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0_2, input_output_2)
 
-av_QO_2 = translate(av, b)
+av_QO_2 = translate_qo(av, b)
 n_v1_t = real(expect(dagger(av_QO_2)*av_QO_2, ρt_2))
 n_v1_t[end]
 

@@ -84,8 +84,8 @@ bs1 = NLevelBasis(2)
 bv1 = FockBasis(2)
 b = bu2 ⊗ bu1 ⊗ bs1 ⊗ bv1;
 
-H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
+H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate_qo(L, b; parameter = dict_p, time_parameter = dict_p_t)
 function input_output(t, ρ)
     H = H_QO(t)
     J = [L_QO(t)]
@@ -102,8 +102,8 @@ nothing # hide
 
 # Now we analyze the output modes with the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$. 
 
-au1_qo = translate(au1, b)
-σ_qo(i, j) = translate(σ(i, j), b)
+au1_qo = translate_qo(au1, b)
+σ_qo(i, j) = translate_qo(σ(i, j), b)
 
 Ls(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1, 2)
 g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
@@ -181,8 +181,8 @@ nothing # hide
 
 # The time-dependent couplings are used to define the numeric Hamiltonian and Lindblad term, and then solve the dynamics of the system. 
 
-H_QO_2 = translate(H, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
-L_QO_2 = translate(L, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
+H_QO_2 = translate_qo(H, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
+L_QO_2 = translate_qo(L, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
 function input_output_2(t, ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]

@@ -47,8 +47,8 @@ using Test
     bv1 = FockBasis(2)
     b = bu1 ⊗ bc1 ⊗ bv1
 
-    H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
-    L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
+    H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = translate_qo(L, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output_1(t, ρ)
         Ht = H_QO(t)
@@ -59,9 +59,9 @@ using Test
     ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
     t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output_1)
 
-    au_qo = translate(au, b)
-    c_qo = translate(c, b)
-    av_qo = translate(av, b)
+    au_qo = translate_qo(au, b)
+    c_qo = translate_qo(c, b)
+    av_qo = translate_qo(av, b)
 
     n_u_t = real.(expect(au_qo' * au_qo, ρt))
     n_c_t = real.(expect(c_qo' * c_qo, ρt))
@@ -93,8 +93,8 @@ using Test
     # dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
     dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
 
-    H_QO_2 = translate(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-    L_QO_2 = translate(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+    H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+    L_QO_2 = translate_qo(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
     function input_output_2(t, ρ)
         H = H_QO_2(t)
         J = [L_QO_2(t)]

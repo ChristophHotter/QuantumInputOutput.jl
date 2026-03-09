@@ -101,12 +101,12 @@ bd2 = FockBasis(n)
 bs = NLevelBasis(2)
 b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
-σ22_QO = translate(σ(2, 2), b)
+σ22_QO = translate_qo(σ(2, 2), b)
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
-H_QO_Δ(Δn) = translate(H, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t)
+H_QO_Δ(Δn) = translate_qo(H, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t)
 L_QO_Δ(Δn) = [
-    translate(L[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t) for
+    translate_qo(L[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t) for
     i = 1:length(L)
 ]
 nothing # hide

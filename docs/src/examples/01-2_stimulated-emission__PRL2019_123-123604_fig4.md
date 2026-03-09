@@ -69,7 +69,7 @@ T = [0.001:0.001:1;]*4.0
 nothing # hide
 ````
 
-We use the function [`translate`](@ref) to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic` in  QuantumOptics.jl.
+We use the function [`translate_qo`](@ref) to create the numeric operators and solve the dynamics with the function `timeevolution.master_dynamic` in  QuantumOptics.jl.
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
 # numeric bases
@@ -78,8 +78,8 @@ ba1 = NLevelBasis(2)
 bv1 = FockBasis(2)
 b = bu1 ⊗ ba1 ⊗ bv1
 
-H_QO = translate(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate(L, b; parameter = dict_p, time_parameter = dict_p_t)
+H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = translate_qo(L, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     H = H_QO(t)
@@ -98,9 +98,9 @@ nothing # hide
 To calculate expectation values we create the desired numerical operators.
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
-au_qo = translate(au, b)
-σ_qo(i, j) = translate(σ(i, j), b)
-av_qo = translate(av, b)
+au_qo = translate_qo(au, b)
+σ_qo(i, j) = translate_qo(σ(i, j), b)
+av_qo = translate_qo(av, b)
 
 proj_u(n) = embed(b, 1, projector(fockstate(bu1, n)))
 proj_v(n) = embed(b, 3, projector(fockstate(bv1, n)))

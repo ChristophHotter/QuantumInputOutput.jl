@@ -71,7 +71,7 @@ eqs_a = meanfield([a], H1, [L1_L, L1_R])
 # TODO: Latexify? # hide
 ````
 
-To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`translate`](@ref).
+To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`translate_qo`](@ref).
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 # numerical parameters
@@ -91,9 +91,9 @@ bc1 = FockBasis(4)
 a_QO = destroy(bc1)
 ops_dict = Dict([a, a'] .=> [a_QO, dagger(a_QO)])
 
-H1_QO = translate(H1, bc1; parameter = dict_p1, operators = ops_dict)
-L1_L_QO = translate(L1_L, bc1; parameter = dict_p1, operators = ops_dict)
-L1_R_QO = translate(L1_R, bc1; parameter = dict_p1, operators = ops_dict)
+H1_QO = translate_qo(H1, bc1; parameter = dict_p1, operators = ops_dict)
+L1_L_QO = translate_qo(L1_L, bc1; parameter = dict_p1, operators = ops_dict)
+L1_R_QO = translate_qo(L1_R, bc1; parameter = dict_p1, operators = ops_dict)
 J1_QO = [L1_L_QO, L1_R_QO]
 nothing # hide
 ````
@@ -125,7 +125,7 @@ Now we scan the laser-cavity detuning $\Delta$ to plot the transmission and refl
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 dict_p_Δ(Δn) = Dict(p_sym .=> [En, κ_Rn, κ_Ln, Δn])
-H1_QO_Δ_(Δn) = translate(H1, bc1; parameter = dict_p_Δ(Δn), operators = ops_dict)
+H1_QO_Δ_(Δn) = translate_qo(H1, bc1; parameter = dict_p_Δ(Δn), operators = ops_dict)
 
 n_ref_Δ = zeros(lΔ)
 n_trans_Δ = zeros(lΔ)
@@ -208,9 +208,9 @@ a_QO2 = to_numeric(a, b)
 σ_QO(α, i, j) = to_numeric(σ(α, i, j), b)
 
 # translate to numeric Hamiltonian and Lindblad
-H_QO = translate(H2, b; parameter = dict_p2, time_parameter = dict_p_t2)
-L2_L_QO = translate(L2_L, b; parameter = dict_p2, time_parameter = dict_p_t2)
-L2_R_QO = translate(L2_R, b; parameter = dict_p2)
+H_QO = translate_qo(H2, b; parameter = dict_p2, time_parameter = dict_p_t2)
+L2_L_QO = translate_qo(L2_L, b; parameter = dict_p2, time_parameter = dict_p_t2)
+L2_R_QO = translate_qo(L2_R, b; parameter = dict_p2)
 
 # additional atomic decay into free space
 J_add = [√(γn)*σ_QO(α, 1, 2) for α = 1:Natoms]

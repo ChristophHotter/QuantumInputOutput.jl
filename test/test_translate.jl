@@ -37,19 +37,19 @@ using Test
 
     @testset "kwarg_operators" begin
         @test isequal(
-            translate(Δ, bc1; parameter = dict_p1, operators = ops_dict),
+            translate_qo(Δ, bc1; parameter = dict_p1, operators = ops_dict),
             one(bc1)*Δn,
         )
         @test isequal(
-            translate(2, bc1; parameter = dict_p1, operators = ops_dict),
+            translate_qo(2, bc1; parameter = dict_p1, operators = ops_dict),
             one(bc1)*2,
         )
-        @test isequal(translate(a, bc1; parameter = dict_p1, operators = ops_dict), a_QO)
+        @test isequal(translate_qo(a, bc1; parameter = dict_p1, operators = ops_dict), a_QO)
         @test isequal(
-            translate(a*3, bc1; parameter = dict_p1, operators = ops_dict),
+            translate_qo(a*3, bc1; parameter = dict_p1, operators = ops_dict),
             a_QO*3,
         )
-        F1 = translate(
+        F1 = translate_qo(
             a*3,
             bc1;
             parameter = dict_p1,
@@ -58,7 +58,7 @@ using Test
         )
         @test isa(F1, Function)
         @test isequal(F1(0.1), a_QO*3)
-        F2 = translate(
+        F2 = translate_qo(
             a*E,
             bc1;
             parameter = dict_p1,
@@ -69,7 +69,7 @@ using Test
         F2(0.1)
         a_QO*E_t(0.1)
         @test isequal(
-            translate(Δ*a'a, bc1; parameter = dict_p1, operators = ops_dict),
+            translate_qo(Δ*a'a, bc1; parameter = dict_p1, operators = ops_dict),
             Δn*dagger(a_QO)*a_QO,
         )
     end
@@ -82,10 +82,10 @@ using Test
     σ_QO(i, j) = to_numeric(σ(i, j), b)
 
     @test isequal(a_QO2, dense(to_numeric(a, b)))
-    @test isequal(translate(Δ, b; parameter = dict_p1), one(b)*Δn)
-    F3 = translate(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test isequal(translate_qo(Δ, b; parameter = dict_p1), one(b)*Δn)
+    F3 = translate_qo(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F3(4) - one(b)*Δn).data)) < 1e-8
-    F4 = translate(
+    F4 = translate_qo(
         a*3*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
@@ -93,22 +93,22 @@ using Test
     )
     @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
     F5 =
-        translate(a*conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
+        translate_qo(a*conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    F5_ = translate(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    F5_ = translate_qo(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
-    F6 = translate(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    F6 = translate_qo(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
-    F7 = translate(conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    F7 = translate_qo(conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    @test_throws MethodError translate(conj(E), b; parameter = dict_p1)
-    F8 = translate(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test_throws MethodError translate_qo(conj(E), b; parameter = dict_p1)
+    F8 = translate_qo(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F8(0.2) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
 
 
     @testset "time_parameter_normalization" begin
         dict_p_t_num = Dict([E] .=> [2.5])
-        F_num = translate(a*E, b; parameter = dict_p1, time_parameter = dict_p_t_num)
+        F_num = translate_qo(a*E, b; parameter = dict_p1, time_parameter = dict_p_t_num)
         @test sum(abs.((F_num(0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
     end
 
@@ -117,7 +117,7 @@ using Test
         E2_t(t) = 0.7 - 0.1im + 0.2t
         E2_t_c(t) = conj(E2_t(t))
         dict_p_t_multi = Dict([E1, conj(E2)] .=> [E1_t, E2_t_c])
-        F_multi = translate(
+        F_multi = translate_qo(
             a * E1 * conj(E2),
             b;
             parameter = dict_p1,
