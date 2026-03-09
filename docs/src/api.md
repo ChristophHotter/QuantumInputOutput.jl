@@ -41,7 +41,7 @@ concatenate
 ## [Translation](@id API: Translation)
 
 ```@docs
-translate
+translate_qo
 ```
 
 ## [Pulses](@id API: Pulses)
