@@ -194,7 +194,7 @@ gcf()
 
 # ## Cavity with phase noise
 
-# We slightly adapt the above example by assuming the intial pulse to be in a coherent state and adding phase noise to the cavity. This results in scattering into multiple modes. 
+# We slightly adapt the above example by assuming the initial pulse to be in a coherent state and adding phase noise to the cavity. This results in scattering into multiple modes. 
 
 ## new basis of the system
 bu1_3 = FockBasis(12)

@@ -158,7 +158,7 @@ occupations, we compute the first-order correlation function
 g^{(1)}(t_1, t_2) = \langle \hat L_s^\dagger(t_1)\, \hat L_s(t_2) \rangle,
 ```
 
-where $\hat L_s$ is the output operator (e.g., $\hat L_s = g_u(t) \hat{a}_u + \sqrt{\kappa} \hat c$ for a single sided cavity interacting with a puls $u(t)$).
+where $\hat L_s$ is the output operator (e.g., $\hat L_s = g_u(t) \hat{a}_u + \sqrt{\kappa} \hat c$ for a single sided cavity interacting with a pulse$u(t)$).
 The eigen-decomposition
 
 ```math
