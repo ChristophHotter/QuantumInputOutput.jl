@@ -1,0 +1,12 @@
+[default.extend-words]
+ket = "ket"
+Ket = "Ket"
+pn = "pn"
+ba = "ba"
+HOM = "HOM"
+Ein = "Ein"
+nd = "nd"
+
+[type.ipynb]
+extend-glob = ["*.ipynb"]
+check-file = false
