@@ -7,7 +7,7 @@ EditURL = "../../../examples/08-1_pulse-delay__simple.jl"
 In this example, a single-photon pulse is emitted from an input cavity, delayed by a virtual delay cavity,
 and finally captured by an output cavity. The delay cavity is driven by an incoming pulse `u(t)` and
 simultaneously emits a delayed pulse `u(t-τ)` using the pulse-shaping couplings introduced in
-[V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)](https://doi.org/10.1103/PhysRevA.113.013730).
+[V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)](https://journals.aps.org/pra/abstract/10.1103/3f3w-jmj8).
 
 ````@example 08-1_pulse-delay__simple
 using QuantumInputOutput

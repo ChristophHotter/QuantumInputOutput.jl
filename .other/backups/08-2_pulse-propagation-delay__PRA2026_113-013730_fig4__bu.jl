@@ -2,7 +2,7 @@
 
 # # Ramsey Interference with Delayed Fock Pulses
 
-# In this example, we reproduces the Ramsey-like interference pattern for a partially delayed input Fock state with `n = 9`, studied in  [V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)](https://doi.org/10.1103/PhysRevA.113.013730). 
+# In this example, we reproduces the Ramsey-like interference pattern for a partially delayed input Fock state with `n = 9`, studied in  [V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)](https://journals.aps.org/pra/abstract/10.1103/3f3w-jmj8). 
 # We model a single input Fock pulse that is split on a 50/50 beam splitter (with vacuum padding on the second port),
 # creating two channels that interact with the two-level system. We then scan the detuning to extract the excited-state
 # population at the evaluation time used in the paper and compare with a coherent-state drive of the same mean photon number.
