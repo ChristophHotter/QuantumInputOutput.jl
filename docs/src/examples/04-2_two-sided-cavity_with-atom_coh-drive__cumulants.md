@@ -66,7 +66,12 @@ We use the function `meanfield` to obtain the equation for the intra-cavity fiel
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
 # TODO: Latexify? # hide
+nothing # hide
 ````
+
+```math
+\begin{align} \frac{d}{dt} \langle a\rangle &= 1 i \Delta \langle a\rangle -1.0 \sqrt{\kappa{L}} E -0.5 \left( \left( \sqrt{\kappa{L}} \right)^{2} + \left( \sqrt{\kappa_{R}} \right)^{2} \right) \langle a\rangle \end{align}
+```
 
 We defined the numerical parameters and the initial state of the system, create the ODE problem and solve the dynamics.
 
@@ -175,6 +180,10 @@ We derive the equations of motion for system with a second-order mean-field appr
 J_add = [√(γ)*σ(α, 1, 2) for α = 1:Natoms]
 eqs2 = meanfield([a'a, σ(1, 2, 2)], H2, [L2_L, L2_R, J_add...]; order = 2)
 ````
+
+```math
+\begin{align} \frac{d}{dt} \langle a^\dagger a\rangle &= -1 i g \langle a^\dagger {\sigma1}^{{12}}\rangle + \langle a^\dagger a\rangle \left( -1.0 \left( \sqrt{\kappa{L}} \right)^{2} -1.0 \left( \sqrt{\kappa{R}} \right)^{2} \right) -1 i g \langle a^\dagger {\sigma2}^{{12}}\rangle + 1 i \langle a {\sigma2}^{{21}}\rangle g -1.0 \sqrt{\kappa{L}} \langle a\rangle \mathrm{Et}\left( t \right) -1.0 \sqrt{\kappa{L}} \langle a^\dagger\rangle \mathrm{Et}\left( t \right) + 1 i g \langle a {\sigma1}^{{21}}\rangle \\ \frac{d}{dt} \langle {\sigma1}^{{22}}\rangle &= 1 i g \langle a^\dagger {\sigma1}^{{12}}\rangle -1.0 \left( \sqrt{\gamma} \right)^{2} \langle {\sigma1}^{{22}}\rangle -1 i g \langle a {\sigma1}^{{21}}\rangle \end{align}
+```
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 eqs2_c = complete(eqs2)

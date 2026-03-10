@@ -289,7 +289,13 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots", "LaTeXStrings"],
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumOptics",
+        "Plots",
+        "LaTeXStrings",
+    ],
     mode = PKGMODE_MANIFEST,
 )
 ````

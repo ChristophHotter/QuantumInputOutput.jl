@@ -69,7 +69,12 @@ Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
 # TODO: Latexify? # hide
+nothing  # hide
 ````
+
+```math
+\begin{align} \frac{d}{dt} \langle a\rangle &= 1 i \Delta \langle a\rangle -1.0 \sqrt{\kappa{L}} E -0.5 \left( \left( \sqrt{\kappa{L}} \right)^{2} + \left( \sqrt{\kappa_{R}} \right)^{2} \right) \langle a\rangle \end{align}
+```
 
 To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`translate_qo`](@ref).
 
