@@ -1,7 +1,7 @@
 # MAIN TODO - LIST:
 
 - [ ] clean up code
-  - [x] rm QC.jl
+  - [x] rm QC.jl 
   - [ ] types
   - [ ] rename translate_qo (to to_numerics ?)
 
