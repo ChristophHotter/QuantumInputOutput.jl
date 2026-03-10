@@ -27,25 +27,25 @@ pages = [
     ],
 ]
 
-using Pkg
-status = sprint(io -> Pkg.status("SecondQuantizedAlgebra"; io = io))
-# version = match(r"(v[0-9].[0-9]+.[0-9]+)", status)[1]
-gh_moi = Documenter.Remotes.GitHub("qojulia", "SecondQuantizedAlgebra.jl")
-# remotes = Dict(pkgdir(SecondQuantizedAlgebra) => (gh_moi, version))
-
 makedocs(
     sitename = "QuantumInputOutput.jl",
-    modules = [QuantumInputOutput],#, SecondQuantizedAlgebra],
-    pages = pages,
-    # remotes = remotes,
-    checkdocs = :exports,
-    format = Documenter.HTML(
-        mathengine = MathJax(),
-        footer = "[**Back to GitHub**](https://github.com/ChristophHotter/QuantumInputOutput.jl)",
-        example_size_threshold = 800 * 2^10,
-        size_threshold_warn = 400 * 2^10,
-        size_threshold = 600 * 2^10,
+    modules = QuantumInputOutput,
+    format = Documenter.HTML(;
+        canonical = "https://ChristophHotter.github.io/QuantumInputOutput.jl",
     ),
+    pages = pages,
+    clean = true,
+    linkcheck = true,
+    warnonly = :missing_docs,
+    draft = false,#,(!CI),
+    doctest = false,  # We test it in the CI, no need to run it here
+    checkdocs = :exports,
 )
 
-deploydocs(repo = "github.com/ChristophHotter/QuantumInputOutput.jl", push_preview = true)
+deploydocs(
+    repo = "github.com/ChristophHotter/QuantumInputOutput.jl",
+    devbranch = "main",
+    target = "build",
+    branch = "gh-pages",
+    push_preview = true,
+)
