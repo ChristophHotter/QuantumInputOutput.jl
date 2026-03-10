@@ -1,5 +1,5 @@
 """
-    SLH
+    SLH 
 
 SLH triple with scattering matrix `S`, Lindblad term `L` and Hamiltonian `H`. 
 `S` and `L` can also be vectors of scattering matrices and Linblad terms. 
