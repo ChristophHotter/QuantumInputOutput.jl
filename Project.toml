@@ -18,6 +18,7 @@ SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 [compat]
 # Aqua = "0.8"
 # CheckConcreteStructs = "0.1"
+DataInterpolations = "8"
 DiffEqNoiseProcess = "5.27.0"
 # ExplicitImports = "1.12"
 LinearAlgebra = "1.10"
