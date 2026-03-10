@@ -76,7 +76,8 @@ ops_sym = [a, a', σ(2, 2), σ(1, 2), σ(2, 1)]
 ops_QO = [a_QO, dagger(a_QO), σ_QO(2, 2), σ_QO(1, 2), σ_QO(2, 1)]
 ops_dict = Dict(ops_sym .=> ops_QO)
 
-H_QO = translate_qo(H_ac, b; parameter = dict_p, time_parameter = dict_t, operators = ops_dict)
+H_QO =
+    translate_qo(H_ac, b; parameter = dict_p, time_parameter = dict_t, operators = ops_dict)
 L_QO = translate_qo(√(κ)*a, b; parameter = dict_p, operators = ops_dict)
 J_add_QO = √(γ_)*σ_QO(1, 2)
 

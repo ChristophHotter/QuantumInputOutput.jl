@@ -13,6 +13,7 @@ using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
 using Plots
+using LaTeXStrings
 
 #
 
@@ -155,8 +156,8 @@ b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
 H_QO_Δ(Δn) = translate_qo(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
 L_QO_Δ(Δn) = [
-    translate_qo(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
-    i = 1:length(L)
+    translate_qo(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
+    for i = 1:length(L)
 ]
 # H_QO_Δ(Δn) = translate_qo(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
 # L_QO_Δ(Δn) = [translate_qo(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]

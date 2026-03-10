@@ -14,6 +14,7 @@ using QuantumOptics
 using SecondQuantizedAlgebra
 using SymbolicUtils
 using Plots
+using LaTeXStrings
 ````
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
@@ -151,11 +152,25 @@ If the interaction picture is not used, the input cavity $u$ completely empties 
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
 p1 = plot(T, n_u; label = L"\langle n_u \rangle")
-plot!(p1; xlabel = "tγ", ylabel = "excitations", ylims = (17.8, 20.2), grid = true, legend = :best)
+plot!(
+    p1;
+    xlabel = "tγ",
+    ylabel = "excitations",
+    ylims = (17.8, 20.2),
+    grid = true,
+    legend = :best,
+)
 
 p2 = plot(T, P_e; label = L"\langle \sigma_{ee} \rangle")
 plot!(p2, T, n_v; label = L"\langle n_v \rangle", ls = :dash)
-plot!(p2; xlabel = "tγ", ylabel = "excitations", ylims = (0, 1), grid = true, legend = :best)
+plot!(
+    p2;
+    xlabel = "tγ",
+    ylabel = "excitations",
+    ylims = (0, 1),
+    grid = true,
+    legend = :best,
+)
 
 plot(p1, p2; layout = (2, 1), size = (560, 420))
 ````
@@ -176,6 +191,7 @@ Pkg.status(
         "SecondQuantizedAlgebra",
         "SymbolicUtils",
         "Plots",
+        "LaTeXStrings",
     ],
     mode = PKGMODE_MANIFEST,
 )

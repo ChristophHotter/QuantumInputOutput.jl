@@ -13,6 +13,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
+using LaTeXStrings
 ````
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
@@ -236,7 +237,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots", "LaTeXStrings"],
     mode = PKGMODE_MANIFEST,
 )
 ````

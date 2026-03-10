@@ -13,6 +13,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
+using LaTeXStrings
 using LinearAlgebra
 ````
 
@@ -255,7 +256,7 @@ nothing # hide
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 L0(t) = √(γ_)*c_3 + gu_t(t)*au_3 + gv_t(t)*av_3
-I_out = [expect(dagger(L0(t_3[i]))*L0(t_3[i]), ρt_3[i]) for i = 1:length(t_3)]
+I_out = [real(expect(dagger(L0(t_3[i]))*L0(t_3[i]), ρt_3[i])) for i = 1:length(t_3)]
 
 n_u1_t_3 = real.(expect(au'*au, ρt_3))
 n_v1_t_3 = real.(expect(av'*av, ρt_3))
@@ -288,7 +289,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots", "LaTeXStrings"],
     mode = PKGMODE_MANIFEST,
 )
 ````

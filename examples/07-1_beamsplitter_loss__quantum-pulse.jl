@@ -109,15 +109,28 @@ n_u_t = real(expect(au_qo'au_qo, ρt))
 n_v_t = real(expect(av_qo'av_qo, ρt))
 
 ρv_end = ptrace(ρt[end], 1)
-pop_n_ls = [ρv_end.data[i, i] for i = 1:(n_ph+1)]
+pop_n_ls = [real(ρv_end.data[i, i]) for i = 1:(n_ph+1)]
 nothing # hide
 
 # We plot the mean photon number and the distribution of the Fock state components after the beam splitter interaction. 
 # We can see that the mean photon number is reduced by $\eta = 20 \%$. 
 
 
-p1 = plot(T, n_u_t .+ n_v_t; xlabel = "time", ylabel = "photon number", grid = true)
-p2 = bar(0:n_ph, pop_n_ls; xlabel = "Fock state component n", ylabel = "population")
+p1 = plot(
+    T,
+    n_u_t .+ n_v_t;
+    xlabel = "time",
+    ylabel = "photon number",
+    grid = true,
+    label = "",
+)
+p2 = bar(
+    0:n_ph,
+    pop_n_ls;
+    xlabel = "Fock state component n",
+    ylabel = "population",
+    label = "",
+)
 plot(p1, p2; layout = (2, 1), size = (540, 420))
 
 # Note that the calculation can also be performed in the interaction picture, which would be numerically beneficial and the loss of the input mode $u(t)$ can be directly observed. 
@@ -131,6 +144,12 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumOptics",
+        "Plots",
+        "LaTeXStrings",
+    ],
     mode = PKGMODE_MANIFEST,
 )

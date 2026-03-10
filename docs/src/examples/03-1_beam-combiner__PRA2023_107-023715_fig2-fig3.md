@@ -15,6 +15,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
+using LaTeXStrings
 using LinearAlgebra
 using DataInterpolations
 ````
@@ -86,7 +87,7 @@ We translate the symbolic expressions to numerical operators and solve the time-
 To obtain the output modes we do not use the second input mode and the output mode cavity.
 However, to keep the example short we include them already from the beginning since they are needed later.
 To perform time consuming parameter scans one should merely use the necessary Hilbert spaces. In this case, this would correspond to one input cavity and the two-level system.
-The kwarg `operators` of the function [translate](@ref) provides a convenient way to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
+The kwarg `operators` of the function [translate_qo](@ref) provides a convenient way to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 # numeric bases
@@ -231,10 +232,30 @@ nothing # hide
 We can see that the two single photons combine to a two photon Fock-state in one temporal mode.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-p = plot(T, nu2_t_comb; color = :red, ls = :dash, label = L"\langle a^\dagger a \rangle_{u_2}")
-plot!(p, T, nu1_t_comb; color = :blue, ls = :dashdot, label = L"\langle a^\dagger a \rangle_{u_1}")
+p = plot(
+    T,
+    nu2_t_comb;
+    color = :red,
+    ls = :dash,
+    label = L"\langle a^\dagger a \rangle_{u_2}",
+)
+plot!(
+    p,
+    T,
+    nu1_t_comb;
+    color = :blue,
+    ls = :dashdot,
+    label = L"\langle a^\dagger a \rangle_{u_1}",
+)
 plot!(p, T, s22_t_comb; color = :black, ls = :dot, label = L"\langle \sigma^{22} \rangle")
-plot!(p, T, nv1_t_comb; color = :green, ls = :solid, label = L"\langle a^\dagger a \rangle_{v_1}")
+plot!(
+    p,
+    T,
+    nv1_t_comb;
+    color = :green,
+    ls = :solid,
+    label = L"\langle a^\dagger a \rangle_{v_1}",
+)
 plot!(
     p;
     ylims = (0, 2),
@@ -263,6 +284,7 @@ Pkg.status(
         "QuantumOptics",
         "Plots",
         "DataInterpolations",
+        "LaTeXStrings",
     ],
     mode = PKGMODE_MANIFEST,
 )

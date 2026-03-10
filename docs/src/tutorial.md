@@ -18,6 +18,7 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using LinearAlgebra
 using Plots
+using LaTeXStrings
 ```
 
 ```@example tutorial

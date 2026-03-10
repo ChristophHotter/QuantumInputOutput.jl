@@ -7,6 +7,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
+using LaTeXStrings
 using LinearAlgebra
 using Random #hide
 
@@ -189,6 +190,12 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumOptics",
+        "Plots",
+        "LaTeXStrings",
+    ],
     mode = PKGMODE_MANIFEST,
 )

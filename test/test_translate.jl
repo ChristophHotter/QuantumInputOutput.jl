@@ -92,14 +92,23 @@ using Test
         time_parameter = dict_p_t2,
     )
     @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    F5 =
-        translate_qo(a*conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    F5 = translate_qo(
+        a*conj(E) + Δ*σ(2, 2),
+        b;
+        parameter = dict_p1,
+        time_parameter = dict_p_t2,
+    )
     @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
     F5_ = translate_qo(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
     F6 = translate_qo(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
-    F7 = translate_qo(conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    F7 = translate_qo(
+        conj(E) + Δ*σ(2, 2),
+        b;
+        parameter = dict_p1,
+        time_parameter = dict_p_t2,
+    )
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
     @test_throws MethodError translate_qo(conj(E), b; parameter = dict_p1)
     F8 = translate_qo(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)

@@ -13,6 +13,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
+using LaTeXStrings
 ````
 
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
@@ -110,7 +111,7 @@ popu_v_n1 = real.(expect(proj_v(1), ρt))
 popu_v_n2 = real.(expect(proj_v(2), ρt))
 
 L0(t) = √(γ_)*σ_qo(1, 2) + √(Γ_)*au_qo + gv_(t)*av_qo
-I_out = [expect(dagger(L0(t_[i]))*L0(t_[i]), ρt[i]) for i = 1:length(t_)]
+I_out = [real(expect(dagger(L0(t_[i]))*L0(t_[i]), ρt[i])) for i = 1:length(t_)]
 I_out_int = [0.0]
 for i = 2:length(I_out)
     push!(I_out_int, I_out_int[end]+I_out[i]*ΔT)
@@ -146,7 +147,7 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots", "LaTeXStrings"],
     mode = PKGMODE_MANIFEST,
 )
 ````

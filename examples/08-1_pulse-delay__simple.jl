@@ -11,6 +11,7 @@ using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
 using Plots
+using LaTeXStrings
 
 #
 
@@ -110,7 +111,14 @@ nothing # hide
 p = plot(T, nu; label = L"\langle a_u^\dagger a_u \rangle")
 plot!(p, T, nd; label = L"\langle a_d^\dagger a_d \rangle")
 plot!(p, T, nv; label = L"\langle a_v^\dagger a_v \rangle")
-plot!(p; xlabel = "time", ylabel = "mean photon number", grid = true, legend = :best, size = (500, 300))
+plot!(
+    p;
+    xlabel = "time",
+    ylabel = "mean photon number",
+    grid = true,
+    legend = :best,
+    size = (500, 300),
+)
 p
 
 # We can see that the pulse is perfectly absorbed by the delayed output mode $v(t) = u(t-\tau)$
@@ -215,7 +223,14 @@ nothing # hide
 p = plot(T, nu_int; label = L"\langle a_u^\dagger a_u \rangle_{IP}")
 ## plot!(p, T, nd_int; label = L"\langle a_d^\dagger a_d \rangle_{IP}") # hide
 plot!(p, T, nv_int; label = L"\langle a_v^\dagger a_v \rangle_{IP}")
-plot!(p; xlabel = "time", ylabel = "mean photon number", grid = true, legend = :best, size = (500, 300))
+plot!(
+    p;
+    xlabel = "time",
+    ylabel = "mean photon number",
+    grid = true,
+    legend = :best,
+    size = (500, 300),
+)
 p
 
 #
@@ -227,6 +242,12 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
+    [
+        "QuantumInputOutput",
+        "SecondQuantizedAlgebra",
+        "QuantumOptics",
+        "Plots",
+        "LaTeXStrings",
+    ],
     mode = PKGMODE_MANIFEST,
 )
