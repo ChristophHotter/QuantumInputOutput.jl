@@ -65,7 +65,6 @@ We use the function `meanfield` to obtain the equation for the intra-cavity fiel
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
-# TODO: Latexify? # hide
 nothing # hide
 ````
 

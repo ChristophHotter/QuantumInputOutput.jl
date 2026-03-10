@@ -15,8 +15,6 @@ using SecondQuantizedAlgebra
 using QuantumOptics
 using QuantumCumulants
 using Plots
-using Latexify # hide
-set_default(double_linebreak = true) # hide
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
@@ -68,7 +66,6 @@ Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ 
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
-# TODO: Latexify? # hide
 nothing  # hide
 ````
 
