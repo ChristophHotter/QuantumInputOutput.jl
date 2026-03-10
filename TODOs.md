@@ -1,7 +1,7 @@
 # MAIN TODO - LIST:
 
 - [ ] clean up code
-  - [ ] Is QC.jl needed for the package? (or only SQA.jl?)
+  - [x] rm QC.jl
   - [ ] types
   - [ ] rename translate_qo (to to_numerics ?)
 
