@@ -1,6 +1,6 @@
 # Introduction
 
-**QuantumInputOutput.jl** is a Julia framework for modeling the input-output theory with quantum pulses. It combines:
+**QuantumInputOutput.jl** is a Julia framework for modeling the input-output theory with quantum pulses, using SLH (scattering, Lindblad, Hamiltonian) elements and rules. It combines:
 - a symbolic layer based on [SecondQuantizedAlgebra.jl](https://github.com/qojulia/SecondQuantizedAlgebra.jl) to build models using SLH rules
 - a numerical layer based on [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) and [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl) to simulate time dynamics and observables in a full quantum or higher-order meanfield approach, respectively
 
