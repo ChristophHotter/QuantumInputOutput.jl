@@ -2,7 +2,7 @@ using Documenter
 using QuantumInputOutput, SecondQuantizedAlgebra
 
 using Plots
-default(; fmt=:png)
+default(; fmt = :png)
 
 ENV["GKSwstype"] = "100" # enable headless mode for GR to suppress warnings when plotting
 
