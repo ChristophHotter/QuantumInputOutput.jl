@@ -125,7 +125,7 @@ get_hamiltonian(slh::SLH) = slh.hamiltonian
 Creates a new SLH triple by cascading the SLH triples from first to last according to 
 the rule 
 
-``SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
+``SLH_1 \\triangleright SLH_2 = ( S_2 S_1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
 
 Unicode `\\triangleright<tab>` alias of [`cascade`](@ref)
 """
@@ -228,7 +228,7 @@ Creates a new SLH triple by cascading the SLH triples from first to last accordi
 the rule 
 
 ```math
-SLH_1 \\triangleright SLH_2 = ( S_2 S1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) 
+SLH_1 \\triangleright SLH_2 = ( S_2 S_1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) 
 ```
 
 See also [`▷`](@ref). 
