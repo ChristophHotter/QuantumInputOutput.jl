@@ -24,7 +24,7 @@
 - [ ] more functionalities
   - [ ] feedback reduction
   - [ ] better method for u_eff and v_eff (Victor)
-  - [ ] interaction picture (Victor)
+  - [ ] interaction picture (Victor paper)
     - [ ] general expression for A(t)
   - [ ] pulse delay (Victor paper)
 
