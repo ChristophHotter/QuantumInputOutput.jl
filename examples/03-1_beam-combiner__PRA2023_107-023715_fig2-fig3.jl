@@ -162,7 +162,7 @@ gu1_ = u_to_gu(u1_new, T)
 u_new_data = [u1_new, u2_new]
 u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
 
-# effective u2 mode and corresponding coupling
+## effective u2 mode and corresponding coupling
 u2_for_gu2 = u_eff(u_new_fct, T, 2)
 gu2_ = u_to_gu(u2_for_gu2, T)
 

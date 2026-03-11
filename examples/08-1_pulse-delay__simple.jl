@@ -149,6 +149,11 @@ H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
 #
 
 L_int_sym = simplify.(substitute_operators.(L, Ref(int_dict)))
+L_int_sym[1]
+
+#
+
+L_int_sym[2]
 
 #
 

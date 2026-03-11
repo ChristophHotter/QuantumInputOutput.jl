@@ -51,6 +51,11 @@ H = get_hamiltonian(G)
 #
 
 L = get_lindblad(G)
+L[1]
+
+#
+
+L[2]
 
 #
 

@@ -74,4 +74,4 @@ jobs:
           file: lcov.info
           name: codecov-umbrella
           fail_ci_if_error: false
-        if: ${{ matrix.version == 'lts' }}
+        if: ${{ matrix.version == '1' }}

@@ -54,7 +54,7 @@ L = get_lindblad(G_cas)[1] # only one Lindblad term in this example
 
 p_sym = [γ, Δ, gv]
 p_num = [γ_, Δ_, 0] # gv=0
-dict_p = Dict(p_sym .=> p_num);
+dict_p = Dict(p_sym .=> p_num)
 
 ## Gaussian input mode
 σ = 1/γ_
