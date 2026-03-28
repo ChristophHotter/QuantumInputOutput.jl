@@ -13,7 +13,7 @@ It combines a symbolic layer for the SLH formalism based on [SecondQuantizedAlge
 
 ## Development status
 
-![CI](https://github.com/ChristophHotter/QuantumInputOutput.jl/workflows/CI/badge.svg) [![Codecov][codecov-img]][codecov-url] [![Documentation][docs-stable-img]][docs-stable-url] [![Documentation][docs-dev-img]][docs-dev-url]
+[![Documentation dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://christophhotter.github.io/QuantumInputOutput.jl/dev/)
 
 Note that **QuantumInputOutput.jl** is still at an early stage of development.
 
