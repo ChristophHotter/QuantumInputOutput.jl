@@ -66,15 +66,16 @@ function lowpass_filter(signal, T, B)
     return filtered
 end
 
-pin = ComplexF64[K_ * A_p * exp(-γ_ * t) for t in T]
-let # hide
-    pump = copy(pin)
-    for _ = 1:4
-        pump = lowpass_filter(pump, T, B_)
+function make_kpo_pump(T, K, γ, B, A_p; order = 4)
+    pump = ComplexF64[K * A_p * exp(-γ * t) for t in T]
+    for _ = 1:order
+        pump = lowpass_filter(pump, T, B)
     end
-end # hide
-p_t_ = LinearInterpolation(pump, T)
-p_t(t) = p_t_(t)
+    pump_interp = LinearInterpolation(pump, T)
+    return t -> pump_interp(t)
+end
+
+p_t = make_kpo_pump(T, K_, γ_, B_, A_p)
 nothing # hide
 
 # We solve the master equation for the driven KPO and use the first-order
@@ -121,7 +122,7 @@ gv = cnumber("g_v")
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)
-G_v = SLH(1, gv' * av, 0)
+G_v = SLH(1, gv * av, 0)
 G = G_s2 ▷ G_v
 
 H_2 = get_hamiltonian(G)
