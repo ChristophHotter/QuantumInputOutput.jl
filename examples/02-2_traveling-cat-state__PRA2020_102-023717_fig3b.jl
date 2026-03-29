@@ -67,10 +67,12 @@ function lowpass_filter(signal, T, B)
 end
 
 pin = ComplexF64[K_ * A_p * exp(-γ_ * t) for t in T]
-pump = copy(pin)
-for _ = 1:4
-    pump = lowpass_filter(pump, T, B_)
-end
+let # hide
+    pump = copy(pin)
+    for _ in 1:4
+        pump = lowpass_filter(pump, T, B_)
+    end
+end # hide
 p_t_ = LinearInterpolation(pump, T)
 p_t(t) = p_t_(t)
 nothing # hide
