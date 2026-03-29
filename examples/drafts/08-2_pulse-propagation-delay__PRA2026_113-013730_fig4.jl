@@ -40,7 +40,7 @@ nothing # hide
 # Two-channel coupling to the atom with a beam splitter.
 # The second input is a padding (vacuum) channel.
 
-G_u = concatenate(SLH(1, gu*au, 0), SLH(1, 0, 0))
+G_u = concatenate(SLH(1, gu'*au, 0), SLH(1, 0, 0))
 
 S_bs = [r t; t -r]
 G_bs = SLH(S_bs, [0, 0], 0)

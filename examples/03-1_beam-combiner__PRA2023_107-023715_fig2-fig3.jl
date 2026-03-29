@@ -35,10 +35,10 @@ gu1, gu2, gv1 = cnumbers("gu_1 gu_2 gv_1");
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_a = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # scattering atom
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
 
 G_cas = cascade(G_u2, G_u1, G_a, G_v1)
 nothing # hide

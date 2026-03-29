@@ -30,9 +30,9 @@ using Test
 
     gu_sym, γ_sym, gv_sym = rnumbers("gu γ gv")
 
-    G_u = SLH(1, gu_sym * au_sym, 0)
+    G_u = SLH(1, gu_sym' * au_sym, 0)
     G_s = SLH(1, sqrt(γ_sym) * σ_sym, 0)
-    G_v = SLH(1, gv_sym * av_sym, 0)
+    G_v = SLH(1, gv_sym' * av_sym, 0)
     G_cas = ▷(G_u, G_s, G_v)
 
     H = get_hamiltonian(G_cas)

@@ -32,7 +32,7 @@ nothing # hide
 
 G_u = SLH(1, √(Γ)*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # two-level atom
-G_v = SLH(1, gv*av, 0) # output cavity
+G_v = SLH(1, gv'*av, 0) # output cavity
 
 G_cas = G_u ▷ G_c ▷ G_v
 nothing # hide

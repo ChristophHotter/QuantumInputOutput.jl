@@ -120,7 +120,7 @@ gv = cnumber("g_v")
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)
-G_v = SLH(1, gv * av, 0)
+G_v = SLH(1, gv' * av, 0)
 G = G_s2 ▷ G_v
 
 H_2 = get_hamiltonian(G)

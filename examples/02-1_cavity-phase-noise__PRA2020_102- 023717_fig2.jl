@@ -29,7 +29,7 @@ nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
-G_u = SLH(1, gu*au, 0) # input cavity 
+G_u = SLH(1, gu'*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*c, Δ*c'c) # scattering cavity
 
 G_cas = ▷(G_u, G_c)

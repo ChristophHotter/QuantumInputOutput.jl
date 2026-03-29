@@ -16,9 +16,9 @@ using Test
     gu, Δ, γ = rnumbers("g_u Δ, γ")
     gv = cnumber("g_v");
 
-    G_u = SLH(1, gu*au, 0) # input cavity 
+    G_u = SLH(1, gu'*au, 0) # input cavity 
     G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
-    G_v = SLH(1, gv*av, 0) # output cavity
+    G_v = SLH(1, gv'*av, 0) # output cavity
 
     G_c_S = get_scattering(G_c)
     G_c_L = get_lindblad(G_c)
@@ -39,10 +39,10 @@ using Test
     @testset "simple_cascade" begin
         G1 = G_u ▷ G_c
         @test isequal(G1.scattering, ones(1, 1))
-        @test isequal(G1.lindblad[1], simplify(gu*au + √(γ)*c))
+        @test isequal(G1.lindblad[1], simplify(gu'*au + √(γ)*c))
         @test isequal(
             G1.hamiltonian,
-            simplify(G_c_H - 1im/2*((√(γ)*c)'*(1)*gu*au - (gu*au)'*(1)*(√(γ)*c))),
+            simplify(G_c_H - 1im/2*((√(γ)*c)'*(1)*gu'*au - (gu'*au)'*(1)*(√(γ)*c))),
         )
 
         G2 = cascade(G_u, G_c, G_v)
@@ -52,11 +52,11 @@ using Test
         @test isequal(G2, ▷(G1, G_v))
         @test isequal(G2, G3)
 
-        @test iszero(simplify(G2.lindblad[1] - (gu*au + √(γ)*c + gv*av)))
+        @test iszero(simplify(G2.lindblad[1] - (gu'*au + √(γ)*c + gv'*av)))
     end
 
     @testset "simple_concatenate" begin
-        G1 = SLH(1, gu*au, 0)
+        G1 = SLH(1, gu'*au, 0)
         G2 = SLH(1, √(γ)*c, Δ*c'c)
 
         Gc = concatenate(G1, G2)
@@ -64,7 +64,7 @@ using Test
         @test size(Gc.scattering) == (2, 2)
         @test Gc.scattering == [1 0; 0 1]
         @test length(Gc.lindblad) == 2
-        @test isequal(Gc.lindblad[1], gu*au)
+        @test isequal(Gc.lindblad[1], gu'*au)
         @test isequal(Gc.lindblad[2], √(γ)*c)
         @test isequal(Gc.hamiltonian, Δ*c'c)
 

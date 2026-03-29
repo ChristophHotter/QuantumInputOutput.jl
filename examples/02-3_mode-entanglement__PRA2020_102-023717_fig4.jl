@@ -43,8 +43,8 @@ nothing # hide
 H_s = g * (a' * σ(1, 3) + a * σ(3, 1) + a' * σ(2, 3) + a * σ(3, 2)) + ω12 * σ(2, 2)
 G_s = SLH(1, √(γ) * a, H_s)
 
-G_v1 = SLH(1, gv1 * av1, 0)
-G_v2 = SLH(1, gv2 * av2, 0)
+G_v1 = SLH(1, gv1' * av1, 0)
+G_v2 = SLH(1, gv2' * av2, 0)
 G = cascade(G_s, G_v1, G_v2)
 
 H = get_hamiltonian(G)
@@ -58,8 +58,7 @@ nothing # hide
 g_ = 0.1γ_
 ω12_ = 0.5γ_
 
-N_t = 201
-T = collect(range(0, 100 / γ_; length = N_t))
+T = [0:0.005:1;]*100/γ_
 ΔT = T[2] - T[1]
 
 dict_p_1 = Dict([γ, g, ω12, gv1, gv2] .=> [γ_, g_, ω12_, 0.0, 0.0])
@@ -100,17 +99,8 @@ g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
 
-function fix_mode_phase(v)
-    i_max = argmax(abs.(v))
-    v_rot = v .* exp(-1im * angle(v[i_max]))
-    if real(v_rot[i_max]) < 0
-        v_rot .*= -1
-    end
-    return v_rot
-end
-
-v1_mode = fix_mode_phase(F.vectors[:, end] / √(ΔT))
-v2_mode = fix_mode_phase(F.vectors[:, end - 1] / √(ΔT))
+v1_mode = F.vectors[:, end] / √(ΔT)
+v2_mode = F.vectors[:, end - 1] / √(ΔT)
 n1 = n_avg[end]
 n2 = n_avg[end - 1]
 nothing # hide
@@ -122,8 +112,10 @@ nothing # hide
 v1_f = LinearInterpolation(v1_mode, T)
 v2_f = LinearInterpolation(v2_mode, T)
 
-gv1_t = v_to_gv(v1_f, T)
+# gv1_t = v_to_gv(v1_f, T)
+gv1_t = v_to_gv(v1_mode, T)
 v2_eff = v_eff([v1_f, v2_f], T, 2)
+v2_eff = v_eff([v1_mode, v2_mode], T, 2) # TODO: implement v_eff for v_data
 gv2_t = v_to_gv(v2_eff, T)
 
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
@@ -212,8 +204,9 @@ p_a = heatmap(
     c = :inferno,
     xlabel = L"\gamma t_2",
     ylabel = L"\gamma t_1",
-    title = "(a)",
     colorbar_title = L"g^{(1)}(t_1,t_2)",
+    xlims = (0, 100),
+    ylims = (0, 100),
     aspect_ratio = 1,
 )
 
@@ -237,7 +230,6 @@ plot!(
     p_b;
     xlabel = L"\gamma t",
     ylabel = L"\Re[v_i(t)]",
-    title = "(b)",
     legend = :topright,
 )
 
@@ -256,13 +248,12 @@ plot!(
     p_c;
     xlabel = L"\gamma t",
     ylabel = "mean excitation",
-    title = "(c)",
     ylims = (0, 1),
     legend = :topright,
 )
 
-p_d = hinton_plot(ρ_plot, labels)
-plot!(p_d; title = "(d)")
+p_d = hinton_plot(ρ_plot, labels) # TODO: label, size
+plot!(p_d)
 
 plot(p_a, p_b, p_c, p_d; layout = (1, 4), size = (1400, 320))
 
