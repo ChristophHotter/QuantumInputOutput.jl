@@ -1,11 +1,11 @@
 # # Traveling Cat State from a Kerr-Nonlinear Parametric Oscillator
 
-# In this example, we reproduce the Wigner function shown in Fig. 3(b) of
-# [A. Kiilerich and K. Molmer, Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
 #We drive a Kerr-nonlinear parametric
 # oscillator (KPO), extract the dominant output mode from the cavity-field
 # autocorrelation function, and then capture this mode in a virtual output
-# cavity. The Wigner function at the $t = 31 K^{-1}$ is plotted.
+# cavity. This creates a traveling cat state. 
+# The Wigner function at the $t = 31 K^{-1}$ is plotted.
+# The example reproduces Fig. 3(b) of [A. Kiilerich and K. Molmer, Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
 
 # We start by loading the packages and defining the symbolic operators and
 # parameters for the driven KPO.
@@ -101,7 +101,6 @@ nothing # hide
 a_qo = destroy(bc)
 Ls(t) = √(γ_) * a_qo
 g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
-# g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, √(γ_) * a_qo) # TODO: add method!
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT

@@ -1,12 +1,12 @@
 # # Photon Number and Mode Entanglement with a Quantum Emitter
 
-# In this example, we reproduce Fig. 4 of
-# [A. Kiilerich and K. Molmer, Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717),
-# following the model described in Sec. III.B.
-# A three-level Λ emitter decays through a cavity into two dominant temporal
+# We simulate the decay of a three-level Λ emitter through a cavity into two dominant temporal
 # output modes. We identify these modes from the field autocorrelation
 # function, capture them with two virtual output cavities, and visualize the
-# resulting mode populations and the final atom-mode density matrix.
+# resulting mode populations and the final atom-mode density matrix. 
+# This example, reproduces Fig. 4 of
+# [A. Kiilerich and K. Molmer, Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
+
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -51,8 +51,7 @@ H = get_hamiltonian(G)
 L = get_lindblad(G)[1]
 nothing # hide
 
-# We use the parameters quoted in the paper and initialize the emitter in the
-# excited state.
+# We use the parameters quoted in the paper and initialize the emitter in the excited state.
 
 γ_ = 1.0
 g_ = 0.1γ_
@@ -136,60 +135,6 @@ n1_t = real.(expect(av1_qo' * av1_qo, ρt_2))
 n2_t = real.(expect(av2_qo' * av2_qo, ρt_2))
 nothing # hide
 
-# Finally, we inspect the reduced density matrix of the emitter and the two
-# captured modes. The paper displays the real part of this matrix in the basis
-# |g₁/g₂, n₁, n₂⟩ with n₁, n₂ ∈ {0, 1}.
-
-ρ_atom_modes = ptrace(ρt_2[end], 1)
-ρ_plot = real.(ρ_atom_modes.data[1:8, 1:8])
-ρ_abs_max = maximum(abs, ρ_plot)
-
-labels = [
-    L"|g_1,0,0\rangle",
-    L"|g_1,0,1\rangle",
-    L"|g_1,1,0\rangle",
-    L"|g_1,1,1\rangle",
-    L"|g_2,0,0\rangle",
-    L"|g_2,0,1\rangle",
-    L"|g_2,1,0\rangle",
-    L"|g_2,1,1\rangle",
-]
-
-function hinton_plot(ρ, labels)
-    n = size(ρ, 1)
-    p = plot(
-        xlims = (0.5, n + 0.5),
-        ylims = (n + 0.5, 0.5),
-        xticks = (1:n, labels),
-        yticks = (1:n, labels),
-        xrotation = 90,
-        aspect_ratio = 1,
-        framestyle = :box,
-        legend = false,
-        grid = true,
-        colorbar = true,
-        clims = (-ρ_abs_max, ρ_abs_max),
-    )
-
-    for i = 1:n, j = 1:n
-        if abs(ρ[i, j]) > 1e-6
-            scatter!(
-                p,
-                [j],
-                [i];
-                marker = :rect,
-                markersize = 30 * sqrt(abs(ρ[i, j]) / ρ_abs_max),
-                markerstrokewidth = 0,
-                marker_z = [ρ[i, j]],
-                c = cgrad([:red, :white, :blue]),
-                label = "",
-            )
-        end
-    end
-
-    return p
-end
-
 #
 
 p_a = heatmap(
@@ -247,11 +192,17 @@ plot!(
     legend = :topright,
 )
 
-p_d = hinton_plot(ρ_plot, labels) # TODO: adjust aspect ratio, label size, size
-plot!(p_d)
+plot(
+    p_a,
+    p_b,
+    p_c,
+    layout = (1, 3),
+    size = (1200, 360),
+)
 
-plot(p_a, p_b, p_c, p_d; layout = (1, 4), size = (1400, 320))
-
+# Note that the plotted real part of the output-mode functions are not the same 
+# as in the paper due the arbitrary global phase. 
+  
 # ## Package versions
 
 # These results were obtained using the following versions:

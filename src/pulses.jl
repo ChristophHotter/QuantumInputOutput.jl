@@ -105,7 +105,7 @@ output cavity after the system.
 
 All kwargs are passed on to the ODE solver.     
 """
-function v_eff(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...) # TODO: v_data
+function v_eff(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
         for j = 1:(i-1)
@@ -150,7 +150,7 @@ input cavity before the system.
 
 All kwargs are passed on to the ODE solver.   
 """
-function u_eff(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...) # TODO: v_data
+function u_eff(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
         for j = 1:(i-1)
