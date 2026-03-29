@@ -1,15 +1,16 @@
 # MAIN TODO - LIST:
 
-- [ ] clean up code
+- [ ] clean up 
   - [x] rm QC.jl 
   - [ ] types
   - [ ] rename translate_qo (to to_numerics ?)
 
 - [ ] examples
-  - [ ] Multi-mode Dicke state superradiance
+  - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
   - [ ] SUPER example (Johannes)
   - [ ] pulse delay advanced example (Victor paper)
   - [ ] feedback reduction (see SLH paper)  
+  - [ ] cumulants correlation matrix modes 
   
 - [ ] create more tests (cov +80%)
   - [x] simple full example
@@ -27,6 +28,7 @@
   - [ ] interaction picture (Victor paper)
     - [ ] general expression for A(t)
   - [ ] pulse delay (Victor paper)
+  - [ ] two_time_corr_matrix for Ls const (see example 02-2)
 
 - [x] Formatter/SpellCheck
 
