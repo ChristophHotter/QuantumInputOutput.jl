@@ -45,10 +45,12 @@ using Test
 
     u_eff_f = u_eff([u1, u2], T, 2)
     u_eff_data = u_eff([u1.(T), u2.(T)], T, 2)
-    @test maximum(abs.(u_eff_f.(T) .- u_eff_data.(T))) / maximum(abs.(u_eff_f.(T) .+ u_eff_data.(T))) < 1e-5
+    @test maximum(abs.(u_eff_f.(T) .- u_eff_data.(T))) /
+          maximum(abs.(u_eff_f.(T) .+ u_eff_data.(T))) < 1e-5
 
     gu1 = u_to_gu(u1, T)
     gu2 = u_to_gu(u2, T)
     u_eff_data2 = u_eff([u1.(T), u2.(T)], [gu1.(T), gu2.(T)], T, 2)
-    @test maximum(abs.(u_eff_f.(T) .- u_eff_data2.(T))) / maximum(abs.(u_eff_f.(T) .+ u_eff_data2.(T))) < 1e-5
+    @test maximum(abs.(u_eff_f.(T) .- u_eff_data2.(T))) /
+          maximum(abs.(u_eff_f.(T) .+ u_eff_data2.(T))) < 1e-5
 end

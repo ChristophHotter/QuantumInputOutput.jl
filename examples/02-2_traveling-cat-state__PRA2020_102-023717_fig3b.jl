@@ -69,7 +69,7 @@ end
 pin = ComplexF64[K_ * A_p * exp(-γ_ * t) for t in T]
 let # hide
     pump = copy(pin)
-    for _ in 1:4
+    for _ = 1:4
         pump = lowpass_filter(pump, T, B_)
     end
 end # hide
