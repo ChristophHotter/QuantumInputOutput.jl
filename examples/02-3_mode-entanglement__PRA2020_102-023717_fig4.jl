@@ -109,13 +109,8 @@ nothing # hide
 # The coupling of the second cavity must be corrected for the reshaping caused by
 # the first output cavity, which is done with [`v_eff`](@ref).
 
-v1_f = LinearInterpolation(v1_mode, T)
-v2_f = LinearInterpolation(v2_mode, T)
-
-# gv1_t = v_to_gv(v1_f, T)
 gv1_t = v_to_gv(v1_mode, T)
-v2_eff = v_eff([v1_f, v2_f], T, 2)
-v2_eff = v_eff([v1_mode, v2_mode], T, 2) # TODO: implement v_eff for v_data
+v2_eff = v_eff([v1_mode, v2_mode], T, 2) 
 gv2_t = v_to_gv(v2_eff, T)
 
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
@@ -252,7 +247,7 @@ plot!(
     legend = :topright,
 )
 
-p_d = hinton_plot(ρ_plot, labels) # TODO: label, size
+p_d = hinton_plot(ρ_plot, labels) # TODO: adjust aspect ratio, label size, size
 plot!(p_d)
 
 plot(p_a, p_b, p_c, p_d; layout = (1, 4), size = (1400, 320))

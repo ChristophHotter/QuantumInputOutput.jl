@@ -7,6 +7,10 @@ _extrapolate = ExtrapolationType.Extension
 _ϵu = 1e-10
 _ϵv = 1e-10
 
+_mode_interp(mode::AbstractVector, T::AbstractVector) =
+    LinearInterpolation(mode, T; extrapolation = _extrapolate)
+_mode_interp(mode, T::AbstractVector) = mode
+
 """
     u_to_gu(u, T)
 
@@ -90,8 +94,8 @@ function v_to_gv_Gauss(τ, σ; δ = 0) # slower than v_to_gv
 end
 
 """
-    v_eff(v_fcts, gv_fcts, T_ls, i)
-    v_eff(v_fcts, T_ls, i)
+    v_eff(v_fcts, gv_fcts, T, i)
+    v_eff(v_fcts, T, i)
 
 Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` for a system with multiple output modes, 
 due to the pulse distortion from the preceding output cavities.  
@@ -101,7 +105,7 @@ output cavity after the system.
 
 All kwargs are passed on to the ODE solver.     
 """
-function v_eff(v_fcts, gv_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function v_eff(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...) # TODO: v_data
     @assert i > 1
     function multiple_outputs_α(dα, α, p, t) # only for i>1
         for j = 1:(i-1)
@@ -112,17 +116,31 @@ function v_eff(v_fcts, gv_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_dat
         end
     end
     u0 = zeros(ComplexF64, i-1)
-    tspan = (T_ls[1], T_ls[end])
+    tspan = (T[1], T[end])
     prob = ODEProblem(multiple_outputs_α, u0, tspan)
     sol_α = solve(prob, alg; kwargs...)
     v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
     return v_i_im1
 end
-v_eff(v_fcts, T_ls, i) = v_eff(v_fcts, [v_to_gv(v_, T_ls) for v_ in v_fcts], T_ls, i)
+v_eff(v_fcts, T, i) = v_eff(v_fcts, [v_to_gv(v_, T) for v_ in v_fcts], T, i)
+function v_eff(
+    v_data::AbstractVector{<:AbstractVector},
+    gv_data::AbstractVector{<:AbstractVector},
+    T::AbstractVector,
+    i;
+    alg = Tsit5(),
+    kwargs...,
+)
+    v_fcts = [_mode_interp(v_, T) for v_ in v_data]
+    gv_fcts = [_mode_interp(gv_, T) for gv_ in gv_data]
+    return v_eff(v_fcts, gv_fcts, T, i; alg, kwargs...)
+end
+v_eff(v_data::AbstractVector{<:AbstractVector}, T::AbstractVector, i; alg = Tsit5(), kwargs...) =
+    v_eff(v_data, [v_to_gv(v_, T).(T) for v_ in v_data], T, i; alg, kwargs...)
 
 """
-    u_eff(u_fcts, gu_fcts, T_ls, i)
-    u_eff(u_fcts, T_ls, i)
+    u_eff(u_fcts, gu_fcts, T, i)
+    u_eff(u_fcts, T, i)
 
 Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` for a system with multiple input modes, 
 due to the pulse distortion from the subsequent input cavities.  
@@ -132,7 +150,7 @@ input cavity before the system.
 
 All kwargs are passed on to the ODE solver.   
 """
-function u_eff(u_fcts, gu_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_data, T_ls -> T
+function u_eff(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...) # TODO: v_data
     @assert i > 1
     function multiple_inputs_α(dα, α, p, t) # only for i>1
         for j = 1:(i-1)
@@ -144,13 +162,27 @@ function u_eff(u_fcts, gu_fcts, T_ls, i; alg = Tsit5(), kwargs...) # TODO: v_dat
         # 2 Typos in PRA2020-Kiilerich Eq.(A15): last term "-" → "+" and |g_ui|² → |g_uj|²
     end
     u0 = zeros(ComplexF64, i-1)
-    tspan = (T_ls[1], T_ls[end])
+    tspan = (T[1], T[end])
     prob = ODEProblem(multiple_inputs_α, u0, tspan)
     sol_α = solve(prob, alg; kwargs...)
     u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
     return u_i_im1
 end
-u_eff(u_fcts, T_ls, i) = u_eff(u_fcts, [u_to_gu(u_, T_ls) for u_ in u_fcts], T_ls, i)
+u_eff(u_fcts, T, i) = u_eff(u_fcts, [u_to_gu(u_, T) for u_ in u_fcts], T, i)
+function u_eff(
+    u_data::AbstractVector{<:AbstractVector},
+    gu_data::AbstractVector{<:AbstractVector},
+    T::AbstractVector,
+    i;
+    alg = Tsit5(),
+    kwargs...,
+)
+    u_fcts = [_mode_interp(u_, T) for u_ in u_data]
+    gu_fcts = [_mode_interp(gu_, T) for gu_ in gu_data]
+    return u_eff(u_fcts, gu_fcts, T, i; alg, kwargs...)
+end
+u_eff(u_data::AbstractVector{<:AbstractVector}, T::AbstractVector, i; alg = Tsit5(), kwargs...) =
+    u_eff(u_data, [u_to_gu(u_, T).(T) for u_ in u_data], T, i; alg, kwargs...)
 
 """
     uv_to_gout(u, v, T)

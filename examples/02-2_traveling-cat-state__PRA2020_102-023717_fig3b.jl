@@ -219,8 +219,7 @@ plot!(
 plot!(p1r; ylabel = "KPO excitation")
 p1
 
-# Finally, we plot only the Wigner function of the captured traveling mode at
-# $t = 31 K^{-1}$.
+# Finally, we plot the Wigner function of the captured traveling mode at $t = 31 K^{-1}$.
 
 x = [-5:0.05:5;]
 W = wigner(ρv_plot, x, x)
