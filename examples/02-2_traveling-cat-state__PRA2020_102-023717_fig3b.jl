@@ -154,8 +154,6 @@ n_c_t = real.(expect(a2_qo' * a2_qo, ρt_2))
 mode_shape = abs.(v_mode)
 nothing # hide
 
-# TODO: look at this!!
-
 # The output-mode eigenvector is only defined up to a global phase. To match
 # the convention used in Fig. 3(b), we rotate the captured state such that the
 # phase of $\langle a_v^2 \rangle$ agrees with the cat-state amplitude quoted
