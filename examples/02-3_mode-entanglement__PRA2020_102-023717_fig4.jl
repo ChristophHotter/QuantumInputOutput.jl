@@ -99,9 +99,9 @@ F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
 
 v1_mode = F.vectors[:, end] / √(ΔT)
-v2_mode = F.vectors[:, end - 1] / √(ΔT)
+v2_mode = F.vectors[:, end-1] / √(ΔT)
 n1 = n_avg[end]
-n2 = n_avg[end - 1]
+n2 = n_avg[end-1]
 nothing # hide
 
 # After identifying the two modes, we add two cascaded virtual output cavities.
@@ -109,7 +109,7 @@ nothing # hide
 # the first output cavity, which is done with [`v_eff`](@ref).
 
 gv1_t = v_to_gv(v1_mode, T)
-v2_eff = v_eff([v1_mode, v2_mode], T, 2) 
+v2_eff = v_eff([v1_mode, v2_mode], T, 2)
 gv2_t = v_to_gv(v2_eff, T)
 
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
@@ -158,29 +158,10 @@ p_b = plot(
     lw = 2,
     label = "n₁ = $(round(n1; digits = 2))",
 )
-plot!(
-    p_b,
-    T,
-    real.(v2_mode);
-    color = :red,
-    lw = 2,
-    label = "n₂ = $(round(n2; digits = 2))",
-)
-plot!(
-    p_b;
-    xlabel = L"\gamma t",
-    ylabel = L"\Re[v_i(t)]",
-    legend = :topright,
-)
+plot!(p_b, T, real.(v2_mode); color = :red, lw = 2, label = "n₂ = $(round(n2; digits = 2))")
+plot!(p_b; xlabel = L"\gamma t", ylabel = L"\Re[v_i(t)]", legend = :topright)
 
-p_c = plot(
-    T,
-    n_cavity_t;
-    color = :green,
-    ls = :dot,
-    lw = 2,
-    label = L"n_\mathrm{cavity}",
-)
+p_c = plot(T, n_cavity_t; color = :green, ls = :dot, lw = 2, label = L"n_\mathrm{cavity}")
 plot!(p_c, T, P_e_t; color = :black, ls = :dashdot, lw = 2, label = L"P(|e\rangle)")
 plot!(p_c, T, n1_t; color = :blue, lw = 2, label = L"n_1")
 plot!(p_c, T, n2_t; color = :red, ls = :dash, lw = 2, label = L"n_2")
@@ -192,17 +173,11 @@ plot!(
     legend = :topright,
 )
 
-plot(
-    p_a,
-    p_b,
-    p_c,
-    layout = (1, 3),
-    size = (1200, 360),
-)
+plot(p_a, p_b, p_c, layout = (1, 3), size = (1200, 360))
 
 # Note that the plotted real part of the output-mode functions are not the same 
 # as in the paper due the arbitrary global phase. 
-  
+
 # ## Package versions
 
 # These results were obtained using the following versions:

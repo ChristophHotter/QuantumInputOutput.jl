@@ -135,8 +135,13 @@ function v_eff(
     gv_fcts = [_mode_interp(gv_, T) for gv_ in gv_data]
     return v_eff(v_fcts, gv_fcts, T, i; alg, kwargs...)
 end
-v_eff(v_data::AbstractVector{<:AbstractVector}, T::AbstractVector, i; alg = Tsit5(), kwargs...) =
-    v_eff(v_data, [v_to_gv(v_, T).(T) for v_ in v_data], T, i; alg, kwargs...)
+v_eff(
+    v_data::AbstractVector{<:AbstractVector},
+    T::AbstractVector,
+    i;
+    alg = Tsit5(),
+    kwargs...,
+) = v_eff(v_data, [v_to_gv(v_, T).(T) for v_ in v_data], T, i; alg, kwargs...)
 
 """
     u_eff(u_fcts, gu_fcts, T, i)
@@ -181,8 +186,13 @@ function u_eff(
     gu_fcts = [_mode_interp(gu_, T) for gu_ in gu_data]
     return u_eff(u_fcts, gu_fcts, T, i; alg, kwargs...)
 end
-u_eff(u_data::AbstractVector{<:AbstractVector}, T::AbstractVector, i; alg = Tsit5(), kwargs...) =
-    u_eff(u_data, [u_to_gu(u_, T).(T) for u_ in u_data], T, i; alg, kwargs...)
+u_eff(
+    u_data::AbstractVector{<:AbstractVector},
+    T::AbstractVector,
+    i;
+    alg = Tsit5(),
+    kwargs...,
+) = u_eff(u_data, [u_to_gu(u_, T).(T) for u_ in u_data], T, i; alg, kwargs...)
 
 """
     uv_to_gout(u, v, T)

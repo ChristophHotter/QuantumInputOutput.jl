@@ -59,9 +59,9 @@ nothing # hide
 function lowpass_filter(signal, T, B)
     filtered = zeros(ComplexF64, length(signal))
     for i = 2:length(T)
-        dt = T[i] - T[i - 1]
+        dt = T[i] - T[i-1]
         α = exp(-B * dt)
-        filtered[i] = α * filtered[i - 1] + (1 - α) * signal[i - 1]
+        filtered[i] = α * filtered[i-1] + (1 - α) * signal[i-1]
     end
     return filtered
 end
@@ -149,7 +149,7 @@ nothing # hide
 
 a2_qo = destroy(bc) ⊗ one(bv)
 n_c_t = real.(expect(a2_qo' * a2_qo, ρt_2))
-mode_shape = abs.(v_mode) 
+mode_shape = abs.(v_mode)
 nothing # hide
 
 # TODO: look at this!!
@@ -179,13 +179,7 @@ nothing # hide
 
 #
 
-p1 = plot(
-    T,
-    fidelity_t;
-    color = :red,
-    lw = 2,
-    label = "cat fidelity",
-)
+p1 = plot(T, fidelity_t; color = :red, lw = 2, label = "cat fidelity")
 plot!(
     p1,
     T,
@@ -206,15 +200,7 @@ plot!(
 )
 
 p1r = twinx(p1)
-plot!(
-    p1r,
-    T,
-    n_c_t;
-    color = :blue,
-    lw = 2,
-    ls = :dot,
-    label = "KPO excitation",
-)
+plot!(p1r, T, n_c_t; color = :blue, lw = 2, ls = :dot, label = "KPO excitation")
 plot!(p1r; ylabel = "KPO excitation")
 p1
 
