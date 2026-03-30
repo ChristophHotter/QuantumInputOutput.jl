@@ -1,11 +1,10 @@
 # # Coherent-Feedback Squeezing with a Beam-Splitter Loop
 #
-# This example implements the feedback loop from
-# Gough and Wildfeuer, "Enhancement of field squeezing using coherent feedback"
-# (2009). A degenerate parametric oscillator is concatenated with a beam splitter,
+# This example implements the feedback loop to enhance field squeezing using coherent feedback described in  
+# [J. Gough and S. Wildfeuer, PRA 80, 042107 (2009)](http://dx.doi.org/10.1103/PhysRevA.80.042107), 
+# see also Example VI.1 of [J. Combes, et al. Advances in Physics: X, 2:3, 784-888 (2017)](https://doi.org/10.1080/23746149.2017.1343097). 
+# A degenerate parametric oscillator is concatenated with a beam splitter,
 # and the internal wires are eliminated with the SLH feedback reduction rule.
-
-# TODO: article reference, plot wigner function of squeezed state(?), read carefully  
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -27,8 +26,7 @@ a = Destroy(hc, :a, 1)
 nothing # hide
 
 # The open-loop OPO has one port, while the beam splitter has two ports. We first
-# form the unconnected network and then apply the two feedback reductions
-# described in Example VI.1 of the SLH review by Combes et al.
+# form the unconnected network and then apply the two feedback reductions. 
 
 r = √(1 - η^2)
 G_opo = SLH(1, √(κ) * a, 1im * ϵ * (a'^2 - a^2))
@@ -52,6 +50,8 @@ L_expected = l * √(κ) * a
 nothing # hide
 
 #
+
+L_loop
 
 @show S_loop
 @show simplify(L_loop - L_expected)

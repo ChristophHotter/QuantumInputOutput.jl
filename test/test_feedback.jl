@@ -55,9 +55,13 @@ using Test
 
     @testset "coherent-feedback OPO loop" begin
         # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
-        κ = 0.7 # rnumber("κ")
-        ϵ = 0.45 # rnumber("ϵ")
-        η = 0.65 # rnumber("η")
+        κ = 0.7 
+        ϵ = 0.45 
+        η = 0.65 
+        # κ = rnumber("κ")
+        # ϵ = rnumber("ϵ")
+        # η = rnumber("η")
+
         r = simplify(√(1 - η^2))
 
         G_opo = SLH(1, √(κ) * a, 1im * ϵ * (a'^2 - a^2))
@@ -67,7 +71,7 @@ using Test
 
         l = simplify(η / (1 + r))
 
-        expand(G_loop.scattering .- ones(1, 1))
+        # simplify(G_loop.scattering[1,1] .- l) # TODO: see Example VI.1!
 
         @test isequal(G_loop.scattering, ones(1, 1))
         @test isequal(G_loop.lindblad, [simplify(l * √(κ) * a)])
