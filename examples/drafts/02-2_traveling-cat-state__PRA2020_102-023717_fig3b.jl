@@ -108,7 +108,7 @@ g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
 v_mode = F.vectors[:, end] / √(ΔT)
-@show n_avg[end-1:end]
+@show n_avg[(end-1):end]
 nothing # hide
 
 # After identifying the dominant output mode, we add a virtual output cavity
