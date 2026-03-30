@@ -86,10 +86,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    [
-        "QuantumInputOutput",
-        "SecondQuantizedAlgebra",
-        "Plots",
-    ],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "Plots"],
     mode = PKGMODE_MANIFEST,
 )

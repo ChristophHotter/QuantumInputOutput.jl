@@ -37,16 +37,8 @@ nothing # hide
 
 I2 = Matrix{Int}(I, 2, 2)
 G_in = SLH(I2, [Ein, 0], 0)
-G_qd(i) = SLH(
-    I2,
-    [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)],
-    -Δ(i) * σ(i, 2, 2),
-)
-G_phase(i, j) = SLH(
-    [exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))],
-    [0, 0],
-    0,
-)
+G_qd(i) = SLH(I2, [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)], -Δ(i) * σ(i, 2, 2))
+G_phase(i, j) = SLH([exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))], [0, 0], 0)
 
 G_unc = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
 G_t = feedback(G_unc, 1 => 3, 3 => 5, 5 => 7, 8 => 6, 6 => 4, 4 => 2)
@@ -83,7 +75,7 @@ p_sym = [
     [γR(i) for i = 1:N];
     [γL(i) for i = 1:N];
     [Δ(i) for i = 1:N];
-    [ϕ(i, i + 1) for i = 1:(N - 1)]
+    [ϕ(i, i + 1) for i = 1:(N-1)]
 ]
 p_num = [γRn; γLn; Δn; ϕn]
 dict_p = Dict(p_sym .=> p_num)
@@ -153,11 +145,6 @@ versioninfo()
 
 using Pkg
 Pkg.status(
-    [
-        "QuantumInputOutput",
-        "SecondQuantizedAlgebra",
-        "QuantumOptics",
-        "Plots",
-    ],
+    ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )

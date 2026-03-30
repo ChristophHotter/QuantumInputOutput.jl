@@ -1,6 +1,6 @@
 # # Traveling Cat State from a Kerr-Nonlinear Parametric Oscillator
 
-#We drive a Kerr-nonlinear parametric
+# We drive a Kerr-nonlinear parametric
 # oscillator (KPO), extract the dominant output mode from the cavity-field
 # autocorrelation function, and then capture this mode in a virtual output
 # cavity. This creates a traveling cat state. 
@@ -81,7 +81,7 @@ nothing # hide
 # We solve the master equation for the driven KPO and use the first-order
 # correlation matrix $g^{(1)}(t_1, t_2)$ to determine the dominant output mode.
 
-n_cut = 10
+n_cut = 12
 bc = FockBasis(n_cut)
 b1 = bc
 
@@ -108,6 +108,7 @@ g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
 v_mode = F.vectors[:, end] / √(ΔT)
+@show n_avg[end-1:end]
 nothing # hide
 
 # After identifying the dominant output mode, we add a virtual output cavity
@@ -180,10 +181,10 @@ nothing # hide
 
 #
 
-p1 = plot(T, fidelity_t; color = :red, lw = 2, label = "cat fidelity")
+p1 = plot(T*K_, fidelity_t; color = :red, lw = 2, label = "cat fidelity")
 plot!(
     p1,
-    T,
+    T*K_,
     mode_shape;
     color = :grey,
     fillrange = 0,
@@ -192,17 +193,24 @@ plot!(
 )
 plot!(
     p1;
-    xlabel = "time (1/γ)",
+    xlabel = "time (1/K)",
     ylabel = "fidelity / mode shape",
-    xlims = (0, T_end),
+    xlims = (0, T_end*K_),
     ylims = (0, 1),
-    legend = :topright,
+    legend = :bottomright,
     size = (560, 320),
 )
 
 p1r = twinx(p1)
-plot!(p1r, T, n_c_t; color = :blue, lw = 2, ls = :dot, label = "KPO excitation")
-plot!(p1r; ylabel = "KPO excitation")
+plot!(p1r, T*K_, n_c_t; color = :blue, lw = 2, ls = :dot, label = "")
+plot!(
+    p1r;
+    ylabel = "KPO excitation",
+    yforeground_color_text = :blue,
+    yforeground_color_axis = :blue,
+    yforeground_color_border = :blue,
+    yforeground_color_guide = :blue,
+)
 p1
 
 # Finally, we plot the Wigner function of the captured traveling mode at $t = 31 K^{-1}$.

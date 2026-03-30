@@ -68,12 +68,9 @@ using Test
 
         I2 = Matrix{Int}(I, 2, 2)
         G_in = SLH(I2, [Ein, 0], 0)
-        G_qd(i) = SLH(I2, [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)], -Δ(i) * σ(i, 2, 2))
-        G_phase(i, j) = SLH(
-            [exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))],
-            [0, 0],
-            0,
-        )
+        G_qd(i) =
+            SLH(I2, [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)], -Δ(i) * σ(i, 2, 2))
+        G_phase(i, j) = SLH([exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))], [0, 0], 0)
 
         G_network = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
         G_feedback = feedback(G_network, 1 => 3, 3 => 5, 5 => 7, 8 => 6, 6 => 4, 4 => 2)

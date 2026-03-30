@@ -360,9 +360,7 @@ end
 function _feedback_scattering_update(S_xbar_y::AbstractVector, loop_gain, S_x_ybar)
     nrows = length(S_xbar_y)
     ncols = length(S_x_ybar)
-    return [
-        S_xbar_y[i] * loop_gain * S_x_ybar[j] for i = 1:nrows, j = 1:ncols
-    ]
+    return [S_xbar_y[i] * loop_gain * S_x_ybar[j] for i = 1:nrows, j = 1:ncols]
 end
 
 function _feedback_lindblad_update(S_xbar_y::AbstractVector, loop_gain, L_x)
@@ -409,7 +407,9 @@ function feedback(G::SLH, x::Int, y::Int)
     S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, L_x, loop_gain =
         _feedback_scalar(S, L, x, y)
 
-    S_red = simplify.(S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar)))
+    S_red = simplify.(
+        S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar)),
+    )
     L_red = simplify.(L_xbar + _feedback_lindblad_update(S_xbar_y, loop_gain, L_x))
 
     L_ct = SQA._adjoint.(L)
@@ -419,7 +419,8 @@ function feedback(G::SLH, x::Int, y::Int)
     return SLH(S_red, L_red, H_red)
 end
 
-feedback(G::SLH, connection::Pair{Int,Int}) = feedback(G, first(connection), last(connection))
+feedback(G::SLH, connection::Pair{Int,Int}) =
+    feedback(G, first(connection), last(connection))
 
 function feedback(G::SLH, connections::Pair{Int,Int}...)
     n = size(get_scattering(G), 1)
@@ -455,25 +456,30 @@ function feedback(G::SLHqo, x::Int, y::Int)
     function reduced_L(i)
         return t -> begin
             L_vec = [f(t) for f in Lf]
-            _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
-            (L_xbar_t + _feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t))[i]
+            _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t =
+                _feedback_scalar(S, L_vec, x, y)
+            (L_xbar_t+_feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t))[i]
         end
     end
 
     function reduced_H(t)
         L_vec = [f(t) for f in Lf]
         _, _, _, S_col_y_t, _, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
-        term = sum(adjoint(L_vec[i]) * S_col_y_t[i] for i = 1:length(L_vec)) * loop_gain_t * L_x_t
+        term =
+            sum(adjoint(L_vec[i]) * S_col_y_t[i] for i = 1:length(L_vec)) *
+            loop_gain_t *
+            L_x_t
         Hf(t) + (term - adjoint(term)) / (2im)
     end
 
     if time_dep
-        return SLHqo(S_red, [reduced_L(i) for i = 1:(length(L) - 1)], reduced_H)
+        return SLHqo(S_red, [reduced_L(i) for i = 1:(length(L)-1)], reduced_H)
     end
 
     L_red = begin
         L_vec = copy(L)
-        _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
+        _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t =
+            _feedback_scalar(S, L_vec, x, y)
         L_xbar_t + _feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t)
     end
     term = sum(adjoint(L[i]) * S_col_y[i] for i = 1:length(L)) * loop_gain * L[x]
@@ -481,7 +487,8 @@ function feedback(G::SLHqo, x::Int, y::Int)
     return SLHqo(S_red, L_red, H_red)
 end
 
-feedback(G::SLHqo, connection::Pair{Int,Int}) = feedback(G, first(connection), last(connection))
+feedback(G::SLHqo, connection::Pair{Int,Int}) =
+    feedback(G, first(connection), last(connection))
 
 function feedback(G::SLHqo, connections::Pair{Int,Int}...)
     n = size(get_scattering(G), 1)
