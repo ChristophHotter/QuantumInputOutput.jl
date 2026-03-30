@@ -38,6 +38,10 @@ cascade
 concatenate
 ```
 
+```@docs
+feedback
+```
+
 ## [Translation](@id API: Translation)
 
 ```@docs

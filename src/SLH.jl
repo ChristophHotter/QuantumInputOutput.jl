@@ -328,5 +328,169 @@ See also [`⊞`](@ref).
 concatenate(args...) = ⊞(args...)
 concatenation(args...) = concatenate(args...) # alias
 
+# feedback reduction rules
+
+_dropindex(v::AbstractVector, i::Int) = [v[k] for k = 1:length(v) if k != i]
+
+function _dropindices(M::AbstractMatrix, i::Int, j::Int)
+    rows = [r for r = 1:size(M, 1) if r != i]
+    cols = [c for c = 1:size(M, 2) if c != j]
+    return M[rows, cols]
+end
+
+function _feedback_scalar(S::AbstractMatrix, L::AbstractVector, x::Int, y::Int)
+    n = size(S, 1)
+    @assert size(S, 2) == n
+    @assert length(L) == n
+    @assert 1 <= x <= n
+    @assert 1 <= y <= n
+
+    S_xy = S[x, y]
+    S_xbar_ybar = _dropindices(S, x, y)
+    S_xbar_y = _dropindex(S[:, y], x)
+    S_x_ybar = permutedims(_dropindex(vec(S[x, :]), y))
+    S_col_y = vec(S[:, y])
+    L_xbar = _dropindex(L, x)
+    L_x = L[x]
+
+    loop_gain = 1 / (1 - S_xy)
+    return S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, L_x, loop_gain
+end
+
+function _feedback_scattering_update(S_xbar_y::AbstractVector, loop_gain, S_x_ybar)
+    nrows = length(S_xbar_y)
+    ncols = length(S_x_ybar)
+    return [
+        S_xbar_y[i] * loop_gain * S_x_ybar[j] for i = 1:nrows, j = 1:ncols
+    ]
+end
+
+function _feedback_lindblad_update(S_xbar_y::AbstractVector, loop_gain, L_x)
+    return [S_xbar_y[i] * loop_gain * L_x for i = 1:length(S_xbar_y)]
+end
+
+function _feedback_maps(n::Int, connections)
+    output_ports = collect(1:n)
+    input_ports = collect(1:n)
+    mapped = Tuple{Int,Int}[]
+
+    for connection in connections
+        x = first(connection)
+        y = last(connection)
+        x_now = findfirst(==(x), output_ports)
+        y_now = findfirst(==(y), input_ports)
+        @assert x_now !== nothing "output port $x has already been eliminated"
+        @assert y_now !== nothing "input port $y has already been eliminated"
+        push!(mapped, (x_now, y_now))
+        deleteat!(output_ports, x_now)
+        deleteat!(input_ports, y_now)
+    end
+
+    return mapped
+end
+
+"""
+    feedback(G::SLH, x::Int, y::Int)
+    feedback(G::SLH, connection::Pair{Int,Int})
+    feedback(G::SLH, connections::Pair{Int,Int}...)
+
+Apply the SLH feedback reduction rule to connect output port `x` to input port `y`.
+Multiple connections can be passed as `x => y` pairs; in that form the pairs are
+interpreted using the original port labels and reduced in sequence with the port
+bookkeeping handled automatically.
+
+See also [`SLH`](@ref), [`▷`](@ref), and [`⊞`](@ref).
+"""
+function feedback(G::SLH, x::Int, y::Int)
+    S = get_scattering(G)
+    L = get_lindblad(G)
+    H = get_hamiltonian(G)
+
+    S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, L_x, loop_gain =
+        _feedback_scalar(S, L, x, y)
+
+    S_red = simplify.(S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar)))
+    L_red = simplify.(L_xbar + _feedback_lindblad_update(S_xbar_y, loop_gain, L_x))
+
+    L_ct = SQA._adjoint.(L)
+    term = sum(L_ct[i] * S_col_y[i] for i = 1:length(L)) * loop_gain * L_x
+    H_red = simplify(H + (term - SQA._adjoint(term)) / (2im))
+
+    return SLH(S_red, L_red, H_red)
+end
+
+feedback(G::SLH, connection::Pair{Int,Int}) = feedback(G, first(connection), last(connection))
+
+function feedback(G::SLH, connections::Pair{Int,Int}...)
+    n = size(get_scattering(G), 1)
+    G_red = G
+    for (x, y) in _feedback_maps(n, connections)
+        G_red = feedback(G_red, x, y)
+    end
+    return G_red
+end
+
+"""
+    feedback(G::SLHqo, x::Int, y::Int)
+    feedback(G::SLHqo, connection::Pair{Int,Int})
+    feedback(G::SLHqo, connections::Pair{Int,Int}...)
+
+Apply the feedback reduction rule to an `SLHqo` triple. Time-dependent `L` or `H`
+are preserved in the reduced model.
+"""
+function feedback(G::SLHqo, x::Int, y::Int)
+    S = get_scattering(G)
+    L = get_lindblad(G)
+    H = get_hamiltonian(G)
+
+    S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, _, loop_gain =
+        _feedback_scalar(S, L, x, y)
+
+    S_red = S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar))
+
+    Lf = map(_to_func, L)
+    Hf = _to_func(H)
+    time_dep = any(_is_time_dep, L) || _is_time_dep(H)
+
+    function reduced_L(i)
+        return t -> begin
+            L_vec = [f(t) for f in Lf]
+            _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
+            (L_xbar_t + _feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t))[i]
+        end
+    end
+
+    function reduced_H(t)
+        L_vec = [f(t) for f in Lf]
+        _, _, _, S_col_y_t, _, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
+        term = sum(adjoint(L_vec[i]) * S_col_y_t[i] for i = 1:length(L_vec)) * loop_gain_t * L_x_t
+        Hf(t) + (term - adjoint(term)) / (2im)
+    end
+
+    if time_dep
+        return SLHqo(S_red, [reduced_L(i) for i = 1:(length(L) - 1)], reduced_H)
+    end
+
+    L_red = begin
+        L_vec = copy(L)
+        _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
+        L_xbar_t + _feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t)
+    end
+    term = sum(adjoint(L[i]) * S_col_y[i] for i = 1:length(L)) * loop_gain * L[x]
+    H_red = H + (term - adjoint(term)) / (2im)
+    return SLHqo(S_red, L_red, H_red)
+end
+
+feedback(G::SLHqo, connection::Pair{Int,Int}) = feedback(G, first(connection), last(connection))
+
+function feedback(G::SLHqo, connections::Pair{Int,Int}...)
+    n = size(get_scattering(G), 1)
+    G_red = G
+    for (x, y) in _feedback_maps(n, connections)
+        G_red = feedback(G_red, x, y)
+    end
+    return G_red
+end
+
 Base.length(h::SecondQuantizedAlgebra.ConcreteHilbertSpace) = 1
 Base.length(h::ProductSpace) = length(h.spaces)

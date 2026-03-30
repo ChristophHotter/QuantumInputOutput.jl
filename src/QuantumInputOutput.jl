@@ -25,6 +25,7 @@ export SLH, # SLH.jl
     cascade,
     ⊞,
     concatenate,
+    feedback,
     translate_qo, # translate.jl
     u_to_gu, # utils.jl
     v_to_gv,

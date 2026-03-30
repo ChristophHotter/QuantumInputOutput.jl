@@ -4,6 +4,7 @@
   - [x] rm QC.jl 
   - [ ] types
   - [ ] rename translate_qo (to to_numerics ?)
+  - [ ] speed up derivation
 
 - [ ] examples
   - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
@@ -21,6 +22,7 @@
   - [ ] interaction picture: test general A(t)
   - [ ] cumulants: comparison example 04-1 and 04-2
   - [ ] u_Gaussian, v_Gaussian; slower?
+  - [ ] look at feedback reduction tests
 
 - [ ] more functionalities
   - [ ] feedback reduction
