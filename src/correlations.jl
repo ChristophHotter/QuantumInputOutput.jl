@@ -28,7 +28,7 @@ end
 function two_time_corr_matrix(T::Vector, ρt::Vector, f::Function, Ls; kwargs...)
     l_T = length(T)
     @assert l_T == length(ρt)
-    Ls_dag = dagger.(Ls)
+    Ls_dag = dagger(Ls)
     ρ0_ = [Ls * ρt[i] for i = 1:l_T]
 
     g1_m = zeros(ComplexF64, l_T, l_T)
