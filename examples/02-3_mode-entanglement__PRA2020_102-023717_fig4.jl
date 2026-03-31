@@ -92,7 +92,7 @@ end
 t_1, ρt_1 = timeevolution.master_dynamic(T, ψ0, input_output_1)
 nothing # hide
 
-Ls(t) = √(γ_) * a_qo
+Ls = √(γ_) * a_qo
 g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)

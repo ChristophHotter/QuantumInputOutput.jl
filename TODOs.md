@@ -10,7 +10,7 @@
   - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
   - [ ] SUPER example (Johannes)
   - [ ] pulse delay advanced example (Victor paper)
-  - [ ] feedback reduction (see SLH paper)  
+  - [x] feedback reduction (see SLH paper)  
   - [ ] cumulants correlation matrix modes 
   
 - [ ] create more tests (cov +80%)
@@ -25,7 +25,7 @@
   - [ ] look at feedback reduction tests
 
 - [ ] more functionalities
-  - [ ] feedback reduction
+  - [x] feedback reduction
   - [ ] better method for u_eff and v_eff (Victor)
   - [ ] interaction picture (Victor paper)
     - [ ] general expression for A(t)
