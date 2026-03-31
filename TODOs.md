@@ -12,7 +12,7 @@
   - [ ] pulse delay advanced example (Victor paper)
   - [x] feedback reduction (see SLH paper)  
   - [ ] cumulants correlation matrix modes 
-  - [ ] H_loop in example 09-1 is not simplified correctly on the docu (locally it is fine)
+  - [ ] H_loop in example 09-1 is not simplified correctly on the docu (locally it is fine; pkg versions)
   
 - [ ] create more tests (cov +80%)
   - [x] simple full example

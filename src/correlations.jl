@@ -4,7 +4,7 @@
 
 Compute the two-time correlation matrix ``g^{(1)}(t_1, t_2) = \\langle L_s^\\dagger(t_1) L_s(t_2) \\rangle`` 
 on the time grid `T` for the operator `Ls`.
-The first method supports time-dependent generators with the fucntion `f`; the second is for time-independent `H` and `J`.
+The first method supports time-dependent generators with the function `f`; the second is for time-independent `H` and `J`.
 """
 function two_time_corr_matrix(T::Vector, ρt::Vector, f::Function, Ls::Function; kwargs...)
     l_T = length(T)
