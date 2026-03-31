@@ -39,24 +39,13 @@ nothing # hide
 
 S_loop = get_scattering(G_loop)
 L_loop = get_lindblad(G_loop)[1]
-H_loop = get_hamiltonian(G_loop)
-
-# The feedback loop leaves the OPO Hamiltonian unchanged but rescales the
-# coupling operator by
-# $l = \eta / (1 + \sqrt{1-\eta^2})$.
-
-l = η / (1 + r)
-L_expected = l * √(κ) * a
-nothing # hide
 
 #
 
-L_loop
+H_loop = get_hamiltonian(G_loop)
 
-@show S_loop
-@show simplify(L_loop - L_expected)
-@show H_loop
-
+# The feedback loop leaves the OPO Hamiltonian unchanged but rescales the
+# coupling operator by $l = \eta / (1 + \sqrt{1-\eta^2})$.
 # For a numerical illustration, we evaluate the effective damping factor $l^2$ as
 # a function of the beam-splitter transmission coefficient.
 
@@ -67,10 +56,9 @@ p = plot(
     η_grid,
     l2_grid;
     lw = 2,
-    label = "l²",
+    label = "",
     xlabel = "η",
     ylabel = "effective damping fraction",
-    title = "Feedback-reduced OPO coupling",
     grid = true,
     size = (520, 320),
 )

@@ -49,15 +49,15 @@ using Test
     expected_term = simplify((l1' * s11 + l2' * s21) * loop_gain * l1)
     expected_H = simplify(h0 + (expected_term - expected_term') / (2im))
 
-    @test isequal((G_red.scattering .- expected_S)[1,1], 0)
+    @test isequal((G_red.scattering .- expected_S)[1, 1], 0)
     @test isequal((G_red.lindblad .- expected_L)[1], 0)
     @test isequal(G_red.hamiltonian - expected_H, 0)
 
     @testset "coherent-feedback OPO loop" begin
         # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
-        κ = 0.7 
-        ϵ = 0.45 
-        η = 0.65 
+        κ = 0.7
+        ϵ = 0.45
+        η = 0.65
         # κ = rnumber("κ")
         # ϵ = rnumber("ϵ")
         # η = rnumber("η")
@@ -68,10 +68,7 @@ using Test
         G_bs = SLH([-r η; η r], [0, 0], 0)
         G_unconnected = G_opo ⊞ G_bs
         G_loop = feedback(G_unconnected, 1 => 2, 2 => 1)
-
         l = simplify(η / (1 + r))
-
-        # simplify(G_loop.scattering[1,1] .- l) # TODO: see Example VI.1!
 
         @test isequal(G_loop.scattering, ones(1, 1))
         @test isequal(G_loop.lindblad, [simplify(l * √(κ) * a)])
