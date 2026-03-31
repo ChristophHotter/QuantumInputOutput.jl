@@ -19,7 +19,7 @@ av = Destroy(h, :a_v, 3)
 γ, gu, gv = rnumbers("γ g_u g_v")
 ```
 
-An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref) and concatenation [`⊞`](@ref) rules implement the standard network composition from the SLH framework.
+An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.
 
 The resulting effective operators are accessed by [`get_hamiltonian`](@ref) and [`get_lindblad`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture. 
 
@@ -30,7 +30,9 @@ H = get_hamiltonian(G_cas)
 L = get_lindblad(G_cas)
 ```
 
-If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, the [`SLHqo`](@ref) type skips the symbolic layer and allows time-dependent `L` or `H` as callables while still using the same cascade and concatenate rules.
+For networks with internal loops, the symbolic model can be reduced directly with [`feedback`](@ref), which applies the SLH feedback reduction rule before translation. This keeps the symbolic workflow consistent: build a network from cascades and concatenations, eliminate internal connections symbolically, and only then translate the reduced Hamiltonian and Lindblad operators to numerics.
+
+If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, the [`SLHqo`](@ref) type skips the symbolic layer and allows time-dependent `L` or `H` as callables while still using the same cascade, concatenate, and feedback rules. This can be much faster. 
 
 ## Translate to numerics
 

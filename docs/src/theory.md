@@ -84,6 +84,25 @@ H_1 + H_2
 \right).
 ```
 
+3. **Feedback reduction**: connecting output port $x$ back into input port $y$ of an $n$-port component
+$G = (S, L, H)$ yields a reduced $(n-1)$-port model $[(G)]_{x \to y} = (\tilde S, \tilde L, \tilde H)$ with
+
+```math
+\tilde S = S_{\bar x,\bar y} + S_{\bar x,y}(1 - S_{x,y})^{-1}S_{x,\bar y},
+```
+
+```math
+\tilde L = L_{\bar x} + S_{\bar x,y}(1 - S_{x,y})^{-1}L_x,
+```
+
+```math
+\tilde H = H + \frac{1}{2i}\left[
+\left(\sum_{j=1}^n L_j^\dagger S_{j,y}\right)(1 - S_{x,y})^{-1}L_x - \mathrm{h.c.}
+\right].
+```
+
+Here $\bar x$ and $\bar y$ denote the remaining output and input ports after removing $x$ and $y$. This rule closes internal loops in an SLH network and is used whenever a network contains a direct coherent feedback path.
+
 By modeling the input and output pulses as virtual cavities and cascading them with the physical system, we
 obtain an effective SLH triple for the full problem. This describes a master equation involving the system and auxiliary modes, which can be solved with standard Lindblad solvers. 
 
