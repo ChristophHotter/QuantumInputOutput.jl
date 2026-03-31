@@ -22,7 +22,6 @@
   - [ ] interaction picture: test general A(t)
   - [ ] cumulants: comparison example 04-1 and 04-2
   - [ ] u_Gaussian, v_Gaussian; slower?
-  - [ ] look at feedback reduction tests
 
 - [ ] more functionalities
   - [x] feedback reduction
@@ -30,7 +29,7 @@
   - [ ] interaction picture (Victor paper)
     - [ ] general expression for A(t)
   - [ ] pulse delay (Victor paper)
-  - [ ] two_time_corr_matrix for Ls const (see example 02-2)
+  - [x] two_time_corr_matrix for Ls const (see example 02-2)
 
 - [x] Formatter/SpellCheck
 
