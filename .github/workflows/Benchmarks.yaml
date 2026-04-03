@@ -17,6 +17,7 @@ on:
       - 'src/**'
       - 'ext/**'
       - 'test/**'
+      - 'benchmarks/**'
       - 'Project.toml'
     types:
       - opened
