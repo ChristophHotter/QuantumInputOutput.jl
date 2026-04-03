@@ -48,11 +48,11 @@ nothing # hide
 ```
 
 ```@example tutorial
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ```
 
 ```@example tutorial
-L = get_lindblad(G_cas)[1]
+L = lindblad(G_cas)[1]
 ```
 
 ## 2. Numerical parameters and input pulse

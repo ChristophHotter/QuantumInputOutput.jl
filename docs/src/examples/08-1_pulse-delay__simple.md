@@ -51,8 +51,8 @@ G_v = SLH(1, gv*av, 0)
 G_v2 = concatenate(SLH(1, 0, 0), G_v)
 
 G_cas = cascade(G_u2, G_d, G_v2)
-H = get_hamiltonian(G_cas)
-L = get_lindblad(G_cas)
+H = hamiltonian(G_cas)
+L = lindblad(G_cas)
 nothing # hide
 ````
 
@@ -138,7 +138,7 @@ delay between different modes is crucial, e.g. for two arms of an interferometer
 
 ````@example 08-1_pulse-delay__simple
 G_d_in = SLH(S2, [gin*ad, 0], 0)
-H_ud = get_hamiltonian(cascade(G_u2, G_d_in))
+H_ud = hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
 M(i, j) = cnumber("M_{$(i)$(j)}")

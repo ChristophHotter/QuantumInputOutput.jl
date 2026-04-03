@@ -21,13 +21,13 @@ av = Destroy(h, :a_v, 3)
 
 An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.
 
-The resulting effective operators are accessed by [`get_hamiltonian`](@ref) and [`get_lindblad`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture. 
+The resulting effective operators are accessed by [`hamiltonian`](@ref) and [`lindblad`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture. 
 
 ```julia
 G_cas = ▷(G_u, G_s, G_v)
 
-H = get_hamiltonian(G_cas)
-L = get_lindblad(G_cas)
+H = hamiltonian(G_cas)
+L = lindblad(G_cas)
 ```
 
 For networks with internal loops, the symbolic model can be reduced directly with [`feedback`](@ref), which applies the SLH feedback reduction rule before translation. This keeps the symbolic workflow consistent: build a network from cascades and concatenations, eliminate internal connections symbolically, and only then translate the reduced Hamiltonian and Lindblad operators to numerics.

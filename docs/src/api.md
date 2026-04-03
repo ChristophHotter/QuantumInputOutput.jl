@@ -11,15 +11,15 @@ SLHqo
 ```
 
 ```@docs
-get_scattering
+scattering
 ```
 
 ```@docs
-get_lindblad
+lindblad
 ```
 
 ```@docs
-get_hamiltonian
+hamiltonian
 ```
 
 ```@docs

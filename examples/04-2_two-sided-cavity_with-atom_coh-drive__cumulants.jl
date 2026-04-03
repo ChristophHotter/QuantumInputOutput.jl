@@ -40,15 +40,15 @@ nothing # hide
 
 # Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule. 
 
-H1 = get_hamiltonian(G_cav_L_R_drive)
+H1 = hamiltonian(G_cav_L_R_drive)
 
 # 
 
-L1_L = get_lindblad(G_cav_L_R_drive)[1]
+L1_L = lindblad(G_cav_L_R_drive)[1]
 
 # 
 
-L1_R = get_lindblad(G_cav_L_R_drive)[2]
+L1_R = lindblad(G_cav_L_R_drive)[2]
 
 # The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. 
 # We use the function `meanfield` to obtain the equation for the intra-cavity field, which leads to a closed set of equations in this particular case.  

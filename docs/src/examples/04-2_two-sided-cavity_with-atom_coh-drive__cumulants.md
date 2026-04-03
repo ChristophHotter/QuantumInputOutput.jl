@@ -49,15 +49,15 @@ nothing # hide
 Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule.
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-H1 = get_hamiltonian(G_cav_L_R_drive)
+H1 = hamiltonian(G_cav_L_R_drive)
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-L1_L = get_lindblad(G_cav_L_R_drive)[1]
+L1_L = lindblad(G_cav_L_R_drive)[1]
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-L1_R = get_lindblad(G_cav_L_R_drive)[2]
+L1_R = lindblad(G_cav_L_R_drive)[2]
 ````
 
 The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad.

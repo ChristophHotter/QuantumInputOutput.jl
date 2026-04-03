@@ -51,15 +51,15 @@ nothing # hide
 Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-H1 = get_hamiltonian(G_cav_L_R_drive)
+H1 = hamiltonian(G_cav_L_R_drive)
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-L1_L = get_lindblad(G_cav_L_R_drive)[1]
+L1_L = lindblad(G_cav_L_R_drive)[1]
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-L1_R = get_lindblad(G_cav_L_R_drive)[2]
+L1_R = lindblad(G_cav_L_R_drive)[2]
 ````
 
 Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl). We could, in principle, also proceed by solving this equation, see e.g. the example `Mean-field Two-sided Cavity`.

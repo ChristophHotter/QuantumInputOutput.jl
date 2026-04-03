@@ -48,8 +48,8 @@ nothing # hide
 # first Lindblad operator corresponds to the reflected left-moving output and the
 # second one to the transmitted right-moving output.
 
-H = get_hamiltonian(G_t)
-L = get_lindblad(G_t)
+H = hamiltonian(G_t)
+L = lindblad(G_t)
 L_L = L[1]
 L_R = L[2]
 nothing # hide

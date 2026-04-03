@@ -37,12 +37,12 @@ nothing # hide
 
 #
 
-S_loop = get_scattering(G_loop)
-L_loop = get_lindblad(G_loop)[1]
+S_loop = scattering(G_loop)
+L_loop = lindblad(G_loop)[1]
 
 #
 
-H_loop = get_hamiltonian(G_loop)
+H_loop = hamiltonian(G_loop)
 
 # The feedback loop leaves the OPO Hamiltonian unchanged but rescales the
 # coupling operator by $l = \eta / (1 + \sqrt{1-\eta^2})$.

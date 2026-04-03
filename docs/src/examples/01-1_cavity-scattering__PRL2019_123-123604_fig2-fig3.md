@@ -47,11 +47,11 @@ nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-L = get_lindblad(G_cas)[1] # only one Lindblad term in this example
+L = lindblad(G_cas)[1] # only one Lindblad term in this example
 ````
 
 To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.

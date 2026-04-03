@@ -45,11 +45,11 @@ nothing # hide
 
 #
 
-H = get_hamiltonian(G)
+H = hamiltonian(G)
 
 #
 
-L = get_lindblad(G)
+L = lindblad(G)
 L[1]
 
 #

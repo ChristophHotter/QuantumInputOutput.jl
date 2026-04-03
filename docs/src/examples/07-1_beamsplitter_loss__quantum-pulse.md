@@ -53,11 +53,11 @@ nothing # hide
 ````
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
-H = get_hamiltonian(G)
+H = hamiltonian(G)
 ````
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
-L = get_lindblad(G)
+L = lindblad(G)
 ````
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse

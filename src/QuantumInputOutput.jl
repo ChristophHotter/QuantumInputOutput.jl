@@ -23,10 +23,6 @@ export SLH,
     scattering,
     lindblad,
     hamiltonian,
-    # Backward compat
-    get_scattering,
-    get_lindblad,
-    get_hamiltonian,
     # Composition
     ▷,
     cascade,

@@ -53,11 +53,11 @@ nothing # hide
 ````
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-L = get_lindblad(G_cas)[1] # only one Lindblad in this example
+L = lindblad(G_cas)[1] # only one Lindblad in this example
 ````
 
 Next, the numerical parameters and functions of the system are defined.

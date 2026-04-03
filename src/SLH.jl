@@ -182,10 +182,6 @@ Return the Hamiltonian `H` of an SLH object.
 """
 hamiltonian(G::SLH) = G.hamiltonian
 
-# Backward compat
-get_scattering(G::SLH) = scattering(G)
-get_lindblad(G::SLH) = lindblad(G)
-get_hamiltonian(G::SLH) = hamiltonian(G)
 
 # ──────────────────────────────────────────────
 # Equality

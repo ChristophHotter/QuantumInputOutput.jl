@@ -44,11 +44,11 @@ nothing # hide
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-L = get_lindblad(G_cas)[1] # only one Lindblad in this example
+L = lindblad(G_cas)[1] # only one Lindblad in this example
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2

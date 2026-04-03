@@ -50,11 +50,11 @@ nothing # hide
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
-H = get_hamiltonian(G)
+H = hamiltonian(G)
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
-L = get_lindblad(G)
+L = lindblad(G)
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse

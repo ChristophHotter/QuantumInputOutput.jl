@@ -45,11 +45,11 @@ nothing # hide
 
 #
 
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 
 #
 
-L = get_lindblad(G_cas)[1] # only one Lindblad in this example
+L = lindblad(G_cas)[1] # only one Lindblad in this example
 
 # Next, the numerical parameters and functions of the system are defined.
 

@@ -36,15 +36,15 @@ nothing # hide
 
 #
 
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 
 #
 
-L = get_lindblad(G_cas)[1]
+L = lindblad(G_cas)[1]
 
 # Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$. 
 
-H_uv = get_hamiltonian(▷(G_u, G_v))
+H_uv = hamiltonian(▷(G_u, G_v))
 
 # To do so, we first subtract $H_{uv}$ from $H$ and then replace the virtual cavity operators $a_v$ and $a_u$ as described in the [Theory](@ref) section. 
 
