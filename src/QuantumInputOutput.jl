@@ -38,12 +38,7 @@ export SLH, # SLH.jl
     two_time_corr_matrix,
     interaction_picture_M, # interaction picture
     interaction_picture_M_2modes_equal,
-    interaction_picture_A_2modes,
-    interaction_picture_A_3modes,
-    interaction_picture_A_4modes,
-    interaction_picture_A_uv,
-    interaction_picture_A_ucv,
-    interaction_picture_A_uuvv,
+    interaction_picture_A,
     substitute_operators
 
 include("SLH.jl")

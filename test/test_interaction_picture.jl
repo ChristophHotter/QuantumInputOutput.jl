@@ -56,7 +56,7 @@ using Test
     gv_t = v_to_gv(u, T)
 
     # Interaction-picture coefficient matrices
-    A_uv = interaction_picture_A_2modes(gu_t, gv_t)
+    A_uv = interaction_picture_A(gu_t, gv_t)
     M_num = interaction_picture_M(A_uv, T)
     M_ana = interaction_picture_M_2modes_equal(u, T)
 

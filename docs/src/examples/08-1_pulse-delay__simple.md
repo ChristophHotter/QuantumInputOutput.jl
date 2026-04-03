@@ -179,7 +179,7 @@ nothing # hide
 
 ````@example 08-1_pulse-delay__simple
 # interaction-picture coefficient matrix M(t) for u ↔ d
-A_ud = interaction_picture_A_2modes(gu_, gin_)
+A_ud = interaction_picture_A(gu_, gin_)
 M_t = interaction_picture_M(A_ud, T)
 
 M_ls = [M(i, j) for i = 1:la for j = 1:la]

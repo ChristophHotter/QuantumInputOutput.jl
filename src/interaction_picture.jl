@@ -61,88 +61,54 @@ end
 _as_time_function(x) = x isa Function ? x : (_ -> x)
 
 """
-    interaction_picture_A_2modes(g1, g2)
+    interaction_picture_A(gs)
+    interaction_picture_A(g1, g2, gs...)
 
-Coefficient matrix `A(t)` for two virtual modes `(1, 2)`,
+Coefficient matrix `A(t)` for `N` interacting modes with couplings `gs = [g_1, …, g_N]`.
+All couplings may be time-dependent functions or constants.
+
+The anti-Hermitian matrix has entries
+
+```math
+A_{ij}(t) = \\tfrac{1}{2}\\,g_i(t)\\,g_j^*(t), \\quad i < j,
+\\qquad A_{ji} = -A_{ij}^*,
+\\qquad A_{ii} = 0.
+```
+
+For two modes this gives
 
 ```math
 A(t) = \\frac{1}{2}
 \\begin{bmatrix}
-0 & g_1(t) g_2^*(t) \\\\
--g_1^*(t) g_2(t) & 0
-\\end{bmatrix}
+0 & g_1(t)\\, g_2^*(t) \\\\
+-g_1^*(t)\\, g_2(t) & 0
+\\end{bmatrix},
 ```
 
-All couplings may be time-dependent or constant.
-"""
-function interaction_picture_A_2modes(g1, g2)
-    g1f = _as_time_function(g1)
-    g2f = _as_time_function(g2)
-    A(t) = 0.5 * [
-        0 g1f(t) * conj(g2f(t));
-        -conj(g1f(t)) * g2f(t) 0
-    ]
-    return A
-end
-interaction_picture_A_2modes(g_ls) = interaction_picture_A_2modes(g_ls...)
-
-"""
-    interaction_picture_A_3modes(g1, g2, g3)
-
-Coefficient matrix `A(t)` for three interacting modes ordered as `(1, 2, 3)`
+and for three modes
 
 ```math
 A(t) = \\frac{1}{2}
 \\begin{bmatrix}
-0 & g_1(t) g_2^*(t) & g_1(t) g_3^*(t) \\\\
--g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) \\\\
--g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0
-\\end{bmatrix}
+0 & g_1(t)\\, g_2^*(t) & g_1(t)\\, g_3^*(t) \\\\
+-g_1^*(t)\\, g_2(t) & 0 & g_2(t)\\, g_3^*(t) \\\\
+-g_1^*(t)\\, g_3(t) & -g_2^*(t)\\, g_3(t) & 0
+\\end{bmatrix}.
 ```
-
-All couplings may be time-dependent or constant.
 """
-function interaction_picture_A_3modes(g1, g2, g3)
-    g1f = _as_time_function(g1)
-    g2f = _as_time_function(g2)
-    g3f = _as_time_function(g3)
-    A(t) =
-        0.5 * [
-            0 conj(g2f(t)) * g1f(t) g1f(t) * conj(g3f(t));
-            -g2f(t) * conj(g1f(t)) 0 g2f(t) * conj(g3f(t));
-            -conj(g1f(t)) * g3f(t) -conj(g2f(t)) * g3f(t) 0
-        ]
+function interaction_picture_A(gs)
+    gfs = _as_time_function.(gs)
+    n = length(gfs)
+    function A(t)
+        g = [gf(t) for gf in gfs]
+        M = zeros(ComplexF64, n, n)
+        for i in 1:n, j in (i+1):n
+            M[i, j] = g[i] * conj(g[j])
+            M[j, i] = -conj(M[i, j])
+        end
+        return 0.5 * M
+    end
     return A
 end
 
-"""
-    interaction_picture_A_4modes(g1, g2, g3, g4)
-
-Coefficient matrix `A(t)` for four interacting modes ordered as `(1, 2, 3, 4)`
-
-```math
-A(t) = \\frac{1}{2}
-\\begin{bmatrix}
-0 & g_1(t) g_2^*(t) & g_1(t) g_3^*(t) & g_1(t) g_4^*(t) \\\\
--g_1^*(t) g_2(t) & 0 & g_2(t) g_3^*(t) & g_2(t) g_4^*(t) \\\\
--g_1^*(t) g_3(t) & -g_2^*(t) g_3(t) & 0 & g_3(t) g_4^*(t) \\\\
--g_1^*(t) g_4(t) & -g_2^*(t) g_4(t) & -g_3^*(t) g_4(t) & 0
-\\end{bmatrix}
-```
-
-All couplings may be time-dependent or constant.
-"""
-function interaction_picture_A_4modes(g1, g2, g3, g4)
-    g1f = _as_time_function(g1)
-    g2f = _as_time_function(g2)
-    g3f = _as_time_function(g3)
-    g4f = _as_time_function(g4)
-    A(t) =
-        0.5 * [
-            0 g1f(t) * conj(g2f(t)) g1f(t) * conj(g3f(t)) g1f(t) * conj(g4f(t));
-            -conj(g1f(t)) * g2f(t) 0 g2f(t) * conj(g3f(t)) g2f(t) * conj(g4f(t));
-            -conj(g1f(t)) * g3f(t) -conj(g2f(t)) * g3f(t) 0 g3f(t) * conj(g4f(t));
-            -conj(g1f(t)) * g4f(t) -conj(g2f(t)) * g4f(t) -conj(g3f(t)) * g4f(t) 0
-        ]
-    return A
-end
+interaction_picture_A(g1, g2, gs...) = interaction_picture_A([g1, g2, gs...])

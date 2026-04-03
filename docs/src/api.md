@@ -93,15 +93,7 @@ interaction_picture_M_2modes_equal
 ```
 
 ```@docs
-interaction_picture_A_2modes
-```
-
-```@docs
-interaction_picture_A_3modes
-```
-
-```@docs
-interaction_picture_A_4modes
+interaction_picture_A
 ```
 
 ## [Correlations](@id API: Correlations)
