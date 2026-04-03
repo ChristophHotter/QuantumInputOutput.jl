@@ -41,9 +41,6 @@ export SLH, # SLH.jl
     interaction_picture_A_2modes,
     interaction_picture_A_3modes,
     interaction_picture_A_4modes,
-    interaction_picture_A_uv,
-    interaction_picture_A_ucv,
-    interaction_picture_A_uuvv,
     substitute_operators
 
 include("SLH.jl")
