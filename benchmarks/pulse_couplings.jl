@@ -17,9 +17,16 @@ function benchmark_pulse_couplings!(SUITE)
 
     SUITE["Pulse Couplings"]["single-pulse"] = BenchmarkGroup()
 
-    SUITE["Pulse Couplings"]["single-pulse"]["input"] = @benchmarkable u_to_gu($u, $T)
+    SUITE["Pulse Couplings"]["single-pulse"]["input"] = @benchmarkable coupling_input($u, $T)
 
-    SUITE["Pulse Couplings"]["single-pulse"]["output"] = @benchmarkable v_to_gv($v, $T)
+    SUITE["Pulse Couplings"]["single-pulse"]["output"] = @benchmarkable coupling_output($v, $T)
+
+    # Gaussian analytical
+    SUITE["Pulse Couplings"]["single-pulse"]["input Gaussian"] =
+        @benchmarkable coupling_input(Gaussian($τ, $σ; δ = $δ))
+
+    SUITE["Pulse Couplings"]["single-pulse"]["output Gaussian"] =
+        @benchmarkable coupling_output(Gaussian($τ, $σ; δ = $δ))
 
     ## --- Effective multi-pulse couplings ---
 
@@ -31,10 +38,10 @@ function benchmark_pulse_couplings!(SUITE)
     u2(t) = 1 / (sqrt(σ) * π^(1 / 4)) * exp(-0.5 * ((t - (τ + 2σ)) / σ)^2)
 
     SUITE["Pulse Couplings"]["multi-pulse"]["output 2 modes"] =
-        @benchmarkable v_eff([$v1, $v2], $T, 2)
+        @benchmarkable effective_output_mode([$v1, $v2], $T, 2)
 
     SUITE["Pulse Couplings"]["multi-pulse"]["input 2 modes"] =
-        @benchmarkable u_eff([$u1, $u2], $T, 2)
+        @benchmarkable effective_input_mode([$u1, $u2], $T, 2)
 
     return nothing
 end

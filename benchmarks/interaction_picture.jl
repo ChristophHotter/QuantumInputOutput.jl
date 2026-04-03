@@ -1,6 +1,5 @@
 """
 Interaction picture benchmarks — computing coefficient matrices for mode transformations.
-Based on Christiansen et al., PRA 107, 013706 (2023).
 """
 function benchmark_interaction_picture!(SUITE)
     SUITE["Interaction Picture"] = BenchmarkGroup()
@@ -14,9 +13,9 @@ function benchmark_interaction_picture!(SUITE)
     T_end = 12.0
     T = [0:0.005:1;] * T_end
 
-    gu_t = u_to_gu(u, T)
-    gv_t = v_to_gv(u, T)
-    A_uv = interaction_picture_A_2modes(gu_t, gv_t)
+    gu_t = coupling_input(u, T)
+    gv_t = coupling_output(u, T)
+    A_uv = coupling_matrix((gu_t, gv_t))
 
     ## --- Coupling matrix A(t) evaluation (called every ODE step) ---
 
@@ -28,11 +27,11 @@ function benchmark_interaction_picture!(SUITE)
     SUITE["Interaction Picture"]["coupling matrix evaluation"]["2 modes"] =
         @benchmarkable $A_uv($t_mid)
 
-    # 4-mode A(t) — more realistic for multi-port systems
+    # 4-mode A(t)
     u2(t) = 1 / (sqrt(τ) * π^(1 / 4)) * exp(-0.5 * ((t - t_p * 1.5) / τ)^2)
-    g3_t = u_to_gu(u2, T)
-    g4_t = v_to_gv(u2, T)
-    A_4m = interaction_picture_A_4modes(gu_t, gv_t, g3_t, g4_t)
+    g3_t = coupling_input(u2, T)
+    g4_t = coupling_output(u2, T)
+    A_4m = coupling_matrix((gu_t, gv_t, g3_t, g4_t))
 
     SUITE["Interaction Picture"]["coupling matrix evaluation"]["4 modes"] =
         @benchmarkable $A_4m($t_mid)
@@ -42,10 +41,10 @@ function benchmark_interaction_picture!(SUITE)
     SUITE["Interaction Picture"]["coefficient matrix M"] = BenchmarkGroup()
 
     SUITE["Interaction Picture"]["coefficient matrix M"]["numerical (ODE)"] =
-        @benchmarkable interaction_picture_M($A_uv, $T)
+        @benchmarkable solve_mode_evolution($A_uv, $T)
 
     SUITE["Interaction Picture"]["coefficient matrix M"]["analytical (2 equal modes)"] =
-        @benchmarkable interaction_picture_M_2modes_equal($u, $T)
+        @benchmarkable solve_mode_evolution_symmetric($u, $T)
 
     ## --- Symbolic operator substitution ---
 
@@ -65,9 +64,9 @@ function benchmark_interaction_picture!(SUITE)
     G_v = SLH(1, gv_sym' * av_sym, 0)
     G_cas = ▷(G_u, G_s, G_v)
 
-    H = get_hamiltonian(G_cas)
-    L = get_lindblad(G_cas)[1]
-    H_uv = get_hamiltonian(▷(G_u, G_v))
+    H = hamiltonian(G_cas)
+    L = lindblad(G_cas)[1]
+    H_uv = hamiltonian(▷(G_u, G_v))
     H_int_ = simplify(H - H_uv)
 
     M_sym(i, j) = cnumber("M_{$(i)$(j)}")

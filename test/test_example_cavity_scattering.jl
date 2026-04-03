@@ -22,8 +22,8 @@ using Test
     G_v = SLH(1, gv' * av, 0)
     G_cas = ▷(G_u, G_c, G_v)
 
-    H = get_hamiltonian(G_cas)
-    L = get_lindblad(G_cas)[1]
+    H = hamiltonian(G_cas)
+    L = lindblad(G_cas)[1]
 
     γ_ = 1.0
     Δ_ = 0.0
@@ -34,12 +34,11 @@ using Test
     T_p = 1/γ_
     T_end = 12T_p
     σ = sqrt(0.5)*T_p
-    # u1(t) = sqrt(1/(σ*√(2π))*exp( -0.5*(t - 4T_p)^2/σ^2 ))
     u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
     T = [0:0.004:1;]*T_end
     ΔT = T[2] - T[1]
 
-    gu_t = u_to_gu(u1, T)
+    gu_t = coupling_input(u1, T)
     dict_p_t = Dict(gu => gu_t)
 
     bu1 = FockBasis(2)
@@ -71,7 +70,7 @@ using Test
 
     # correlation matrix
     Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-    g1_m = two_time_corr_matrix(T, ρt, input_output_1, Ls)
+    g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
 
     F = eigen(g1_m)
     n_avg = round.(real.(F.values)*ΔT; digits = 3)
@@ -86,11 +85,8 @@ using Test
     p_num_2 = [γ_, Δ_]
     dict_p_2 = Dict(p_sym_2 .=> p_num_2);
 
-    # time-dependent coupling for the output mode $v(t)$
-    gv_t = v_to_gv(v_mode, T)
+    gv_t = coupling_output(v_mode, T)
 
-    # gvc_t = t -> conj(gv_t(t))
-    # dict_p_t_2 = Dict([gu, gv, conj(gv)] .=> [gu_t, gv_t, gvc_t]);
     dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
 
     H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
@@ -101,7 +97,6 @@ using Test
         return H, J, dagger.(J)
     end;
 
-    # time evolution for the system including the output cavity
     t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
 
     n_v1_t = real.(expect(av_qo'*av_qo, ρt_2))

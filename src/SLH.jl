@@ -1,370 +1,421 @@
+using StaticArrays
+using FunctionWrappers: FunctionWrapper
+
+# NOTE: FunctionWrapper is callable but NOT <: Function.
+const _Callable = Union{Function,FunctionWrapper}
+
+# ──────────────────────────────────────────────
+# Dispatch helpers: symbolic vs numeric
+# ──────────────────────────────────────────────
+
+_adj(x::SQA.QNumber) = SQA._adjoint(x)
+_adj(f::_Callable) = t -> adjoint(f(t))
+_adj(x) = adjoint(x)
+
+_post(x::BasicSymbolic) = simplify(x)
+_post(x) = x
+
+# ──────────────────────────────────────────────
+# Arithmetic helpers: static vs time-dependent
+# ──────────────────────────────────────────────
+
+_is_time_dep(x) = x isa _Callable
+_to_func(x) = _is_time_dep(x) ? x : (t -> x)
+
+_add(f::_Callable, g::_Callable) = t -> f(t) + g(t)
+_add(f::_Callable, x) = iszero(x) ? f : (t -> f(t) + x)
+_add(x, f::_Callable) = iszero(x) ? f : (t -> x + f(t))
+_add(x, y) = x + y
+
+_mul(f::_Callable, g::_Callable) = t -> f(t) * g(t)
+_mul(s, f::_Callable) = isone(s) ? f : (t -> s * f(t))
+_mul(f::_Callable, s) = isone(s) ? f : (t -> f(t) * s)
+_mul(x, y) = x * y
+
+# ──────────────────────────────────────────────
+# FunctionWrapper with concrete return type
+# ──────────────────────────────────────────────
+
 """
-    SLH 
+    _detect_operator_type(L, H)
 
-SLH triple with scattering matrix `S`, Lindblad term `L` and Hamiltonian `H`. 
-`S` and `L` can also be vectors of scattering matrices and Linblad terms. 
-
-See also [`▷`](@ref) and [`⊞`](@ref)
+Determine the concrete return type for FunctionWrapper by inspecting
+the non-Function elements of L and H. Falls back to evaluating a
+Function element at t=0.0 if all elements are Functions.
+Errors if the type cannot be determined (would produce FunctionWrapper{Any}).
 """
-struct SLH{T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}}
-    scattering::S
-    lindblad::L
-    hamiltonian::H
-
-    function SLH(
-        scattering::S,
-        lindblad::L,
-        hamiltonian::H,
-    ) where {T,LT,H,S<:AbstractMatrix{T},L<:AbstractVector{LT}}
-
-        @assert size(scattering, 1) == length(lindblad)
-        new{T,LT,H,S,L}(scattering, lindblad, hamiltonian)
-    end
-end
-
-# -----------------------
-# QuantumOptics operators
-# -----------------------
-
-"""
-    SLHqo
-
-SLH triple where `L` and `H` are QuantumOptics.jl operators or time-dependent functions
-returning such operators. This is useful when you build models directly in a numeric basis,
-without symbolic translation.
-"""
-struct SLHqo{S<:AbstractMatrix,L<:AbstractVector,H}
-    scattering::S
-    lindblad::L
-    hamiltonian::H
-
-    function SLHqo(
-        scattering::S,
-        lindblad::L,
-        hamiltonian::H,
-    ) where {S<:AbstractMatrix,L<:AbstractVector,H}
-        @assert size(scattering, 1) == length(lindblad)
-        if !(hamiltonian isa Function || hamiltonian isa QuantumOpticsBase.AbstractOperator)
-            error(
-                "SLHqo expects H to be a QuantumOptics operator or a time-dependent function returning one; got $(typeof(hamiltonian))",
-            )
+function _detect_operator_type(L, H)
+    # Check non-time-dep L elements first
+    for l in L
+        if !_is_time_dep(l)
+            return typeof(l)
         end
-        for (i, l) in pairs(lindblad)
-            if !(l isa Function || l isa QuantumOpticsBase.AbstractOperator)
-                error(
-                    "SLHqo expects L[$i] to be a QuantumOptics operator or a time-dependent function returning one; got $(typeof(l))",
-                )
-            end
-        end
-        new{S,L,H}(scattering, lindblad, hamiltonian)
     end
+    # Check H
+    if !_is_time_dep(H)
+        return typeof(H)
+    end
+    # All time-dep — evaluate one at t=0.0 to determine type
+    for l in L
+        if _is_time_dep(l)
+            T = typeof(l(0.0))
+            T === Any && error("Cannot determine concrete operator type from time-dependent Lindblad element. Pass a non-Function element or use a typed closure.")
+            return T
+        end
+    end
+    if _is_time_dep(H)
+        T = typeof(H(0.0))
+        T === Any && error("Cannot determine concrete operator type from time-dependent Hamiltonian. Pass a non-Function element or use a typed closure.")
+        return T
+    end
+    error("Cannot determine operator type: no elements in L or H")
 end
 
-function SLHqo(S, L::AbstractVector, H)
-    S_ = Matrix(I, length(L), length(L)) * S
-    return SLHqo(S_, L, H)
-end
-function SLHqo(S, L, H)
-    S_ = ones(1, 1) * S
-    L_ = [L]
-    return SLHqo(S_, L_, H)
-end
+# [C3 fix]: error instead of returning Any
 
-"""
-    get_scattering(G)
-
-Return the scattering matrix `S` of an SLH or SLHqo object.
-"""
-get_scattering(slh::SLHqo) = slh.scattering
-"""
-    get_lindblad(G)
-
-Return the Lindblad vector `L` of an SLH or SLHqo object.
-"""
-get_lindblad(slh::SLHqo) = slh.lindblad
-"""
-    get_hamiltonian(G)
-
-Return the Hamiltonian `H` of an SLH or SLHqo object.
-"""
-get_hamiltonian(slh::SLHqo) = slh.hamiltonian
-
-function Base.isequal(slh1::SLHqo, slh2::SLHqo)
-    isequal(get_scattering(slh1), get_scattering(slh2)) &&
-        isequal(get_lindblad(slh1), get_lindblad(slh2)) &&
-        isequal(get_hamiltonian(slh1), get_hamiltonian(slh2))
+function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N, OpType}
+    # [I1 fix]: construct with explicit element type, no splat
+    if any(_is_time_dep, L)
+        fw_type = FunctionWrapper{OpType, Tuple{Float64}}
+        return SVector{N, fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
+    end
+    return L
 end
 
-_is_time_dep(x) = x isa Function
-_to_func(x) = x isa Function ? x : (t -> x)
-
-# SLH(scattering::S, lindblad::L, hamiltonian::H) where {S,H,L} = SLH{S,H,L}(scattering,lindblad,hamiltonian)
-function SLH(S, L::AbstractVector, H)
-    S_ = Matrix{typeof(S)}(I, length(L), length(L))*S
-    return SLH(S_, L, H)
+function _maybe_wrap_hamiltonian(H, has_td::Bool, ::Type{OpType}) where {OpType}
+    if has_td
+        return FunctionWrapper{OpType,Tuple{Float64}}(_to_func(H))
+    end
+    return H
 end
+
+# ──────────────────────────────────────────────
+# SLH type
+# ──────────────────────────────────────────────
+
+"""
+    SLH{N, ST, LT, HT}
+
+SLH triple with scattering matrix `S`, Lindblad vector `L`, and Hamiltonian `H`.
+`N` is the number of ports (channels). Uses `SMatrix` and `SVector` from StaticArrays
+for stack-allocated, type-stable storage.
+
+Works for both symbolic (SecondQuantizedAlgebra) and numeric (QuantumOptics) operators.
+Time-dependent elements are wrapped with `FunctionWrapper{ConcreteOpType, Tuple{Float64}}`
+for concrete types.
+
+See also [`▷`](@ref), [`⊞`](@ref), [`feedback`](@ref)
+"""
+struct SLH{N,ST,LT,HT}
+    scattering::SMatrix{N,N,ST}
+    lindblad::SVector{N,LT}
+    hamiltonian::HT
+end
+
+# ──────────────────────────────────────────────
+# Constructors
+# ──────────────────────────────────────────────
+
+# Canonical: from SMatrix + SVector (handles FunctionWrapper wrapping)
+function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H) where {N}
+    has_td = any(_is_time_dep, L) || _is_time_dep(H)
+    if has_td
+        OpType = _detect_operator_type(L, H)
+        L_w = _maybe_wrap_lindblad(L, OpType)
+        H_w = _maybe_wrap_hamiltonian(H, true, OpType)
+        return SLH{N,eltype(S),eltype(L_w),typeof(H_w)}(S, L_w, H_w)
+    end
+    return SLH{N,eltype(S),eltype(L),typeof(H)}(S, L, H)
+end
+
+# From AbstractMatrix + AbstractVector (includes SMatrix + SVector)
+function SLH(S::AbstractMatrix, L::AbstractVector, H)
+    N = length(L)
+    @assert size(S, 1) == N && size(S, 2) == N
+    return _build_slh(SMatrix{N,N}(S), SVector{N}(L...), H)
+end
+
+# [I7 fix]: use lazy I instead of I(N)
+# Numeric scalar S + vector L → S * I_{NxN}
+function SLH(S::Number, L::AbstractVector, H)
+    N = length(L)
+    S_mat = SMatrix{N,N}(S * LinearAlgebra.I)
+    return _build_slh(S_mat, SVector{N}(L...), H)
+end
+
+# Scalar S + scalar L → SLH{1}
 function SLH(S, L, H)
-    S_ = ones(1, 1)*S
-    L_ = [L]
-    return SLH(S_, L_, H)
+    S_mat = SMatrix{1,1}(S)
+    L_vec = SVector{1}(L)
+    return _build_slh(S_mat, L_vec, H)
 end
 
-function Base.isequal(slh1::SLH, slh2::SLH)
-    isequal(get_scattering(slh1), get_scattering(slh2)) &&
-        isequal(get_lindblad(slh1), get_lindblad(slh2)) &&
-        isequal(get_hamiltonian(slh1), get_hamiltonian(slh2))
+# Symbolic/general scalar S + vector L → S * I
+function SLH(S, L::AbstractVector, H)
+    N = length(L)
+    S_mat = SMatrix{N,N}([i == j ? S : 0 for i in 1:N, j in 1:N])
+    return _build_slh(S_mat, SVector{N}(L...), H)
 end
 
-get_scattering(slh::SLH) = slh.scattering
-get_lindblad(slh::SLH) = slh.lindblad
-get_hamiltonian(slh::SLH) = slh.hamiltonian
+# ──────────────────────────────────────────────
+# Accessors
+# ──────────────────────────────────────────────
 
 """
-    ▷(G::SLH...)
+    scattering(G::SLH)
 
-Creates a new SLH triple by cascading the SLH triples from first to last according to 
-the rule 
-
-``SLH_1 \\triangleright SLH_2 = ( S_2 S_1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) ``
-
-Unicode `\\triangleright<tab>` alias of [`cascade`](@ref)
+Return the scattering matrix `S` of an SLH object.
 """
-function ▷(G1::SLH, G2::SLH) #\triangleright
-    # function cascade(G1::SLH,G2::SLH) # G1 ▷ G2 = G2 ◁ G1
-    S1 = get_scattering(G1);
-    L1 = get_lindblad(G1);
-    H1 = get_hamiltonian(G1)
-    S2 = get_scattering(G2);
-    L2 = get_lindblad(G2);
-    H2 = get_hamiltonian(G2)
+scattering(G::SLH) = G.scattering
 
-    lL1 = length(L1)
-    lL2 = length(L2)
-    @assert lL1==lL2
+"""
+    lindblad(G::SLH)
 
-    S_t = simplify.(S2*S1)
-    L_t = simplify.(L2 + S2*L1)
-    # H_t = (H1 + H2 - 1im/2*(L2'S2*L1 - L1'S2'L2)) # the adjoint also creates the transpose! 
-    # H_t = (H1 + H2 - 1im/2*(SQA._adjoint(L2)*S2*L1 - SQA._adjoint(L1)*SQA._adjoint(S2)*L2))
-    L1_ct = SQA._adjoint.(L1)
-    L2_ct = SQA._adjoint.(L2)
-    S2_ct = SQA._adjoint.(S2)
+Return the Lindblad vector `L` of an SLH object.
+"""
+lindblad(G::SLH) = G.lindblad
 
-    H_t = simplify(
-        H1 + H2 -
-        1im/2*(
-            sum(L2_ct[it]*(S2*L1)[it] for it = 1:lL1) -
-            sum(L1_ct[it]*(S2_ct*L2)[it] for it = 1:lL1)
-        ),
-    )
+"""
+    hamiltonian(G::SLH)
+
+Return the Hamiltonian `H` of an SLH object.
+"""
+hamiltonian(G::SLH) = G.hamiltonian
+
+# Backward compat
+get_scattering(G::SLH) = scattering(G)
+get_lindblad(G::SLH) = lindblad(G)
+get_hamiltonian(G::SLH) = hamiltonian(G)
+
+# ──────────────────────────────────────────────
+# Equality
+# ──────────────────────────────────────────────
+
+function Base.isequal(G1::SLH, G2::SLH)
+    isequal(scattering(G1), scattering(G2)) &&
+        isequal(lindblad(G1), lindblad(G2)) &&
+        isequal(hamiltonian(G1), hamiltonian(G2))
+end
+
+# ──────────────────────────────────────────────
+# Matrix-vector helpers
+# [I8 fix]: removed dead N=1 fallbacks, @generated handles all N
+# ──────────────────────────────────────────────
+
+@generated function _slh_matvec(S::SMatrix{N,N}, L::SVector{N}) where {N}
+    if N == 1
+        return :(SVector{1}(_mul(S[1, 1], L[1])))
+    end
+    exprs = []
+    for i in 1:N
+        terms = [:(tmp_$(i)_1 = _mul(S[$i, 1], L[1]))]
+        acc = :tmp_$(Symbol("$(i)_1"))
+        for j in 2:N
+            tname = Symbol("tmp_$(i)_$(j)")
+            push!(terms, :($tname = _add($acc, _mul(S[$i, $j], L[$j]))))
+            acc = tname
+        end
+        push!(exprs, Expr(:block, terms..., acc))
+    end
+    return :(SVector($(exprs...)))
+end
+
+@generated function _slh_dot(L1::SVector{N}, L2::SVector{N}) where {N}
+    if N == 1
+        return :(_mul(L1[1], L2[1]))
+    end
+    expr = :(_mul(L1[1], L2[1]))
+    for i in 2:N
+        expr = :(_add($expr, _mul(L1[$i], L2[$i])))
+    end
+    return expr
+end
+
+# ──────────────────────────────────────────────
+# Cascade: ▷
+# [C2 fix]: Val(N*N) for ntuple in S2_adj construction
+# ──────────────────────────────────────────────
+
+"""
+    ▷(G1::SLH{N}, G2::SLH{N}) where N
+
+Cascade two SLH triples:
+
+``G_1 \\triangleright G_2 = (S_2 S_1,\\; L_2 + S_2 L_1,\\; H_1 + H_2 - \\tfrac{i}{2}(L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2))``
+
+Unicode `\\triangleright<tab>`. See also [`cascade`](@ref).
+"""
+function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
+    S1, L1, H1 = scattering(G1), lindblad(G1), hamiltonian(G1)
+    S2, L2, H2 = scattering(G2), lindblad(G2), hamiltonian(G2)
+
+    S_t = _post.(S2 * S1)
+    S2L1 = _slh_matvec(S2, L1)
+    L_t = SVector{N}(ntuple(i -> _post(_add(L2[i], S2L1[i])), Val(N)))
+
+    # Cross terms for Hamiltonian
+    S2_adj = SMatrix{N,N}(ntuple(Val(N * N)) do k
+        i, j = divrem(k - 1, N) .+ (1, 1)
+        _adj(S2[i, j])
+    end)
+    L1_adj = SVector{N}(ntuple(i -> _adj(L1[i]), Val(N)))
+    L2_adj = SVector{N}(ntuple(i -> _adj(L2[i]), Val(N)))
+
+    cross1 = _slh_dot(L2_adj, S2L1)
+    S2adj_L2 = _slh_matvec(S2_adj, L2)
+    cross2 = _slh_dot(L1_adj, S2adj_L2)
+
+    H_t = _post(_add(_add(H1, H2), _mul(-1im / 2, _add(cross1, _mul(-1, cross2)))))
+
     return SLH(S_t, L_t, H_t)
 end
-▷(a::SLH, b::SLH, c::SLH...) = ▷(a▷b, c...)
-# G's in the order as they are cascaded (from left to right)
 
-"""
-    ▷(G::SLHqo...)
-
-Cascades SLHqo triples from first to last, allowing time-dependent `L` or `H`.
-If any input `L` or `H` is time-dependent, the result uses time-dependent functions.
-"""
-function ▷(G1::SLHqo, G2::SLHqo)
-    S1 = get_scattering(G1);
-    L1 = get_lindblad(G1);
-    H1 = get_hamiltonian(G1)
-    S2 = get_scattering(G2);
-    L2 = get_lindblad(G2);
-    H2 = get_hamiltonian(G2)
-
-    lL1 = length(L1)
-    lL2 = length(L2)
-    @assert lL1 == lL2
-
-    S_t = S2 * S1
-
-    L1f = map(_to_func, L1)
-    L2f = map(_to_func, L2)
-    H1f = _to_func(H1)
-    H2f = _to_func(H2)
-    time_dep =
-        any(_is_time_dep, L1) ||
-        any(_is_time_dep, L2) ||
-        _is_time_dep(H1) ||
-        _is_time_dep(H2)
-
-    if time_dep
-        function L_t(i)
-            return t -> begin
-                L1_vec = [f(t) for f in L1f]
-                L2_vec = [f(t) for f in L2f]
-                (L2_vec+S2*L1_vec)[i]
-            end
-        end
-        L_out = [L_t(i) for i = 1:lL1]
-
-        H_out =
-            t -> begin
-                L1_vec = [f(t) for f in L1f]
-                L2_vec = [f(t) for f in L2f]
-                term1 = sum(adjoint(L2_vec[i]) * (S2*L1_vec)[i] for i = 1:lL1)
-                term2 = sum(adjoint(L1_vec[i]) * (adjoint(S2)*L2_vec)[i] for i = 1:lL1)
-                H1f(t) + H2f(t) - 1im / 2 * (term1 - term2)
-            end
-        return SLHqo(S_t, L_out, H_out)
-    end
-
-    L_out = L2 + S2 * L1
-    term1 = sum(adjoint(L2[i]) * (S2*L1)[i] for i = 1:lL1)
-    term2 = sum(adjoint(L1[i]) * (adjoint(S2)*L2)[i] for i = 1:lL1)
-    H_out = H1 + H2 - 1im / 2 * (term1 - term2)
-    return SLHqo(S_t, L_out, H_out)
-end
-▷(a::SLHqo, b::SLHqo, c::SLHqo...) = ▷(a▷b, c...)
+▷(a::SLH, b::SLH, c::SLH...) = ▷(a ▷ b, c...)
 
 """
     cascade(G::SLH...)
 
-Creates a new SLH triple by cascading the SLH triples from first to last according to 
-the rule 
-
-```math
-SLH_1 \\triangleright SLH_2 = ( S_2 S_1, L_2 + S_2 L_1, H_1 + H_2 - \\frac{i}{2} L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2 ) 
-```
-
-See also [`▷`](@ref). 
+Cascade SLH triples from first to last. Alias for [`▷`](@ref).
 """
 cascade(args...) = ▷(args...)
-# ◁(G1::SLH,G2::SLH) = ▷(G2,G1) # unknown unicode character
+
+# ──────────────────────────────────────────────
+# Concatenate: ⊞
+# [I2 fix]: use :(zero(eltype(S1))) instead of bare 0
+# ──────────────────────────────────────────────
 
 """
-    ⊞(G::SLH...)
+    ⊞(G1::SLH{N1}, G2::SLH{N2})
 
-Creates a new SLH triple by concatenating the SLH triples according to 
-the rule 
+Concatenate (parallel composition) of two SLH triples:
 
-```math
-SLH_1 \\boxplus SLH_2 = \\left( \\begin{pmatrix} S_1 & 0 \\\\ 0 & S_2 \\end{pmatrix}, \\begin{pmatrix} L_1 \\\\ L_2 \\end{pmatrix}, H_1 + H_2 \\right)
-```
+``G_1 \\boxplus G_2 = \\left(\\begin{pmatrix} S_1 & 0 \\\\ 0 & S_2 \\end{pmatrix},\\;
+\\begin{pmatrix} L_1 \\\\ L_2 \\end{pmatrix},\\; H_1 + H_2\\right)``
 
-Unicode `\\boxplus<tab>` alias of [`concatenate`](@ref)
+Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
 """
-function ⊞(G1::SLH, G2::SLH) #\boxplus
-    S1 = get_scattering(G1);
-    L1 = get_lindblad(G1);
-    H1 = get_hamiltonian(G1)
-    S2 = get_scattering(G2);
-    L2 = get_lindblad(G2);
-    H2 = get_hamiltonian(G2)
-
-    lS1 = size(S1, 1);
-    lS2 = size(S2, 1)
-
-    S_t = Matrix{Any}(undef, lS1+lS2, lS1+lS2) # that is pretty ugly (but it works)
-    S_t .= zeros(lS1+lS2, lS1+lS2)
-    S_t[1:lS1, 1:lS1] .= S1
-    S_t[(1+lS1):(lS1+lS2), (1+lS1):(lS1+lS2)] .= S2
-
-    L_t = [L1; L2]
-    H_t = H1 + H2
-
-    return SLH(S_t, L_t, H_t)
-end
-⊞(a::SLH, b::SLH, c::SLH...) = ⊞(a⊞b, c...)
-
-"""
-    ⊞(G::SLHqo...)
-
-Concatenates SLHqo triples, allowing time-dependent `L` or `H`.
-If any input `L` or `H` is time-dependent, the result uses time-dependent functions.
-"""
-function ⊞(G1::SLHqo, G2::SLHqo)
-    S1 = get_scattering(G1);
-    L1 = get_lindblad(G1);
-    H1 = get_hamiltonian(G1)
-    S2 = get_scattering(G2);
-    L2 = get_lindblad(G2);
-    H2 = get_hamiltonian(G2)
-
-    lS1 = size(S1, 1);
-    lS2 = size(S2, 1)
-    T_S = promote_type(eltype(S1), eltype(S2))
-    S_t = Matrix{T_S}(undef, lS1 + lS2, lS1 + lS2)
-    fill!(S_t, 0)
-    S_t[1:lS1, 1:lS1] .= S1
-    S_t[(1+lS1):(lS1+lS2), (1+lS1):(lS1+lS2)] .= S2
-
-    L1f = map(_to_func, L1)
-    L2f = map(_to_func, L2)
-    time_dep =
-        any(_is_time_dep, L1) ||
-        any(_is_time_dep, L2) ||
-        _is_time_dep(H1) ||
-        _is_time_dep(H2)
-
-    if time_dep
-        L_out = vcat(L1f, L2f)
-        H_out = t -> _to_func(H1)(t) + _to_func(H2)(t)
-        return SLHqo(S_t, L_out, H_out)
+@generated function ⊞(G1::SLH{N1}, G2::SLH{N2}) where {N1,N2}
+    N = N1 + N2
+    s_exprs = []
+    for j in 1:N, i in 1:N  # column-major for SMatrix
+        if i <= N1 && j <= N1
+            push!(s_exprs, :(S1[$i, $j]))
+        elseif i > N1 && j > N1
+            push!(s_exprs, :(S2[$(i - N1), $(j - N1)]))
+        else
+            push!(s_exprs, 0)
+        end
     end
 
-    L_out = [L1; L2]
-    H_out = H1 + H2
-    return SLHqo(S_t, L_out, H_out)
+    quote
+        S1, L1, H1 = scattering(G1), lindblad(G1), hamiltonian(G1)
+        S2, L2, H2 = scattering(G2), lindblad(G2), hamiltonian(G2)
+        S_t = SMatrix{$N,$N}($(s_exprs...))
+        L_t = vcat(L1, L2)
+        H_t = _add(H1, H2)
+        return SLH(S_t, L_t, H_t)
+    end
 end
-⊞(a::SLHqo, b::SLHqo, c::SLHqo...) = ⊞(a⊞b, c...)
+
+⊞(a::SLH, b::SLH, c::SLH...) = ⊞(a ⊞ b, c...)
 
 """
     concatenate(G::SLH...)
 
-Creates a new SLH triple by concatenating the SLH triples according to 
-the rule 
-
-```math
-SLH_1 \\boxplus SLH_2 = \\left( \\begin{pmatrix} S_1 & 0 \\\\ 0 & S_2 \\end{pmatrix}, \\begin{pmatrix} L_1 \\\\ L_2 \\end{pmatrix}, H_1 + H_2 \\right)
-```
-
-See also [`⊞`](@ref).
+Concatenate (parallel composition) of SLH triples. Alias for [`⊞`](@ref).
 """
 concatenate(args...) = ⊞(args...)
-concatenation(args...) = concatenate(args...) # alias
 
-# feedback reduction rules
+# ──────────────────────────────────────────────
+# Feedback reduction
+# [C1 fix]: dispatch through Val(N-1) so M is a type parameter
+# [C2 fix]: all ntuple calls use Val
+# ──────────────────────────────────────────────
 
-_dropindex(v::AbstractVector, i::Int) = [v[k] for k = 1:length(v) if k != i]
-
-function _dropindices(M::AbstractMatrix, i::Int, j::Int)
-    rows = [r for r = 1:size(M, 1) if r != i]
-    cols = [c for c = 1:size(M, 2) if c != j]
-    return M[rows, cols]
+function _drop_row_col(S::SMatrix{N,N}, row::Int, col::Int, ::Val{M}) where {N, M}
+    SMatrix{M,M}(
+        ntuple(Val(M * M)) do k
+            i, j = divrem(k - 1, M) .+ (1, 1)
+            ri = i >= row ? i + 1 : i
+            cj = j >= col ? j + 1 : j
+            S[ri, cj]
+        end
+    )
 end
 
-function _feedback_scalar(S::AbstractMatrix, L::AbstractVector, x::Int, y::Int)
-    n = size(S, 1)
-    @assert size(S, 2) == n
-    @assert length(L) == n
-    @assert 1 <= x <= n
-    @assert 1 <= y <= n
+function _drop_index(L::SVector{N}, idx::Int, ::Val{M}) where {N, M}
+    SVector{M}(ntuple(i -> L[i >= idx ? i + 1 : i], Val(M)))
+end
 
+function _get_col_dropped_row(S::SMatrix{N,N}, col::Int, drop_row::Int, ::Val{M}) where {N, M}
+    SVector{M}(ntuple(i -> S[i >= drop_row ? i + 1 : i, col], Val(M)))
+end
+
+function _get_row_dropped_col(S::SMatrix{N,N}, row::Int, drop_col::Int, ::Val{M}) where {N, M}
+    SVector{M}(ntuple(j -> S[row, j >= drop_col ? j + 1 : j], Val(M)))
+end
+
+"""
+    feedback(G::SLH{N}, x::Int, y::Int) where N
+
+Apply the SLH feedback reduction rule: connect output port `x` to input port `y`.
+Returns `SLH{N-1}`.
+
+See also [`SLH`](@ref), [`▷`](@ref), [`⊞`](@ref).
+"""
+function feedback(G::SLH{N}, x::Int, y::Int) where {N}
+    _feedback_impl(G, x, y, Val(N - 1))
+end
+
+function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
+    S = scattering(G)
+    L = lindblad(G)
+    H = hamiltonian(G)
+
+    @assert 1 <= x <= N && 1 <= y <= N
+
+    valM = Val(M)
     S_xy = S[x, y]
-    S_xbar_ybar = _dropindices(S, x, y)
-    S_xbar_y = _dropindex(S[:, y], x)
-    S_x_ybar = permutedims(_dropindex(vec(S[x, :]), y))
-    S_col_y = vec(S[:, y])
-    L_xbar = _dropindex(L, x)
-    L_x = L[x]
-
     loop_gain = 1 / (1 - S_xy)
-    return S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, L_x, loop_gain
+
+    S_bar = _drop_row_col(S, x, y, valM)
+    S_col_y_no_x = _get_col_dropped_row(S, y, x, valM)
+    S_row_x_no_y = _get_row_dropped_col(S, x, y, valM)
+
+    S_update = SMatrix{M,M}(
+        ntuple(Val(M * M)) do k
+            i, j = divrem(k - 1, M) .+ (1, 1)
+            _post(_mul(_mul(S_col_y_no_x[i], loop_gain), S_row_x_no_y[j]))
+        end
+    )
+    S_red = SMatrix{M,M}(ntuple(Val(M * M)) do k
+        i, j = divrem(k - 1, M) .+ (1, 1)
+        _post(_add(S_bar[i, j], S_update[i, j]))
+    end)
+
+    L_bar = _drop_index(L, x, valM)
+    L_x = L[x]
+    L_update = SVector{M}(ntuple(i -> _post(_mul(_mul(S_col_y_no_x[i], loop_gain), L_x)), valM))
+    L_red = SVector{M}(ntuple(i -> _post(_add(L_bar[i], L_update[i])), valM))
+
+    S_col_y_full = SVector{N}(ntuple(i -> S[i, y], Val(N)))
+    L_adj = SVector{N}(ntuple(i -> _adj(L[i]), Val(N)))
+    term = _mul(_slh_dot(L_adj, S_col_y_full), _mul(loop_gain, L_x))
+    H_red = _post(_add(H, _mul(1 / (2im), _add(term, _mul(-1, _adj(term))))))
+
+    return SLH(S_red, L_red, H_red)
 end
 
-function _feedback_scattering_update(S_xbar_y::AbstractVector, loop_gain, S_x_ybar)
-    nrows = length(S_xbar_y)
-    ncols = length(S_x_ybar)
-    return [S_xbar_y[i] * loop_gain * S_x_ybar[j] for i = 1:nrows, j = 1:ncols]
-end
+feedback(G::SLH, connection::Pair{Int,Int}) =
+    feedback(G, first(connection), last(connection))
 
-function _feedback_lindblad_update(S_xbar_y::AbstractVector, loop_gain, L_x)
-    return [S_xbar_y[i] * loop_gain * L_x for i = 1:length(S_xbar_y)]
+function feedback(G::SLH, connections::Pair{Int,Int}...)
+    n = size(scattering(G), 1)
+    G_red = G
+    for (x, y) in _feedback_maps(n, connections)
+        G_red = feedback(G_red, x, y)
+    end
+    return G_red
 end
 
 function _feedback_maps(n::Int, connections)
@@ -383,120 +434,7 @@ function _feedback_maps(n::Int, connections)
         deleteat!(output_ports, x_now)
         deleteat!(input_ports, y_now)
     end
-
     return mapped
-end
-
-"""
-    feedback(G::SLH, x::Int, y::Int)
-    feedback(G::SLH, connection::Pair{Int,Int})
-    feedback(G::SLH, connections::Pair{Int,Int}...)
-
-Apply the SLH feedback reduction rule to connect output port `x` to input port `y`.
-Multiple connections can be passed as `x => y` pairs; in that form the pairs are
-interpreted using the original port labels and reduced in sequence with the port
-bookkeeping handled automatically.
-
-See also [`SLH`](@ref), [`▷`](@ref), and [`⊞`](@ref).
-"""
-function feedback(G::SLH, x::Int, y::Int)
-    S = get_scattering(G)
-    L = get_lindblad(G)
-    H = get_hamiltonian(G)
-
-    S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, L_x, loop_gain =
-        _feedback_scalar(S, L, x, y)
-
-    S_red = simplify.(
-        S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar)),
-    )
-    L_red = simplify.(L_xbar + _feedback_lindblad_update(S_xbar_y, loop_gain, L_x))
-
-    L_ct = SQA._adjoint.(L)
-    term = sum(L_ct[i] * S_col_y[i] for i = 1:length(L)) * loop_gain * L_x
-    H_red = simplify(H + (term - SQA._adjoint(term)) / (2im))
-
-    return SLH(S_red, L_red, H_red)
-end
-
-feedback(G::SLH, connection::Pair{Int,Int}) =
-    feedback(G, first(connection), last(connection))
-
-function feedback(G::SLH, connections::Pair{Int,Int}...)
-    n = size(get_scattering(G), 1)
-    G_red = G
-    for (x, y) in _feedback_maps(n, connections)
-        G_red = feedback(G_red, x, y)
-    end
-    return G_red
-end
-
-"""
-    feedback(G::SLHqo, x::Int, y::Int)
-    feedback(G::SLHqo, connection::Pair{Int,Int})
-    feedback(G::SLHqo, connections::Pair{Int,Int}...)
-
-Apply the feedback reduction rule to an `SLHqo` triple. Time-dependent `L` or `H`
-are preserved in the reduced model.
-"""
-function feedback(G::SLHqo, x::Int, y::Int)
-    S = get_scattering(G)
-    L = get_lindblad(G)
-    H = get_hamiltonian(G)
-
-    S_xbar_ybar, S_xbar_y, S_x_ybar, S_col_y, L_xbar, _, loop_gain =
-        _feedback_scalar(S, L, x, y)
-
-    S_red = S_xbar_ybar + _feedback_scattering_update(S_xbar_y, loop_gain, vec(S_x_ybar))
-
-    Lf = map(_to_func, L)
-    Hf = _to_func(H)
-    time_dep = any(_is_time_dep, L) || _is_time_dep(H)
-
-    function reduced_L(i)
-        return t -> begin
-            L_vec = [f(t) for f in Lf]
-            _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t =
-                _feedback_scalar(S, L_vec, x, y)
-            (L_xbar_t+_feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t))[i]
-        end
-    end
-
-    function reduced_H(t)
-        L_vec = [f(t) for f in Lf]
-        _, _, _, S_col_y_t, _, L_x_t, loop_gain_t = _feedback_scalar(S, L_vec, x, y)
-        term =
-            sum(adjoint(L_vec[i]) * S_col_y_t[i] for i = 1:length(L_vec)) *
-            loop_gain_t *
-            L_x_t
-        Hf(t) + (term - adjoint(term)) / (2im)
-    end
-
-    if time_dep
-        return SLHqo(S_red, [reduced_L(i) for i = 1:(length(L)-1)], reduced_H)
-    end
-
-    L_red = begin
-        L_vec = copy(L)
-        _, S_xbar_y_t, _, _, L_xbar_t, L_x_t, loop_gain_t =
-            _feedback_scalar(S, L_vec, x, y)
-        L_xbar_t + _feedback_lindblad_update(S_xbar_y_t, loop_gain_t, L_x_t)
-    end
-    term = sum(adjoint(L[i]) * S_col_y[i] for i = 1:length(L)) * loop_gain * L[x]
-    H_red = H + (term - adjoint(term)) / (2im)
-    return SLHqo(S_red, L_red, H_red)
-end
-
-feedback(G::SLHqo, connection::Pair{Int,Int}) =
-    feedback(G, first(connection), last(connection))
-
-function feedback(G::SLHqo, connections::Pair{Int,Int}...)
-    n = size(get_scattering(G), 1)
-    G_red = G
-    for (x, y) in _feedback_maps(n, connections)
-        G_red = feedback(G_red, x, y)
-    end
-    return G_red
 end
 
 Base.length(h::SecondQuantizedAlgebra.ConcreteHilbertSpace) = 1

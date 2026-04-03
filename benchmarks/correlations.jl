@@ -23,14 +23,14 @@ function benchmark_correlations!(SUITE)
     G_v = SLH(1, gv * av, 0)
     G_cas = ▷(G_u, G_c, G_v)
 
-    H_sym = get_hamiltonian(G_cas)
-    L_sym = get_lindblad(G_cas)[1]
+    H_sym = hamiltonian(G_cas)
+    L_sym = lindblad(G_cas)[1]
 
     γ_ = 1.0
     σ_pulse = 1 / γ_
     T = [0:0.002:1;] * 12σ_pulse
     u1(t) = 1 / (sqrt(σ_pulse) * π^(1 / 4)) * exp(-(t - 4σ_pulse)^2 / (2 * σ_pulse^2))
-    gu_t = u_to_gu(u1, T)
+    gu_t = coupling_input(u1, T)
 
     bu1 = FockBasis(1)
     bc1 = FockBasis(1)
@@ -61,7 +61,7 @@ function benchmark_correlations!(SUITE)
     SUITE["Correlations"]["two-time"] = BenchmarkGroup()
 
     SUITE["Correlations"]["two-time"]["single photon cavity"] =
-        @benchmarkable two_time_corr_matrix($T, $ρt, $input_output, $Ls)
+        @benchmarkable correlation_matrix($T, $ρt, $input_output, $Ls)
 
     return nothing
 end

@@ -13,8 +13,8 @@ using Test
     ha_ = NLevelSpace("a", 2)
     h = hc ⊗ ha_
 
-    a = Destroy(h, :a, 1) # cavity 
-    σ(i, j) = Transition(h, "σ", i, j, 2) # two-level atom 
+    a = Destroy(h, :a, 1) # cavity
+    σ(i, j) = Transition(h, "σ", i, j, 2) # two-level atom
 
     bc1 = FockBasis(4)
     a_QO = destroy(bc1)
@@ -31,7 +31,6 @@ using Test
 
     E_t(t) = 2*t + 1im
     E_t_c(t) = conj(E_t(t))
-    # dict_p_t2 = Dict( [E, conj(E)] .=> [E_t, E_t_c] )
     dict_p_t2 = Dict(E => E_t)
 
 

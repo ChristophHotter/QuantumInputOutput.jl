@@ -35,9 +35,9 @@ using Test
     G_v = SLH(1, gv_sym' * av_sym, 0)
     G_cas = ▷(G_u, G_s, G_v)
 
-    H = get_hamiltonian(G_cas)
-    L = get_lindblad(G_cas)[1]
-    H_uv = get_hamiltonian(▷(G_u, G_v))
+    H = hamiltonian(G_cas)
+    L = lindblad(G_cas)[1]
+    H_uv = hamiltonian(▷(G_u, G_v))
     H_int_sym_ = simplify(H - H_uv)
 
     # Interaction-picture operator substitution
@@ -45,20 +45,20 @@ using Test
     a0_ls = [au_sym, av_sym]
     la = length(a0_ls)
     a_int_ls = [sum(M(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]
-    # int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; adjoint.(a_int_ls)])
     int_dict = Dict(a0_ls .=> a_int_ls)
 
     H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
     L_int_sym = simplify(substitute_operators(L, int_dict))
 
     # Virtual-cavity couplings
-    gu_t = u_to_gu(u, T)
-    gv_t = v_to_gv(u, T)
+    gu_t = coupling_input(u, T)
+    gv_t = coupling_output(u, T)
 
     # Interaction-picture coefficient matrices
-    A_uv = interaction_picture_A_2modes(gu_t, gv_t)
-    M_num = interaction_picture_M(A_uv, T)
-    M_ana = interaction_picture_M_2modes_equal(u, T)
+    A_uv = coupling_matrix((gu_t, gv_t))
+    sol_M = solve_mode_evolution(A_uv, T)
+    M_num = t -> sol_M(t)
+    M_ana = solve_mode_evolution_symmetric(u, T)
 
     @test abs(maximum([maximum(abs.(M_num(t))) for t in T]) - 1) < 1e-4
     max_M_err = maximum([maximum(abs.(M_num(t) - M_ana(t))) for t in T])
@@ -77,9 +77,6 @@ using Test
     dict_p = Dict(γ_sym => γ)
     M_ls = [M(i, j) for i = 1:la for j = 1:la]
     M_t_ls = [t -> M_num(t)[i, j] for i = 1:la for j = 1:la]
-    # M_t_c_ls = [t -> conj(M_num(t)[i, j]) for i = 1:la for j = 1:la]
-    # p_t_sym = [gu_sym, gv_sym, M_ls..., conj.(M_ls)...]
-    # p_t_num = [gu_t, gv_t, M_t_ls..., M_t_c_ls...]
     p_t_sym = [gu_sym, gv_sym, M_ls...]
     p_t_num = [gu_t, gv_t, M_t_ls...]
     dict_p_t = Dict(p_t_sym .=> p_t_num)

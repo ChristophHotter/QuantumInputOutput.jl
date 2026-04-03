@@ -14,31 +14,25 @@ _translate_one(b, operators, op_type) =
     isempty(operators) ? op_type(one(b)) :
     op_type(one(basis(collect(values(operators))[1])))
 
+# [I4+I5 fix]: simplified, no applicable(), values are Number → wrap, anything else → pass through
 function _normalize_time_parameter(time_parameter)
     if isempty(time_parameter)
         return time_parameter
     end
-    out = Dict()
+    KT = keytype(time_parameter)
+    out = Dict{KT,Any}()
     for (k, v) in time_parameter
-        if isa(v, Function)
-            out[k] = v
-        elseif isa(v, Number)
-            out[k] = t -> v
-        else
-            error(
-                "time_parameter values must be callable or numeric, got $(typeof(v)) for key $(k)",
-            )
-        end
+        out[k] = v isa Number ? (t -> v) : v
     end
     return out
 end
 
+# [C5 fix]: use Tuple + map instead of generator splat to avoid per-call allocation
 function _translate_prefactor(arg_c, time_parameter)
     keys_ = collect(keys(time_parameter))
-    values_ = collect(values(time_parameter))
-
+    values_tuple = Tuple(values(time_parameter))
     pref_build = build_function(arg_c, keys_...; expression = Val(false))
-    pref_f = t -> pref_build((v(t) for v in values_)...)
+    pref_f = t -> pref_build(map(v -> v(t), values_tuple)...)
     return true, pref_f
 end
 function _translate_prefactor(arg_c::Number, time_parameter)
@@ -49,16 +43,25 @@ end
     translate_qo(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),
               level_map=nothing, operators=Dict(), op_type=sparse)
 
-Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator with the corresponding basis `b`. 
-The dictionary `parameter` substitutes symbolic parameters with numbers. Time-dependent functions can be provide 
-with the dictionary `time_parameter`. 
-If `time_parameter` is non-empty, the result is a time-dependent function `t -> op(t)`. 
-The kwarg `level_map=nothing` is used to provide the names of levels for `transition` operators. 
-The operator type which should be returned can be set with the kwarg `op_type=sparse` and  
-a list of user-defined operators (e.g. on a different basis than `b`) can be provided with the 
-dictionary `operators=Dict()`. These operators will then be used to replace the symbolic expressions.  
+Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator.
+Time-dependent parameters are normalized ONCE at this entry point.
 """
 function translate_qo(
+    op,
+    b::QuantumOpticsBase.Basis;
+    parameter = Dict(),
+    time_parameter = Dict(),
+    level_map = nothing,
+    operators = Dict(),
+    op_type = sparse,
+)
+    tp = _normalize_time_parameter(time_parameter)
+    return _translate_qo(op, b; parameter, time_parameter = tp, level_map, operators, op_type)
+end
+
+# ── Internal dispatch: time_parameter already normalized ──
+
+function _translate_qo(
     op::SQA.QMul,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -67,40 +70,23 @@ function translate_qo(
     operators = Dict(),
     op_type = sparse,
 )
-
-    time_parameter = _normalize_time_parameter(time_parameter)
     if isempty(time_parameter)
-        return _translate_numeric(
-            op,
-            b;
-            parameter = parameter,
-            level_map = level_map,
-            operators = operators,
-            op_type = op_type,
-        ) # TODO: test
+        return _translate_numeric(op, b; parameter, level_map, operators, op_type)
     end
 
-    op_ = substitute(op, parameter) # First substitute all symbolic parameters with the numerical values -> only time-dependent parameters left
+    op_ = substitute(op, parameter)
 
-    if isa(op_, QSym) # special case if parameter is 1.0: after substitute p*op -> 1.0*op -> op (has no fields arg_c, args_nc)
-        output_op_QMul_QO_ = _translate_numeric_raw(
-            op_,
-            b;
-            level_map = level_map,
-            operators = operators,
-            op_type = op_type,
-        ) # this is faster!
-        output_op_QMul_QO = t -> output_op_QMul_QO_
-        return output_op_QMul_QO
-    elseif iszero(op_) # special case if parameter is 0.0
+    if isa(op_, QSym)
+        output_op = _translate_numeric_raw(op_, b; level_map, operators, op_type)
+        return t -> output_op
+    elseif iszero(op_)
         return op_type(0 * one(b))
     else
         arg_c = op_.arg_c
         args_nc = op_.args_nc
         prod_args_nc = op_type(
-            prod((to_numeric(arg, b, operators; level_map = level_map)) for arg in args_nc),
+            prod((to_numeric(arg, b, operators; level_map)) for arg in args_nc),
         )
-
         is_func, pref = _translate_prefactor(arg_c, time_parameter)
         if is_func
             return t -> pref(t) * prod_args_nc
@@ -109,8 +95,8 @@ function translate_qo(
         return t -> prod_c_nc_num
     end
 end
-#
-function translate_qo(
+
+function _translate_qo(
     op::SQA.QAdd,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -119,40 +105,28 @@ function translate_qo(
     operators = Dict(),
     op_type = sparse,
 )
-
-    time_parameter = _normalize_time_parameter(time_parameter)
-    op = expand(op) # should ensure that only multiplications are in arguments
-    ### only static operators - returns a time-independent Hamiltonian and Lindblad
+    op = expand(op)
     if isempty(time_parameter)
-        return _translate_numeric(
-            op,
-            b;
-            parameter = parameter,
-            level_map = level_map,
-            operators = operators,
-            op_type = op_type,
-        ) # TODO: test
+        return _translate_numeric(op, b; parameter, level_map, operators, op_type)
     end
 
-    ### static and time-dependent operators
     args = arguments(substitute(op, parameter))
-    args_translated = [
-        translate_qo(
-            arg,
-            b;
-            parameter = parameter,
-            time_parameter = time_parameter,
-            level_map = level_map,
-            operators = operators,
-            op_type = sparse,
-        ) for arg in args
-    ]
+    args_translated = Tuple(
+        _translate_qo(arg, b; parameter, time_parameter, level_map, operators, op_type = sparse)
+        for arg in args
+    )
 
-    output_op_QAdd_QO = t -> sum(args_translated[i](t) for i = 1:length(args_translated))
-    return output_op_QAdd_QO
+    n = length(args_translated)
+    return t -> begin
+        result = args_translated[1](t)
+        for i in 2:n
+            result = result + args_translated[i](t)
+        end
+        result
+    end
 end
 
-function translate_qo(
+function _translate_qo(
     op::QSym,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -161,32 +135,14 @@ function translate_qo(
     operators = Dict(),
     op_type = sparse,
 )
-    # QSym are only fundamental symbolic operators, e.g. a, σ_-, x, ...
-
-    time_parameter = _normalize_time_parameter(time_parameter)
     if isempty(time_parameter)
-        return _translate_numeric(
-            op,
-            b;
-            parameter = parameter,
-            level_map = level_map,
-            operators = operators,
-            op_type = op_type,
-        ) # TODO: test
+        return _translate_numeric(op, b; parameter, level_map, operators, op_type)
     end
-
-    output_op_QSym_QO_ = _translate_numeric_raw(
-        op,
-        b;
-        level_map = level_map,
-        operators = operators,
-        op_type = op_type,
-    ) # this is faster!
-    output_op_QSym_QO = t -> output_op_QSym_QO_
-    return output_op_QSym_QO
+    output_op = _translate_numeric_raw(op, b; level_map, operators, op_type)
+    return t -> output_op
 end
 
-function translate_qo(
+function _translate_qo(
     arg_c_,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -195,12 +151,9 @@ function translate_qo(
     operators = Dict(),
     op_type = sparse,
 )
-    # should only be needed for numbers and symbolic parameters
-
     arg_c = substitute(arg_c_, parameter)
     one_b = _translate_one(b, operators, op_type)
 
-    time_parameter = _normalize_time_parameter(time_parameter)
     if isempty(time_parameter)
         return arg_c * one_b
     end
@@ -216,9 +169,10 @@ end
 function translate_qo(ops::Vector, b::QuantumOpticsBase.Basis; kwargs...)
     return [translate_qo(op, b; kwargs...) for op in ops]
 end
+
 function translate_qo(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
-    L = get_lindblad(G);
-    H = get_hamiltonian(G)
+    L = lindblad(G)
+    H = hamiltonian(G)
     H_QO = translate_qo(H, b; kwargs...)
     L_QO = [translate_qo(L_, b; kwargs...) for L_ in L]
     return H_QO, L_QO

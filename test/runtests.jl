@@ -1,7 +1,6 @@
 names = [
-    # "test_code_quality.jl",
     "test_SLH.jl",
-    # "test_feedback.jl", # TODO
+    "test_feedback.jl",
     "test_translate.jl",
     "test_example_cavity_scattering.jl",
     "test_compare_example_05_1_05_2.jl",
@@ -10,7 +9,7 @@ names = [
 ]
 
 detected_tests =
-    filter(name->startswith(name, "test_") && endswith(name, ".jl"), readdir("."))
+    filter(name -> startswith(name, "test_") && endswith(name, ".jl"), readdir("."))
 
 unused_tests = setdiff(detected_tests, names)
 if length(unused_tests) != 0
