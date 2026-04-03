@@ -40,8 +40,8 @@ function benchmark_correlations!(SUITE)
     dict_p = Dict([γ, Δ, gv] .=> [γ_, 0.0, 0])
     dict_p_t = Dict(gu => gu_t)
 
-    H_QO = translate_qo(H_sym, b; parameter=dict_p, time_parameter=dict_p_t)
-    L_QO = translate_qo(L_sym, b; parameter=dict_p, time_parameter=dict_p_t)
+    H_QO = translate_qo(H_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = translate_qo(L_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output(t, ρ)
         Ht = H_QO(t)

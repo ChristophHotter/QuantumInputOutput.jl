@@ -17,11 +17,9 @@ function benchmark_pulse_couplings!(SUITE)
 
     SUITE["Pulse Couplings"]["single-pulse"] = BenchmarkGroup()
 
-    SUITE["Pulse Couplings"]["single-pulse"]["input"] =
-        @benchmarkable u_to_gu($u, $T)
+    SUITE["Pulse Couplings"]["single-pulse"]["input"] = @benchmarkable u_to_gu($u, $T)
 
-    SUITE["Pulse Couplings"]["single-pulse"]["output"] =
-        @benchmarkable v_to_gv($v, $T)
+    SUITE["Pulse Couplings"]["single-pulse"]["output"] = @benchmarkable v_to_gv($v, $T)
 
     ## --- Effective multi-pulse couplings ---
 

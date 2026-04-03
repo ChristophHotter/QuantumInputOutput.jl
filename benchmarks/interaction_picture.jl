@@ -22,7 +22,7 @@ function benchmark_interaction_picture!(SUITE)
 
     SUITE["Interaction Picture"]["coupling matrix evaluation"] = BenchmarkGroup()
 
-    t_mid = T[length(T) ÷ 2]
+    t_mid = T[length(T)÷2]
 
     # 2-mode A(t)
     SUITE["Interaction Picture"]["coupling matrix evaluation"]["2 modes"] =
@@ -73,7 +73,7 @@ function benchmark_interaction_picture!(SUITE)
     M_sym(i, j) = cnumber("M_{$(i)$(j)}")
     a0_ls = [au_sym, av_sym]
     la = length(a0_ls)
-    a_int_ls = [sum(M_sym(i, j) * a0_ls[j] for j in 1:la) for i in 1:la]
+    a_int_ls = [sum(M_sym(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]
     int_dict = Dict(a0_ls .=> a_int_ls)
 
     SUITE["Interaction Picture"]["operator substitution"] = BenchmarkGroup()

@@ -46,7 +46,7 @@ function benchmark_translation!(SUITE)
     expr_composite = a * 3 + Δ_sym * σ(2, 2)
 
     SUITE["Translation"]["static"]["atom-cavity"] =
-        @benchmarkable translate_qo($expr_composite, $b_multi; parameter=$dict_p_static)
+        @benchmarkable translate_qo($expr_composite, $b_multi; parameter = $dict_p_static)
 
     ## --- Time-dependent translation ---
 
@@ -58,10 +58,12 @@ function benchmark_translation!(SUITE)
     # Expression with time-dependent + static parameters and operators
     expr_td = a * 3 * conj(E) + Δ_sym * σ(2, 2)
 
-    SUITE["Translation"]["time-dependent"]["atom-cavity"] =
-        @benchmarkable translate_qo(
-            $expr_td, $b_multi; parameter=$dict_p_static, time_parameter=$dict_p_t
-        )
+    SUITE["Translation"]["time-dependent"]["atom-cavity"] = @benchmarkable translate_qo(
+        $expr_td,
+        $b_multi;
+        parameter = $dict_p_static,
+        time_parameter = $dict_p_t,
+    )
 
     # Full cascade H and L translation (realistic workflow from example 06-1)
     γ_ = 1.0
@@ -80,20 +82,24 @@ function benchmark_translation!(SUITE)
     dict_p_cav = Dict([γ_sym, Δ_sym, gv_sym] .=> [γ_, 0.0, 0])
     dict_p_t_cav = Dict([gu_sym, gv_sym] .=> [gu_t, gv_t])
 
-    SUITE["Translation"]["time-dependent"]["3-cavity H+L"] =
-        @benchmarkable begin
-            translate_qo($H_sym, $b_cav; parameter=$dict_p_cav, time_parameter=$dict_p_t_cav)
-            translate_qo($L_sym, $b_cav; parameter=$dict_p_cav, time_parameter=$dict_p_t_cav)
-        end
+    SUITE["Translation"]["time-dependent"]["3-cavity H+L"] = @benchmarkable begin
+        translate_qo($H_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
+        translate_qo(
+            $L_sym,
+            $b_cav;
+            parameter = $dict_p_cav,
+            time_parameter = $dict_p_t_cav,
+        )
+    end
 
     ## --- Closure evaluation (the ODE hot loop) ---
 
     SUITE["Translation"]["closure evaluation"] = BenchmarkGroup()
 
-    H_QO = translate_qo(H_sym, b_cav; parameter=dict_p_cav, time_parameter=dict_p_t_cav)
-    L_QO = translate_qo(L_sym, b_cav; parameter=dict_p_cav, time_parameter=dict_p_t_cav)
+    H_QO = translate_qo(H_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
+    L_QO = translate_qo(L_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
 
-    t_mid = T[length(T) ÷ 2]
+    t_mid = T[length(T)÷2]
 
     SUITE["Translation"]["closure evaluation"]["3-cavity H(t)"] =
         @benchmarkable $H_QO($t_mid)

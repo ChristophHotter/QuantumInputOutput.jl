@@ -25,19 +25,17 @@ function benchmark_slh_algebra!(SUITE)
     G_c = SLH(1, √(γ) * c, Δ * c'c)
     G_v = SLH(1, gv * av, 0)
 
-    SUITE["SLH Algebra"]["symbolic"]["3-cavity cascade"] =
-        @benchmarkable begin
-            G_cas = ▷($G_u, $G_c, $G_v)
-            get_hamiltonian(G_cas)
-            get_lindblad(G_cas)
-        end
+    SUITE["SLH Algebra"]["symbolic"]["3-cavity cascade"] = @benchmarkable begin
+        G_cas = ▷($G_u, $G_c, $G_v)
+        get_hamiltonian(G_cas)
+        get_lindblad(G_cas)
+    end
 
-    SUITE["SLH Algebra"]["symbolic"]["concatenate + cascade"] =
-        @benchmarkable begin
-            G_R = $G_u ▷ $G_c
-            G_L = $G_v
-            G_R ⊞ G_L
-        end
+    SUITE["SLH Algebra"]["symbolic"]["concatenate + cascade"] = @benchmarkable begin
+        G_R = $G_u ▷ $G_c
+        G_L = $G_v
+        G_R ⊞ G_L
+    end
 
     # Feedback: coherent-feedback OPO loop (from test_feedback.jl)
     hs = FockSpace(:s)
@@ -62,7 +60,7 @@ function benchmark_slh_algebra!(SUITE)
     N = 2
     bu = FockBasis(20)
     ba = NLevelBasis(2)
-    b_qds = tensor([ba for _ in 1:N]...)
+    b_qds = tensor([ba for _ = 1:N]...)
     b = bu ⊗ b_qds
 
     σ(i, j, k) = embed(b, i + 1, transition(ba, j, k))
@@ -108,17 +106,16 @@ function benchmark_slh_algebra!(SUITE)
     H_f = get_hamiltonian(G_t)
     L_f = get_lindblad(G_t)
 
-    t_mid = T[length(T) ÷ 2]
+    t_mid = T[length(T)÷2]
 
     SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide H(t)"] =
         @benchmarkable $H_f($t_mid)
 
-    SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide L(t)"] =
-        @benchmarkable begin
-            for Li in $L_f
-                Li($t_mid)
-            end
+    SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide L(t)"] = @benchmarkable begin
+        for Li in $L_f
+            Li($t_mid)
         end
+    end
 
     return nothing
 end
