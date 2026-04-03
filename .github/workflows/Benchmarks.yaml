@@ -16,7 +16,6 @@ on:
       - '.github/workflows/Benchmarks.yml'
       - 'src/**'
       - 'ext/**'
-      - 'test/**'
       - 'benchmarks/**'
       - 'Project.toml'
     types:
