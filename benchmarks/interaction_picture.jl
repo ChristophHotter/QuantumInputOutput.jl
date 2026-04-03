@@ -1,0 +1,88 @@
+"""
+Interaction picture benchmarks — computing coefficient matrices for mode transformations.
+Based on Christiansen et al., PRA 107, 013706 (2023).
+"""
+function benchmark_interaction_picture!(SUITE)
+    SUITE["Interaction Picture"] = BenchmarkGroup()
+
+    ## Setup: u -> TLS -> v system
+    γ_ = 1.0
+    τ = 1 / γ_
+    t_p = 4 / γ_
+    u(t) = 1 / (sqrt(τ) * π^(1 / 4)) * exp(-0.5 * ((t - t_p) / τ)^2)
+
+    T_end = 12.0
+    T = [0:0.005:1;] * T_end
+
+    gu_t = u_to_gu(u, T)
+    gv_t = v_to_gv(u, T)
+    A_uv = interaction_picture_A_2modes(gu_t, gv_t)
+
+    ## --- Coupling matrix A(t) evaluation (called every ODE step) ---
+
+    SUITE["Interaction Picture"]["coupling matrix evaluation"] = BenchmarkGroup()
+
+    t_mid = T[length(T)÷2]
+
+    # 2-mode A(t)
+    SUITE["Interaction Picture"]["coupling matrix evaluation"]["2 modes"] =
+        @benchmarkable $A_uv($t_mid)
+
+    # 4-mode A(t) — more realistic for multi-port systems
+    u2(t) = 1 / (sqrt(τ) * π^(1 / 4)) * exp(-0.5 * ((t - t_p * 1.5) / τ)^2)
+    g3_t = u_to_gu(u2, T)
+    g4_t = v_to_gv(u2, T)
+    A_4m = interaction_picture_A_4modes(gu_t, gv_t, g3_t, g4_t)
+
+    SUITE["Interaction Picture"]["coupling matrix evaluation"]["4 modes"] =
+        @benchmarkable $A_4m($t_mid)
+
+    ## --- Coefficient matrix M(t) ---
+
+    SUITE["Interaction Picture"]["coefficient matrix M"] = BenchmarkGroup()
+
+    SUITE["Interaction Picture"]["coefficient matrix M"]["numerical (ODE)"] =
+        @benchmarkable interaction_picture_M($A_uv, $T)
+
+    SUITE["Interaction Picture"]["coefficient matrix M"]["analytical (2 equal modes)"] =
+        @benchmarkable interaction_picture_M_2modes_equal($u, $T)
+
+    ## --- Symbolic operator substitution ---
+
+    hu = FockSpace(:u)
+    hs = NLevelSpace(:s, 2)
+    hv = FockSpace(:v)
+    h = hu ⊗ hs ⊗ hv
+
+    au_sym = Destroy(h, :a_u, 1)
+    av_sym = Destroy(h, :a_v, 3)
+    σ_sym = Transition(h, :σ, 1, 2, 2)
+
+    gu_sym, γ_sym, gv_sym = rnumbers("gu γ gv")
+
+    G_u = SLH(1, gu_sym' * au_sym, 0)
+    G_s = SLH(1, sqrt(γ_sym) * σ_sym, 0)
+    G_v = SLH(1, gv_sym' * av_sym, 0)
+    G_cas = ▷(G_u, G_s, G_v)
+
+    H = get_hamiltonian(G_cas)
+    L = get_lindblad(G_cas)[1]
+    H_uv = get_hamiltonian(▷(G_u, G_v))
+    H_int_ = simplify(H - H_uv)
+
+    M_sym(i, j) = cnumber("M_{$(i)$(j)}")
+    a0_ls = [au_sym, av_sym]
+    la = length(a0_ls)
+    a_int_ls = [sum(M_sym(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]
+    int_dict = Dict(a0_ls .=> a_int_ls)
+
+    SUITE["Interaction Picture"]["operator substitution"] = BenchmarkGroup()
+
+    SUITE["Interaction Picture"]["operator substitution"]["TLS cascade"] =
+        @benchmarkable begin
+            simplify(substitute_operators($H_int_, $int_dict))
+            simplify(substitute_operators($L, $int_dict))
+        end
+
+    return nothing
+end

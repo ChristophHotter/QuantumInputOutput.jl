@@ -31,3 +31,4 @@ JuliaLocalPreferences.toml
 /.vscode/
 docs/src/examples/jupyter_notebooks/.ipynb_checkpoints
 docs/Manifest.toml
+benchmarks_output.json
