@@ -40,38 +40,30 @@ _mul(x, y) = x * y
     _detect_operator_type(L, H)
 
 Determine the concrete return type for FunctionWrapper by inspecting
-the non-Function elements of L and H. Falls back to evaluating a
-Function element at t=0.0 if all elements are Functions.
-Errors if the type cannot be determined (would produce FunctionWrapper{Any}).
+the elements of L and H. Checks FunctionWrapper type parameters first
+(no evaluation needed), then static element types.
+Errors if only plain closures are present (the caller should thread
+the type through from input SLH objects instead).
 """
 function _detect_operator_type(L, H)
-    # Check non-time-dep L elements first
+    # Check FunctionWrapper elements (carry explicit type info)
     for l in L
-        if !_is_time_dep(l)
-            return typeof(l)
-        end
+        l isa FunctionWrapper && return _fw_return_type(typeof(l))
     end
-    # Check H
-    if !_is_time_dep(H)
-        return typeof(H)
-    end
-    # All time-dep — evaluate one at t=0.0 to determine type
+    H isa FunctionWrapper && return _fw_return_type(typeof(H))
+    # Check static (non-time-dep) elements
     for l in L
-        if _is_time_dep(l)
-            T = typeof(l(0.0))
-            T === Any && error("Cannot determine concrete operator type from time-dependent Lindblad element. Pass a non-Function element or use a typed closure.")
-            return T
-        end
+        _is_time_dep(l) || return typeof(l)
     end
-    if _is_time_dep(H)
-        T = typeof(H(0.0))
-        T === Any && error("Cannot determine concrete operator type from time-dependent Hamiltonian. Pass a non-Function element or use a typed closure.")
-        return T
-    end
-    error("Cannot determine operator type: no elements in L or H")
+    _is_time_dep(H) || return typeof(H)
+    # No type information available
+    error(
+        "Cannot determine concrete operator type: all elements are untyped closures. " *
+        "Wrap at least one with FunctionWrapper{OpType, Tuple{Float64}} or include a static element."
+    )
 end
 
-# [C3 fix]: error instead of returning Any
+_fw_return_type(::Type{FunctionWrapper{R,A}}) where {R,A} = R
 
 function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N, OpType}
     if any(_is_time_dep, L)
@@ -111,6 +103,18 @@ struct SLH{N,ST,LT,HT}
     hamiltonian::HT
 end
 
+"""
+    _op_type(G::SLH)
+
+Extract the operator return type from an SLH with FunctionWrapper elements.
+Returns `nothing` if no FunctionWrapper type info is available.
+"""
+function _op_type(::SLH{N,ST,LT,HT}) where {N,ST,LT,HT}
+    LT <: FunctionWrapper && return _fw_return_type(LT)
+    HT <: FunctionWrapper && return _fw_return_type(HT)
+    return nothing
+end
+
 # ──────────────────────────────────────────────
 # Constructors
 # ──────────────────────────────────────────────
@@ -120,12 +124,24 @@ function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H) where {N}
     has_td = any(_is_time_dep, L) || _is_time_dep(H)
     if has_td
         OpType = _detect_operator_type(L, H)
+        return _build_slh(S, L, H, OpType)
+    end
+    return SLH{N,eltype(S),eltype(L),typeof(H)}(S, L, H)
+end
+
+# With explicit operator type (skips detection — used by composition operations)
+function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H, ::Type{OpType}) where {N,OpType}
+    has_td = any(_is_time_dep, L) || _is_time_dep(H)
+    if has_td
         L_w = _maybe_wrap_lindblad(L, OpType)
         H_w = _maybe_wrap_hamiltonian(H, true, OpType)
         return SLH{N,eltype(S),eltype(L_w),typeof(H_w)}(S, L_w, H_w)
     end
     return SLH{N,eltype(S),eltype(L),typeof(H)}(S, L, H)
 end
+
+# Nothing hint falls through to detection
+_build_slh(S::SMatrix{N,N}, L::SVector{N}, H, ::Nothing) where {N} = _build_slh(S, L, H)
 
 # From AbstractMatrix + AbstractVector (includes SMatrix + SVector)
 function SLH(S::AbstractMatrix, L::AbstractVector, H)
@@ -260,7 +276,9 @@ function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
 
     H_t = _post(_add(_add(H1, H2), _mul(-1im / 2, _add(cross1, _mul(-1, cross2)))))
 
-    return _build_slh(S_t, L_t, H_t)
+    op_hint = _op_type(G1)
+    op_hint === nothing && (op_hint = _op_type(G2))
+    return _build_slh(S_t, L_t, H_t, op_hint)
 end
 
 ▷(a::SLH, b::SLH, c::SLH...) = ▷(a ▷ b, c...)
@@ -305,7 +323,9 @@ Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
         S_t = SMatrix{$N,$N}($(s_exprs...))
         L_t = vcat(L1, L2)
         H_t = _add(H1, H2)
-        return _build_slh(S_t, L_t, H_t)
+        op_hint = _op_type(G1)
+        op_hint === nothing && (op_hint = _op_type(G2))
+        return _build_slh(S_t, L_t, H_t, op_hint)
     end
 end
 
@@ -395,7 +415,7 @@ function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
     term = _mul(_slh_dot(L_adj, S_col_y_full), _mul(loop_gain, L_x))
     H_red = _post(_add(H, _mul(1 / (2im), _add(term, _mul(-1, _adj(term))))))
 
-    return _build_slh(S_red, L_red, H_red)
+    return _build_slh(S_red, L_red, H_red, _op_type(G))
 end
 
 feedback(G::SLH, connection::Pair{Int,Int}) =

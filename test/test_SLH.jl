@@ -126,5 +126,30 @@ using Test
             l = lindblad(G_td)[1]
             @inferred l(0.5)
         end
+
+        @testset "_op_type extracts type from FunctionWrapper SLH" begin
+            G_td = SLH(1, gu_f, H_s)
+            @test QuantumInputOutput._op_type(G_td) === typeof(H_s)
+        end
+
+        @testset "_op_type returns nothing for static SLH" begin
+            G_s = SLH(1, L_s, H_s)
+            @test QuantumInputOutput._op_type(G_s) === nothing
+        end
+
+        @testset "SLH with only plain closures errors" begin
+            bare_f(t) = t * ones(ComplexF64, 5, 5)
+            bare_g(t) = (1 - t) * ones(ComplexF64, 5, 5)
+            @test_throws ErrorException SLH([1 0; 0 1], [bare_f, bare_g], bare_g)
+        end
+
+        @testset "feedback preserves FunctionWrapper type" begin
+            G1 = SLH(1, gu_f, H_s)
+            G2 = SLH(1, gv_f, H_s)
+            G_cat = G1 ⊞ G2
+            G_fb = feedback(G_cat, 2, 1)
+            @test eltype(lindblad(G_fb)) <: FunctionWrapper
+            @test typeof(hamiltonian(G_fb)) <: FunctionWrapper
+        end
     end
 end
