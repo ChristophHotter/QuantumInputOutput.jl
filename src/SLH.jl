@@ -59,16 +59,16 @@ function _detect_operator_type(L, H)
     # No type information available
     error(
         "Cannot determine concrete operator type: all elements are untyped closures. " *
-        "Wrap at least one with FunctionWrapper{OpType, Tuple{Float64}} or include a static element."
+        "Wrap at least one with FunctionWrapper{OpType, Tuple{Float64}} or include a static element.",
     )
 end
 
 _fw_return_type(::Type{FunctionWrapper{R,A}}) where {R,A} = R
 
-function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N, OpType}
+function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N,OpType}
     if any(_is_time_dep, L)
-        fw_type = FunctionWrapper{OpType, Tuple{Float64}}
-        return SVector{N, fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
+        fw_type = FunctionWrapper{OpType,Tuple{Float64}}
+        return SVector{N,fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
     end
     return L
 end
@@ -167,7 +167,7 @@ end
 # Symbolic/general scalar S + vector L → S * I
 function SLH(S, L::AbstractVector, H)
     N = length(L)
-    S_mat = SMatrix{N,N}([i == j ? S : 0 for i in 1:N, j in 1:N])
+    S_mat = SMatrix{N,N}([i == j ? S : 0 for i = 1:N, j = 1:N])
     return _build_slh(S_mat, SVector{N}(L...), H)
 end
 
@@ -216,10 +216,10 @@ end
         return :(SVector{1}(_mul(S[1, 1], L[1])))
     end
     exprs = []
-    for i in 1:N
+    for i = 1:N
         terms = [:(tmp_$(i)_1 = _mul(S[$i, 1], L[1]))]
         acc = :tmp_$(Symbol("$(i)_1"))
-        for j in 2:N
+        for j = 2:N
             tname = Symbol("tmp_$(i)_$(j)")
             push!(terms, :($tname = _add($acc, _mul(S[$i, $j], L[$j]))))
             acc = tname
@@ -234,7 +234,7 @@ end
         return :(_mul(L1[1], L2[1]))
     end
     expr = :(_mul(L1[1], L2[1]))
-    for i in 2:N
+    for i = 2:N
         expr = :(_add($expr, _mul(L1[$i], L2[$i])))
     end
     return expr
@@ -307,11 +307,11 @@ Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
 @generated function ⊞(G1::SLH{N1}, G2::SLH{N2}) where {N1,N2}
     N = N1 + N2
     s_exprs = []
-    for j in 1:N, i in 1:N  # column-major for SMatrix
+    for j = 1:N, i = 1:N  # column-major for SMatrix
         if i <= N1 && j <= N1
             push!(s_exprs, :(S1[$i, $j]))
         elseif i > N1 && j > N1
-            push!(s_exprs, :(S2[$(i - N1), $(j - N1)]))
+            push!(s_exprs, :(S2[$(i-N1), $(j-N1)]))
         else
             push!(s_exprs, 0)
         end
@@ -344,26 +344,34 @@ concatenate(args...) = ⊞(args...)
 # [C2 fix]: all ntuple calls use Val
 # ──────────────────────────────────────────────
 
-function _drop_row_col(S::SMatrix{N,N}, row::Int, col::Int, ::Val{M}) where {N, M}
-    SMatrix{M,M}(
-        ntuple(Val(M * M)) do k
-            i, j = divrem(k - 1, M) .+ (1, 1)
-            ri = i >= row ? i + 1 : i
-            cj = j >= col ? j + 1 : j
-            S[ri, cj]
-        end
-    )
+function _drop_row_col(S::SMatrix{N,N}, row::Int, col::Int, ::Val{M}) where {N,M}
+    SMatrix{M,M}(ntuple(Val(M * M)) do k
+        i, j = divrem(k - 1, M) .+ (1, 1)
+        ri = i >= row ? i + 1 : i
+        cj = j >= col ? j + 1 : j
+        S[ri, cj]
+    end)
 end
 
-function _drop_index(L::SVector{N}, idx::Int, ::Val{M}) where {N, M}
+function _drop_index(L::SVector{N}, idx::Int, ::Val{M}) where {N,M}
     SVector{M}(ntuple(i -> L[i >= idx ? i + 1 : i], Val(M)))
 end
 
-function _get_col_dropped_row(S::SMatrix{N,N}, col::Int, drop_row::Int, ::Val{M}) where {N, M}
+function _get_col_dropped_row(
+    S::SMatrix{N,N},
+    col::Int,
+    drop_row::Int,
+    ::Val{M},
+) where {N,M}
     SVector{M}(ntuple(i -> S[i >= drop_row ? i + 1 : i, col], Val(M)))
 end
 
-function _get_row_dropped_col(S::SMatrix{N,N}, row::Int, drop_col::Int, ::Val{M}) where {N, M}
+function _get_row_dropped_col(
+    S::SMatrix{N,N},
+    row::Int,
+    drop_col::Int,
+    ::Val{M},
+) where {N,M}
     SVector{M}(ntuple(j -> S[row, j >= drop_col ? j + 1 : j], Val(M)))
 end
 
@@ -379,7 +387,7 @@ function feedback(G::SLH{N}, x::Int, y::Int) where {N}
     _feedback_impl(G, x, y, Val(N - 1))
 end
 
-function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
+function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N,M}
     S = scattering(G)
     L = lindblad(G)
     H = hamiltonian(G)
@@ -394,12 +402,10 @@ function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
     S_col_y_no_x = _get_col_dropped_row(S, y, x, valM)
     S_row_x_no_y = _get_row_dropped_col(S, x, y, valM)
 
-    S_update = SMatrix{M,M}(
-        ntuple(Val(M * M)) do k
-            i, j = divrem(k - 1, M) .+ (1, 1)
-            _post(_mul(_mul(S_col_y_no_x[i], loop_gain), S_row_x_no_y[j]))
-        end
-    )
+    S_update = SMatrix{M,M}(ntuple(Val(M * M)) do k
+        i, j = divrem(k - 1, M) .+ (1, 1)
+        _post(_mul(_mul(S_col_y_no_x[i], loop_gain), S_row_x_no_y[j]))
+    end)
     S_red = SMatrix{M,M}(ntuple(Val(M * M)) do k
         i, j = divrem(k - 1, M) .+ (1, 1)
         _post(_add(S_bar[i, j], S_update[i, j]))
@@ -407,7 +413,8 @@ function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
 
     L_bar = _drop_index(L, x, valM)
     L_x = L[x]
-    L_update = SVector{M}(ntuple(i -> _post(_mul(_mul(S_col_y_no_x[i], loop_gain), L_x)), valM))
+    L_update =
+        SVector{M}(ntuple(i -> _post(_mul(_mul(S_col_y_no_x[i], loop_gain), L_x)), valM))
     L_red = SVector{M}(ntuple(i -> _post(_add(L_bar[i], L_update[i])), valM))
 
     S_col_y_full = SVector{N}(ntuple(i -> S[i, y], Val(N)))

@@ -67,8 +67,7 @@ end
 Compute the virtual-cavity input coupling ``g_u(t)`` from an input mode `u(t)`
 sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
 """
-coupling_input(u::Vector, T::Vector) =
-    _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
+coupling_input(u::Vector, T::Vector) = _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
 coupling_input(u::Function, T::Vector) = coupling_input(u.(T), T)
 coupling_input(u::LinearInterpolation, T::Vector) = coupling_input(u.(T), T)
 
@@ -88,8 +87,7 @@ end
 Compute the virtual-cavity output coupling ``g_v(t)`` from an output mode `v(t)`
 sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
 """
-coupling_output(v::Vector, T::Vector) =
-    _compute_coupling(-v, T, x -> x + _ϵ)
+coupling_output(v::Vector, T::Vector) = _compute_coupling(-v, T, x -> x + _ϵ)
 coupling_output(v::Function, T::Vector) = coupling_output(v.(T), T)
 coupling_output(v::LinearInterpolation, T::Vector) = coupling_output(v.(T), T)
 
@@ -151,8 +149,13 @@ function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
     return v_i_eff
 end
 
-effective_output_mode(v_fcts, T, i; kwargs...) =
-    effective_output_mode(v_fcts, [coupling_output(v_, T) for v_ in v_fcts], T, i; kwargs...)
+effective_output_mode(v_fcts, T, i; kwargs...) = effective_output_mode(
+    v_fcts,
+    [coupling_output(v_, T) for v_ in v_fcts],
+    T,
+    i;
+    kwargs...,
+)
 
 function effective_output_mode(
     v_data::AbstractVector{<:AbstractVector},
@@ -290,9 +293,9 @@ end
 Compute the out-coupling strength for a delay cavity.
 Returns `LinearInterpolation` directly.
 """
-coupling_delay_out(u::Vector, v::Vector, T::Vector) =
-    _compute_coupling_delay(u, u, v, T)
-coupling_delay_out(u::Function, v::Function, T::Vector) = coupling_delay_out(u.(T), v.(T), T)
+coupling_delay_out(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(u, u, v, T)
+coupling_delay_out(u::Function, v::Function, T::Vector) =
+    coupling_delay_out(u.(T), v.(T), T)
 coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_out(u.(T), v.(T), T)
 
@@ -302,8 +305,7 @@ coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
 Compute the in-coupling strength for a delay cavity.
 Returns `LinearInterpolation` directly.
 """
-coupling_delay_in(u::Vector, v::Vector, T::Vector) =
-    _compute_coupling_delay(-v, u, v, T)
+coupling_delay_in(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(-v, u, v, T)
 coupling_delay_in(u::Function, v::Function, T::Vector) = coupling_delay_in(u.(T), v.(T), T)
 coupling_delay_in(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_in(u.(T), v.(T), T)

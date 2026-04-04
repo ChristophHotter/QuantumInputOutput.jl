@@ -11,8 +11,7 @@ _translate_numeric_raw(op, b; level_map = nothing, operators = Dict(), op_type =
     op_type(to_numeric(op, b, operators; level_map = level_map))
 
 _translate_one(b, operators, op_type) =
-    isempty(operators) ? op_type(one(b)) :
-    op_type(one(basis(first(values(operators)))))
+    isempty(operators) ? op_type(one(b)) : op_type(one(basis(first(values(operators)))))
 
 # [I4+I5 fix]: simplified, no applicable(), values are Number → wrap, anything else → pass through
 function _normalize_time_parameter(time_parameter)
@@ -56,7 +55,15 @@ function translate_qo(
     op_type = sparse,
 )
     tp = _normalize_time_parameter(time_parameter)
-    return _translate_qo(op, b; parameter, time_parameter = tp, level_map, operators, op_type)
+    return _translate_qo(
+        op,
+        b;
+        parameter,
+        time_parameter = tp,
+        level_map,
+        operators,
+        op_type,
+    )
 end
 
 # ── Internal dispatch: time_parameter already normalized ──
@@ -84,9 +91,8 @@ function _translate_qo(
     else
         arg_c = op_.arg_c
         args_nc = op_.args_nc
-        prod_args_nc = op_type(
-            prod((to_numeric(arg, b, operators; level_map)) for arg in args_nc),
-        )
+        prod_args_nc =
+            op_type(prod((to_numeric(arg, b, operators; level_map)) for arg in args_nc))
         is_func, pref = _translate_prefactor(arg_c, time_parameter)
         if is_func
             return t -> pref(t) * prod_args_nc
@@ -112,22 +118,39 @@ function _translate_qo(
 
     args = arguments(substitute(op, parameter))
     # Translate first arg to determine concrete operator type
-    first_translated = _translate_qo(args[1], b; parameter, time_parameter, level_map, operators, op_type = sparse)
-    OpType = typeof(first_translated isa Function ? first_translated(0.0) : first_translated)
+    first_translated = _translate_qo(
+        args[1],
+        b;
+        parameter,
+        time_parameter,
+        level_map,
+        operators,
+        op_type = sparse,
+    )
+    OpType =
+        typeof(first_translated isa Function ? first_translated(0.0) : first_translated)
     FW = FunctionWrapper{OpType,Tuple{Float64}}
 
     args_wrapped = ntuple(length(args)) do k
         a_k = if k == 1
             first_translated
         else
-            _translate_qo(args[k], b; parameter, time_parameter, level_map, operators, op_type = sparse)
+            _translate_qo(
+                args[k],
+                b;
+                parameter,
+                time_parameter,
+                level_map,
+                operators,
+                op_type = sparse,
+            )
         end
         FW(a_k isa Function ? a_k : (_ -> a_k))
     end
 
     return t -> begin
         result = args_wrapped[1](t)
-        for i in 2:length(args_wrapped)
+        for i = 2:length(args_wrapped)
             result = result + args_wrapped[i](t)
         end
         result

@@ -41,7 +41,9 @@ using Test
         G1 = G_u ▷ G_c
         @test scattering(G1) isa SMatrix{1,1}
         @test isequal(lindblad(G1)[1], simplify(gu'*au + √(γ)*c))
-        expected_H = simplify(hamiltonian(G_c) - 1im/2*((√(γ)*c)'*(1)*gu'*au - (gu'*au)'*(1)*(√(γ)*c)))
+        expected_H = simplify(
+            hamiltonian(G_c) - 1im/2*((√(γ)*c)'*(1)*gu'*au - (gu'*au)'*(1)*(√(γ)*c)),
+        )
         @test iszero(simplify(hamiltonian(G1) - expected_H))
 
         G2 = cascade(G_u, G_c, G_v)

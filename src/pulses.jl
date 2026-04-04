@@ -33,10 +33,7 @@ function substitute_operators(op::SQA.QAdd, dict::Dict; replace_adjoint = true)
 end
 function substitute_operators(op::SQA.QMul, dict::Dict; replace_adjoint = true)
     dict_ = replace_adjoint ? _extend_with_adjoint(dict) : dict
-    return substitute(
-        op.arg_c,
-        dict_,
-    ) * prod([substitute(arg, dict_) for arg ∈ op.args_nc])
+    return substitute(op.arg_c, dict_) * prod([substitute(arg, dict_) for arg ∈ op.args_nc])
 end
 
 function _extend_with_adjoint(dict::Dict)

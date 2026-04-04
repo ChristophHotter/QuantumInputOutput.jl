@@ -83,14 +83,13 @@ function benchmark_slh_algebra!(SUITE)
     G_L1 = SLH(1, √(γLn[1]) * σ(1, 1, 2), 0 * one(b))
     G_L2 = SLH(1, √(γLn[2]) * σ(2, 1, 2), 0 * one(b))
 
-    SUITE["SLH Algebra"]["numeric"]["2-QD waveguide composition"] =
-        @benchmarkable begin
-            G_R_t = $G_u_qo ▷ $G_R1 ▷ $G_ϕ_12 ▷ $G_R2
-            G_L_t = $G_L2 ▷ $G_ϕ_12 ▷ $G_L1
-            G_t = G_R_t ⊞ G_L_t
-            hamiltonian(G_t)
-            lindblad(G_t)
-        end
+    SUITE["SLH Algebra"]["numeric"]["2-QD waveguide composition"] = @benchmarkable begin
+        G_R_t = $G_u_qo ▷ $G_R1 ▷ $G_ϕ_12 ▷ $G_R2
+        G_L_t = $G_L2 ▷ $G_ϕ_12 ▷ $G_L1
+        G_t = G_R_t ⊞ G_L_t
+        hamiltonian(G_t)
+        lindblad(G_t)
+    end
 
     ## --- Time-dependent closure evaluation (the ODE hot loop) ---
 
