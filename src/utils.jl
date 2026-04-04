@@ -4,8 +4,7 @@
 
 const _tol_div = 1e-10
 const _extrapolate = ExtrapolationType.Extension
-const _ϵu = 1e-10
-const _ϵv = 1e-10
+const _ϵ = 1e-10
 
 _mode_interp(mode::AbstractVector, T::AbstractVector) =
     LinearInterpolation(mode, T; extrapolation = _extrapolate)
@@ -28,9 +27,36 @@ struct Gaussian{T}
 end
 Gaussian(τ, σ; δ = zero(τ)) = Gaussian(promote(τ, σ, δ)...)
 
+function _gaussian_mode(g::Gaussian)
+    τ, σ, δ = g.τ, g.σ, g.δ
+    mode = if δ == 0
+        t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2)
+    else
+        t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2) * exp(1im * δ * t)
+    end
+    ∫mode2 = t -> 0.5 * (erf((t - τ) / σ) + erf(τ / σ))
+    return mode, ∫mode2
+end
+
 # ──────────────────────────────────────────────
-# coupling_input (was u_to_gu)
-# Returns LinearInterpolation directly
+# Shared coupling core
+# ──────────────────────────────────────────────
+
+function _compute_coupling(mode::Vector, T::Vector, denom_fn)
+    l_T = length(T)
+    ∫m2 = cumul_integrate(T, abs2.(mode))
+    g = zeros(ComplexF64, l_T)
+    @inbounds for i = 2:l_T
+        d = denom_fn(∫m2[i])
+        if sqrt(abs(d)) > _tol_div
+            g[i] = mode[i]' / sqrt(d)
+        end
+    end
+    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+end
+
+# ──────────────────────────────────────────────
+# coupling_input / coupling_output
 # ──────────────────────────────────────────────
 
 """
@@ -39,17 +65,8 @@ Gaussian(τ, σ; δ = zero(τ)) = Gaussian(promote(τ, σ, δ)...)
 Compute the virtual-cavity input coupling ``g_u(t)`` from an input mode `u(t)`
 sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
 """
-function coupling_input(u::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u))
-    gu_t = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        if abs(sqrt(1 - ∫u2_t[i])) > _tol_div
-            gu_t[i] = u[i]' / sqrt(abs(1 - ∫u2_t[i]) + _ϵu)
-        end
-    end
-    return LinearInterpolation(gu_t, T; extrapolation = _extrapolate)
-end
+coupling_input(u::Vector, T::Vector) =
+    _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
 coupling_input(u::Function, T::Vector) = coupling_input(u.(T), T)
 coupling_input(u::LinearInterpolation, T::Vector) = coupling_input(u.(T), T)
 
@@ -59,19 +76,9 @@ coupling_input(u::LinearInterpolation, T::Vector) = coupling_input(u.(T), T)
 Analytical input coupling ``g_u(t)`` for a Gaussian pulse.
 """
 function coupling_input(g::Gaussian)
-    τ, σ, δ = g.τ, g.σ, g.δ
-    if δ == 0
-        u = t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2)
-    else
-        u = t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2) * exp(1im * δ * t)
-    end
-    ∫u_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    return t_ -> u(t_)' / √(abs(1 - ∫u_2_t(t_)) + _ϵu)
+    mode, ∫m2 = _gaussian_mode(g)
+    return t -> mode(t)' / √(abs(1 - ∫m2(t)) + _ϵ)
 end
-
-# ──────────────────────────────────────────────
-# coupling_output (was v_to_gv)
-# ──────────────────────────────────────────────
 
 """
     coupling_output(v, T)
@@ -79,17 +86,8 @@ end
 Compute the virtual-cavity output coupling ``g_v(t)`` from an output mode `v(t)`
 sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
 """
-function coupling_output(v::Vector, T::Vector)
-    l_T = length(T)
-    ∫v2_t = cumul_integrate(T, abs2.(v))
-    gv_t = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        if abs(sqrt(∫v2_t[i])) > _tol_div
-            gv_t[i] = -v[i]' / sqrt(∫v2_t[i] + _ϵv)
-        end
-    end
-    return LinearInterpolation(gv_t, T; extrapolation = _extrapolate)
-end
+coupling_output(v::Vector, T::Vector) =
+    _compute_coupling(-v, T, x -> x + _ϵ)
 coupling_output(v::Function, T::Vector) = coupling_output(v.(T), T)
 coupling_output(v::LinearInterpolation, T::Vector) = coupling_output(v.(T), T)
 
@@ -99,14 +97,8 @@ coupling_output(v::LinearInterpolation, T::Vector) = coupling_output(v.(T), T)
 Analytical output coupling ``g_v(t)`` for a Gaussian pulse.
 """
 function coupling_output(g::Gaussian)
-    τ, σ, δ = g.τ, g.σ, g.δ
-    if δ == 0
-        v = t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2)
-    else
-        v = t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2) * exp(1im * δ * t)
-    end
-    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    return t_ -> -v(t_)' / √(∫v_2_t(t_) + _ϵv)
+    mode, ∫m2 = _gaussian_mode(g)
+    return t -> -mode(t)' / √(∫m2(t) + _ϵ)
 end
 
 # ──────────────────────────────────────────────
@@ -270,8 +262,22 @@ effective_input_mode(
 )
 
 # ──────────────────────────────────────────────
-# coupling_delay_out (was uv_to_gout)
+# coupling_delay_out / coupling_delay_in
 # ──────────────────────────────────────────────
+
+function _compute_coupling_delay(num_mode::Vector, u::Vector, v::Vector, T::Vector)
+    l_T = length(T)
+    ∫u2 = cumul_integrate(T, abs2.(u))
+    ∫v2 = cumul_integrate(T, abs2.(v))
+    g = zeros(ComplexF64, l_T)
+    @inbounds for i = 2:l_T
+        d = abs(∫v2[i] - ∫u2[i])
+        if sqrt(abs(d)) > _tol_div
+            g[i] = num_mode[i]' / sqrt(d + _ϵ)
+        end
+    end
+    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+end
 
 """
     coupling_delay_out(u, v, T)
@@ -279,26 +285,11 @@ effective_input_mode(
 Compute the out-coupling strength for a delay cavity.
 Returns `LinearInterpolation` directly.
 """
-function coupling_delay_out(u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u))
-    ∫v2_t = cumul_integrate(T, abs2.(v))
-    gout_t = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        denom = abs(∫v2_t[i] - ∫u2_t[i])
-        if abs(sqrt(denom)) > _tol_div
-            gout_t[i] = u[i]' / sqrt(denom + _ϵu)
-        end
-    end
-    return LinearInterpolation(gout_t, T; extrapolation = _extrapolate)
-end
+coupling_delay_out(u::Vector, v::Vector, T::Vector) =
+    _compute_coupling_delay(u, u, v, T)
 coupling_delay_out(u::Function, v::Function, T::Vector) = coupling_delay_out(u.(T), v.(T), T)
 coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_out(u.(T), v.(T), T)
-
-# ──────────────────────────────────────────────
-# coupling_delay_in (was uv_to_gin)
-# ──────────────────────────────────────────────
 
 """
     coupling_delay_in(u, v, T)
@@ -306,19 +297,8 @@ coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
 Compute the in-coupling strength for a delay cavity.
 Returns `LinearInterpolation` directly.
 """
-function coupling_delay_in(u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u))
-    ∫v2_t = cumul_integrate(T, abs2.(v))
-    gin_t = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        denom = abs(∫v2_t[i] - ∫u2_t[i])
-        if abs(sqrt(denom)) > _tol_div
-            gin_t[i] = -v[i]' / sqrt(denom + _ϵv)
-        end
-    end
-    return LinearInterpolation(gin_t, T; extrapolation = _extrapolate)
-end
+coupling_delay_in(u::Vector, v::Vector, T::Vector) =
+    _compute_coupling_delay(-v, u, v, T)
 coupling_delay_in(u::Function, v::Function, T::Vector) = coupling_delay_in(u.(T), v.(T), T)
 coupling_delay_in(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_in(u.(T), v.(T), T)
