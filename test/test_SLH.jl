@@ -1,6 +1,8 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using QuantumOptics
 using SymbolicUtils
+using FunctionWrappers: FunctionWrapper
 using StaticArrays
 using Test
 
@@ -69,4 +71,60 @@ using Test
         @test isequal(Gc, Gc2)
     end
 
+    @testset "numeric type stability" begin
+        bc = FockBasis(4)
+        a_op = destroy(bc)
+        H_s = sparse(0.5 * dagger(a_op) * a_op)
+        L_s = sparse(sqrt(1.0) * a_op)
+        gu_f(t) = exp(-t^2) * sparse(a_op)
+        gv_f(t) = exp(-(t - 2)^2) * sparse(a_op)
+
+        @testset "static SLH concreteness" begin
+            G = SLH(1, L_s, H_s)
+            @test eltype(lindblad(G)) === typeof(L_s)
+            @test typeof(hamiltonian(G)) === typeof(H_s)
+        end
+
+        @testset "time-dep SLH wraps into FunctionWrapper" begin
+            G_td = SLH(1, gu_f, H_s)
+            @test eltype(lindblad(G_td)) <: FunctionWrapper
+            @test typeof(hamiltonian(G_td)) <: FunctionWrapper
+        end
+
+        @testset "cascade preserves FunctionWrapper" begin
+            G1 = SLH(1, gu_f, H_s)
+            G2 = SLH(1, gv_f, H_s)
+            G_cas = G1 ▷ G2
+            @test eltype(lindblad(G_cas)) <: FunctionWrapper
+            @test typeof(hamiltonian(G_cas)) <: FunctionWrapper
+            @inferred lindblad(G_cas)[1](0.5)
+        end
+
+        @testset "cascade mixed static/time-dep wraps uniformly" begin
+            G_cas = SLH(1, L_s, H_s) ▷ SLH(1, gu_f, H_s)
+            @test eltype(lindblad(G_cas)) <: FunctionWrapper
+            @test eltype(lindblad(G_cas)) !== Any
+        end
+
+        @testset "concatenation mixed static/time-dep wraps uniformly" begin
+            G_cat = SLH(1, L_s, H_s) ⊞ SLH(1, gu_f, H_s)
+            LT = eltype(lindblad(G_cat))
+            @test LT <: FunctionWrapper
+            @test LT !== Any
+            @inferred lindblad(G_cat)[1](0.5)
+            @inferred lindblad(G_cat)[2](0.5)
+        end
+
+        @testset "concatenation static stays static" begin
+            G_cat = SLH(1, L_s, H_s) ⊞ SLH(1, L_s, H_s)
+            @test eltype(lindblad(G_cat)) === typeof(L_s)
+            @test !(eltype(lindblad(G_cat)) <: FunctionWrapper)
+        end
+
+        @testset "FunctionWrapper call is inferred" begin
+            G_td = SLH(1, gu_f, H_s)
+            l = lindblad(G_td)[1]
+            @inferred l(0.5)
+        end
+    end
 end

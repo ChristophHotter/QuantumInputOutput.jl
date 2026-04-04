@@ -7,56 +7,44 @@ Compute the two-time correlation matrix
 on the time grid `T`. Writes directly into output matrix.
 """
 function correlation_matrix(T::Vector, ρt::Vector, f::Function, Ls::Function; kwargs...)
-    l_T = length(T)
-    @assert l_T == length(ρt)
-    Ls_ls = Ls.(T)
-    Ls_ls_dag = dagger.(Ls_ls)
-
-    g1_m = zeros(ComplexF64, l_T, l_T)
-    for it = 1:(l_T-1)
-        ρ0_it = Ls_ls[it] * ρt[it]
-        τ_, ρ_bar_τ = timeevolution.master_dynamic(T[it:end], ρ0_it, f; kwargs...)
-
-        @inbounds for i in eachindex(ρ_bar_τ)
-            val = expect(Ls_ls_dag[it+i-1], ρ_bar_τ[i])
-            g1_m[it, it+i-1] = val
-            g1_m[it+i-1, it] = conj(val)
-        end
+    Ls_vec = Ls.(T)
+    Ls_dag_vec = dagger.(Ls_vec)
+    _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
+        timeevolution.master_dynamic(T_slice, ρ0, f; kwargs...)
     end
-    return g1_m
 end
 
 function correlation_matrix(T::Vector, ρt::Vector, f::Function, Ls; kwargs...)
-    l_T = length(T)
-    @assert l_T == length(ρt)
     Ls_dag = dagger(Ls)
-
-    g1_m = zeros(ComplexF64, l_T, l_T)
-    for it = 1:(l_T-1)
-        ρ0_it = Ls * ρt[it]
-        τ_, ρ_bar_τ = timeevolution.master_dynamic(T[it:end], ρ0_it, f; kwargs...)
-
-        @inbounds for i in eachindex(ρ_bar_τ)
-            val = expect(Ls_dag, ρ_bar_τ[i])
-            g1_m[it, it+i-1] = val
-            g1_m[it+i-1, it] = conj(val)
-        end
+    l_T = length(T)
+    Ls_vec = fill(Ls, l_T)
+    Ls_dag_vec = fill(Ls_dag, l_T)
+    _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
+        timeevolution.master_dynamic(T_slice, ρ0, f; kwargs...)
     end
-    return g1_m
 end
 
 function correlation_matrix(T::Vector, ρt::Vector, H, J::Vector, Ls; kwargs...)
+    Ls_dag = dagger(Ls)
+    l_T = length(T)
+    Ls_vec = fill(Ls, l_T)
+    Ls_dag_vec = fill(Ls_dag, l_T)
+    _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
+        timeevolution.master(T_slice, ρ0, H, J; kwargs...)
+    end
+end
+
+function _correlation_loop(solve_fn, T, ρt, Ls_vec, Ls_dag_vec)
     l_T = length(T)
     @assert l_T == length(ρt)
-    Ls_dag = dagger(Ls)
 
     g1_m = zeros(ComplexF64, l_T, l_T)
     for it = 1:(l_T-1)
-        ρ0_it = Ls * ρt[it]
-        τ_, ρ_bar_τ = timeevolution.master(T[it:end], ρ0_it, H, J; kwargs...)
+        ρ0_it = Ls_vec[it] * ρt[it]
+        τ_, ρ_bar_τ = solve_fn(@view(T[it:end]), ρ0_it)
 
         @inbounds for i in eachindex(ρ_bar_τ)
-            val = expect(Ls_dag, ρ_bar_τ[i])
+            val = expect(Ls_dag_vec[it+i-1], ρ_bar_τ[i])
             g1_m[it, it+i-1] = val
             g1_m[it+i-1, it] = conj(val)
         end

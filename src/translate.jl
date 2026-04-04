@@ -12,7 +12,7 @@ _translate_numeric_raw(op, b; level_map = nothing, operators = Dict(), op_type =
 
 _translate_one(b, operators, op_type) =
     isempty(operators) ? op_type(one(b)) :
-    op_type(one(basis(collect(values(operators))[1])))
+    op_type(one(basis(first(values(operators)))))
 
 # [I4+I5 fix]: simplified, no applicable(), values are Number → wrap, anything else → pass through
 function _normalize_time_parameter(time_parameter)
@@ -111,16 +111,23 @@ function _translate_qo(
     end
 
     args = arguments(substitute(op, parameter))
-    args_translated = Tuple(
-        _translate_qo(arg, b; parameter, time_parameter, level_map, operators, op_type = sparse)
-        for arg in args
-    )
+    # Translate first arg to determine concrete operator type
+    first_translated = _translate_qo(args[1], b; parameter, time_parameter, level_map, operators, op_type = sparse)
+    OpType = typeof(first_translated isa Function ? first_translated(0.0) : first_translated)
+    FW = FunctionWrapper{OpType,Tuple{Float64}}
 
-    n = length(args_translated)
+    args_wrapped = Vector{FW}(undef, length(args))
+    args_wrapped[1] = FW(first_translated isa Function ? first_translated : (_ -> first_translated))
+    for k in 2:length(args)
+        a_k = _translate_qo(args[k], b; parameter, time_parameter, level_map, operators, op_type = sparse)
+        args_wrapped[k] = FW(a_k isa Function ? a_k : (_ -> a_k))
+    end
+
+    n = length(args_wrapped)
     return t -> begin
-        result = args_translated[1](t)
+        result = args_wrapped[1](t)
         for i in 2:n
-            result = result + args_translated[i](t)
+            result = result + args_wrapped[i](t)
         end
         result
     end

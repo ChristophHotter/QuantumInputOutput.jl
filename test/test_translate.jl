@@ -98,6 +98,7 @@ using Test
         time_parameter = dict_p_t2,
     )
     @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
+    @inferred F5(0.2)  # QAdd time-dependent path should return concrete type
     F5_ = translate_qo(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
     F6 = translate_qo(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
@@ -150,5 +151,22 @@ using Test
 
         @test isequal(simplify(y - (a_1*a_1*c1 + a_1*c3)), 0)
         @test isequal(simplify(y2 - (a_2*a_2*c1 + a_2*c3)), 0)
+    end
+
+    @testset "substitute_operators adjoint in args_nc" begin
+        h2 = FockSpace(:h2)
+        a = Destroy(h2, :a, 1)
+        b = Destroy(h2, :b, 1)
+        ad = SecondQuantizedAlgebra._adjoint(a)
+        bd = SecondQuantizedAlgebra._adjoint(b)
+        @cnumbers g
+
+        # QMul with adjoint operator: g * a† * a
+        op = g * ad * a
+        dict_sub = Dict(a => b)
+
+        result = substitute_operators(op, dict_sub)
+        expected = g * bd * b
+        @test isequal(simplify(result - expected), 0)
     end
 end

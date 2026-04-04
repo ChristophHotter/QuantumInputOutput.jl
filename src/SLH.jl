@@ -74,7 +74,6 @@ end
 # [C3 fix]: error instead of returning Any
 
 function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N, OpType}
-    # [I1 fix]: construct with explicit element type, no splat
     if any(_is_time_dep, L)
         fw_type = FunctionWrapper{OpType, Tuple{Float64}}
         return SVector{N, fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
@@ -135,7 +134,6 @@ function SLH(S::AbstractMatrix, L::AbstractVector, H)
     return _build_slh(SMatrix{N,N}(S), SVector{N}(L...), H)
 end
 
-# [I7 fix]: use lazy I instead of I(N)
 # Numeric scalar S + vector L → S * I_{NxN}
 function SLH(S::Number, L::AbstractVector, H)
     N = length(L)
@@ -195,7 +193,6 @@ end
 
 # ──────────────────────────────────────────────
 # Matrix-vector helpers
-# [I8 fix]: removed dead N=1 fallbacks, @generated handles all N
 # ──────────────────────────────────────────────
 
 @generated function _slh_matvec(S::SMatrix{N,N}, L::SVector{N}) where {N}
@@ -263,7 +260,7 @@ function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
 
     H_t = _post(_add(_add(H1, H2), _mul(-1im / 2, _add(cross1, _mul(-1, cross2)))))
 
-    return SLH(S_t, L_t, H_t)
+    return _build_slh(S_t, L_t, H_t)
 end
 
 ▷(a::SLH, b::SLH, c::SLH...) = ▷(a ▷ b, c...)
@@ -277,7 +274,6 @@ cascade(args...) = ▷(args...)
 
 # ──────────────────────────────────────────────
 # Concatenate: ⊞
-# [I2 fix]: use :(zero(eltype(S1))) instead of bare 0
 # ──────────────────────────────────────────────
 
 """
@@ -309,7 +305,7 @@ Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
         S_t = SMatrix{$N,$N}($(s_exprs...))
         L_t = vcat(L1, L2)
         H_t = _add(H1, H2)
-        return SLH(S_t, L_t, H_t)
+        return _build_slh(S_t, L_t, H_t)
     end
 end
 
@@ -399,7 +395,7 @@ function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N, M}
     term = _mul(_slh_dot(L_adj, S_col_y_full), _mul(loop_gain, L_x))
     H_red = _post(_add(H, _mul(1 / (2im), _add(term, _mul(-1, _adj(term))))))
 
-    return SLH(S_red, L_red, H_red)
+    return _build_slh(S_red, L_red, H_red)
 end
 
 feedback(G::SLH, connection::Pair{Int,Int}) =

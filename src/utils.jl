@@ -123,29 +123,34 @@ distortion from preceding output cavities.
 function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     n = i - 1
-    _gv_buf = Vector{ComplexF64}(undef, n)
+    # Capture as tuples for concrete closure types
+    gv_t = ntuple(k -> gv_fcts[k], n)
+    v_i = v_fcts[i]
+    gv_all = ntuple(k -> gv_fcts[k], n)
     function multiple_outputs_α!(dα, α, p, t)
+        gv_buf = p
         @inbounds for k = 1:n
-            _gv_buf[k] = gv_fcts[k](t)
+            gv_buf[k] = gv_t[k](t)
         end
-        vi_t = v_fcts[i](t)
+        vi_t = v_i(t)
         @inbounds for j = 1:n
             coupling_sum = zero(ComplexF64)
             for k = 1:(j-1)
-                coupling_sum += _gv_buf[k]' * α[k]
+                coupling_sum += gv_buf[k]' * α[k]
             end
-            dα[j] = -_gv_buf[j] * (vi_t + coupling_sum) - 0.5 * abs2(_gv_buf[j]) * α[j]
+            dα[j] = -gv_buf[j] * (vi_t + coupling_sum) - 0.5 * abs2(gv_buf[j]) * α[j]
         end
     end
     u0 = zeros(ComplexF64, n)
+    p = Vector{ComplexF64}(undef, n)
     tspan = (T[1], T[end])
-    prob = ODEProblem(multiple_outputs_α!, u0, tspan)
+    prob = ODEProblem(multiple_outputs_α!, u0, tspan, p)
     sol_α = solve(prob, alg; kwargs...)
     function v_i_eff(t)
         α_t = sol_α(t)
-        result = v_fcts[i](t)
+        result = v_i(t)
         @inbounds for k = 1:n
-            result += gv_fcts[k](t)' * α_t[k]
+            result += gv_all[k](t)' * α_t[k]
         end
         return result
     end
@@ -197,30 +202,36 @@ distortion from subsequent input cavities.
 function effective_input_mode(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     n = i - 1
-    _gu_buf = Vector{ComplexF64}(undef, n)
+    # Capture as tuples for concrete closure types
+    gu_t = ntuple(k -> gu_fcts[k], n)
+    u_i = u_fcts[i]
+    gu_i = gu_fcts[i]
+    gu_all = ntuple(k -> gu_fcts[k], n)
     function multiple_inputs_α!(dα, α, p, t)
+        gu_buf = p
         @inbounds for k = 1:n
-            _gu_buf[k] = gu_fcts[k](t)
+            gu_buf[k] = gu_t[k](t)
         end
-        ui_t = u_fcts[i](t)
-        gui_t = gu_fcts[i](t)
+        ui_t = u_i(t)
+        gui_t = gu_i(t)
         @inbounds for j = 1:n
             coupling_sum = zero(ComplexF64)
             for k = 1:(j-1)
                 coupling_sum += gui_t' * α[k]
             end
-            dα[j] = -_gu_buf[j] * (ui_t - coupling_sum) + 0.5 * abs2(_gu_buf[j]) * α[j]
+            dα[j] = -gu_buf[j] * (ui_t - coupling_sum) + 0.5 * abs2(gu_buf[j]) * α[j]
         end
     end
     u0 = zeros(ComplexF64, n)
+    p = Vector{ComplexF64}(undef, n)
     tspan = (T[1], T[end])
-    prob = ODEProblem(multiple_inputs_α!, u0, tspan)
+    prob = ODEProblem(multiple_inputs_α!, u0, tspan, p)
     sol_α = solve(prob, alg; kwargs...)
     function u_i_eff(t)
         α_t = sol_α(t)
-        result = u_fcts[i](t)
+        result = u_i(t)
         @inbounds for k = 1:n
-            result -= gu_fcts[k](t)' * α_t[k]
+            result -= gu_all[k](t)' * α_t[k]
         end
         return result
     end

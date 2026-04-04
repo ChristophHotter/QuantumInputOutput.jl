@@ -1,6 +1,8 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using QuantumOptics
 using SymbolicUtils
+using FunctionWrappers: FunctionWrapper
 using LinearAlgebra
 using StaticArrays
 using Test
@@ -80,5 +82,22 @@ using Test
         @test isequal(lindblad(G_feedback)[1], lindblad(G_manual)[2])
         @test isequal(lindblad(G_feedback)[2], lindblad(G_manual)[1])
         @test isequal(simplify(hamiltonian(G_feedback) - hamiltonian(G_manual)), 0)
+    end
+
+    @testset "feedback preserves FunctionWrapper" begin
+        bc = FockBasis(4)
+        a_op = destroy(bc)
+        H_s = sparse(0.5 * dagger(a_op) * a_op)
+        L_s = sparse(sqrt(1.0) * a_op)
+        gu_f(t) = exp(-t^2) * sparse(a_op)
+        gv_f(t) = exp(-(t - 2)^2) * sparse(a_op)
+
+        G_cat = SLH(1, gu_f, H_s) ⊞ SLH(1, gv_f, H_s)
+        G_fb = feedback(G_cat, 1, 1)
+
+        LT = eltype(lindblad(G_fb))
+        @test LT <: FunctionWrapper
+        @test LT !== Any
+        @inferred lindblad(G_fb)[1](0.5)
     end
 end

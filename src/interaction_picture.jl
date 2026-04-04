@@ -2,9 +2,8 @@
 ### interaction picture ###
 ###########################
 
-using StaticArrays: SMatrix, MMatrix
+using StaticArrays: SMatrix
 
-# [I4 fix]: dispatch-based instead of applicable()
 _as_time_function(x::Number) = _ -> x
 _as_time_function(x) = x  # anything callable passes through
 
@@ -14,18 +13,23 @@ _as_time_function(x) = x  # anything callable passes through
 Build the antisymmetric coupling coefficient matrix `A(t)` from a tuple of
 coupling functions/constants `gs`. Returns a closure `t -> SMatrix{N,N,ComplexF64}`.
 
-Uses `MMatrix` internally for zero-allocation construction, returns `SMatrix`.
+Constructs `SMatrix` directly via `ntuple` for zero-allocation construction.
 """
-function coupling_matrix(gs::NTuple{N}) where {N}  # [I6 fix]: NTuple{N} not NTuple{N,Any}
+function coupling_matrix(gs::NTuple{N}) where {N}
     gfs = map(_as_time_function, gs)
     function A(t)
-        M = zero(MMatrix{N,N,ComplexF64})
-        @inbounds for i in 1:N, j in (i+1):N
-            val = 0.5 * gfs[i](t) * conj(gfs[j](t))
-            M[i, j] = val
-            M[j, i] = -conj(val)
-        end
-        return SMatrix(M)
+        SMatrix{N,N,ComplexF64}(ntuple(Val(N * N)) do k
+            i, j = divrem(k - 1, N) .+ (1, 1)
+            if i == j
+                zero(ComplexF64)
+            elseif j < i
+                val = 0.5 * gfs[j](t) * conj(gfs[i](t))
+                val
+            else  # j > i
+                val = 0.5 * gfs[i](t) * conj(gfs[j](t))
+                -conj(val)
+            end
+        end)
     end
     return A
 end
@@ -45,7 +49,6 @@ function solve_mode_evolution(A::Function, T; alg = Tsit5(), kwargs...)
     Tend = T[end]
     n = size(A(T0), 1)
     M0 = Matrix{ComplexF64}(I, n, n)
-    # [I3 fix]: no _A_buf, mul! works directly with SMatrix
     function f_M!(du, u, p, t)
         mul!(du, A(t), u)
     end
