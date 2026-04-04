@@ -68,7 +68,7 @@ u(t) = 1/(sqrt(τ)*π^(1/4)) * exp(-(t - tp)^2 / (2*τ^2))
 T = [0:0.002:1;]*14τ
 ΔT = T[2] - T[1]
 
-gu_ = u_to_gu(u, T)
+gu_ = coupling_input(u, T)
 dict_p_t = Dict(gu => gu_)
 
 # numeric bases
@@ -105,7 +105,7 @@ We calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 Ls(t) = (gu_(t))'*au_qo + √(γ_)*c_qo
-g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
+g1_m = correlation_matrix(T, ρt, input_output, Ls);
 nothing # hide
 ````
 

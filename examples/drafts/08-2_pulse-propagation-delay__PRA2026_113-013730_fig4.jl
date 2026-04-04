@@ -113,27 +113,17 @@ t1 = 2tp + τ + 2tw
 rn = 1/√(2)
 tn = 1/√(2)
 
-gu_ = u_to_gu(u, T)
-gd1in_ = v_to_gv(u, T)
-gd1out_ = u_to_gu(ud1, T)
-gd2in_ = v_to_gv(u, T)
-gd2out_ = u_to_gu(ud2, T)
+gu_ = coupling_input(u, T)
+gd1in_ = coupling_output(u, T)
+gd1out_ = coupling_input(ud1, T)
+gd2in_ = coupling_output(u, T)
+gd2out_ = coupling_input(ud2, T)
 dict_p_t =
     Dict([gu, gd1in, gd1out, gd2in, gd2out] .=> [gu_, gd1in_, gd1out_, gd2in_, gd2out_])
 nothing # hide
 
-function interaction_picture_A_3modes(g1, g2, g3)
-    A(t) =
-        0.5 * [
-            0 conj(g2(t)) * g1(t) g1(t) * conj(g3(t));
-            -g2(t) * conj(g1(t)) 0 0;
-            -conj(g1(t)) * g3(t) 0 0
-        ]
-    return A
-end
-
-A_ud = interaction_picture_A_3modes(gu_, gd1in_, gd2in_)
-M_t = interaction_picture_M(A_ud, T)
+A_ud = coupling_matrix((gu_, gd1in_, gd2in_))
+M_t = solve_mode_evolution(A_ud, T)
 
 M_ls = [M(i, j) for i = 1:la for j = 1:la]
 M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]

@@ -7,10 +7,6 @@ SLH
 ```
 
 ```@docs
-SLHqo
-```
-
-```@docs
 scattering
 ```
 
@@ -51,63 +47,51 @@ translate_qo
 ## [Pulses](@id API: Pulses)
 
 ```@docs
-u_to_gu
+Gaussian
 ```
 
 ```@docs
-v_to_gv
+coupling_input
 ```
 
 ```@docs
-u_to_gu_Gauss
+coupling_output
 ```
 
 ```@docs
-v_to_gv_Gauss
+effective_input_mode
 ```
 
 ```@docs
-u_eff
+effective_output_mode
 ```
 
 ```@docs
-v_eff
+coupling_delay_in
 ```
 
 ```@docs
-uv_to_gin
-```
-
-```@docs
-uv_to_gout
+coupling_delay_out
 ```
 
 ## [Interaction Picture](@id API: Interaction Picture)
 
 ```@docs
-interaction_picture_M
+coupling_matrix
 ```
 
 ```@docs
-interaction_picture_M_2modes_equal
+solve_mode_evolution
 ```
 
 ```@docs
-interaction_picture_A_2modes
-```
-
-```@docs
-interaction_picture_A_3modes
-```
-
-```@docs
-interaction_picture_A_4modes
+solve_mode_evolution_symmetric
 ```
 
 ## [Correlations](@id API: Correlations)
 
 ```@docs
-two_time_corr_matrix
+correlation_matrix
 ```
 
 ## [Utilities](@id API: Utilities)

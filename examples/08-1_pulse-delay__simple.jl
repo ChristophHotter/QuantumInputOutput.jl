@@ -63,10 +63,10 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-gu_ = u_to_gu(u, T)
-gout_ = uv_to_gout(u_del, u, T)
-gin_ = uv_to_gin(u_del, u, T)
-gv_ = v_to_gv(u_del, T)
+gu_ = coupling_input(u, T)
+gout_ = coupling_delay_out(u_del, u, T)
+gin_ = coupling_delay_in(u_del, u, T)
+gv_ = coupling_output(u_del, T)
 
 dict_p_t = Dict([gu, gout, gin, gv] .=> [gu_, gout_, gin_, gv_])
 nothing # hide
@@ -168,17 +168,17 @@ Tend = 2tp + τ
 dt = Tend/5e2
 T = [0:dt:Tend;]
 
-gu_ = u_to_gu(u, T)
-gout_ = uv_to_gout(u_del, u, T)
-gin_ = uv_to_gin(u_del, u, T)
-gv_ = v_to_gv(u_del, T)
+gu_ = coupling_input(u, T)
+gout_ = coupling_delay_out(u_del, u, T)
+gin_ = coupling_delay_in(u_del, u, T)
+gv_ = coupling_output(u_del, T)
 nothing # hide
 
 #
 
 ## interaction-picture coefficient matrix M(t) for u ↔ d
-A_ud = interaction_picture_A_2modes(gu_, gin_)
-M_t = interaction_picture_M(A_ud, T)
+A_ud = coupling_matrix((gu_, gin_))
+M_t = solve_mode_evolution(A_ud, T)
 
 M_ls = [M(i, j) for i = 1:la for j = 1:la]
 M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]

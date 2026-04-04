@@ -67,7 +67,7 @@ u(t) = 1/(sqrt(τ)*π^(1/4)) * exp(-(t - tp)^2 / (2*τ^2))
 T = [0:0.002:1;]*20
 ΔT = T[2] - T[1]
 
-gu_ = u_to_gu(u, T)
+gu_ = coupling_input(u, T)
 dict_p_t = Dict(gu1 => gu_)
 nothing # hide
 
@@ -107,7 +107,7 @@ au1_qo = translate_qo(au1, b)
 σ_qo(i, j) = translate_qo(σ(i, j), b)
 
 Ls(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1, 2)
-g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
+g1_m = correlation_matrix(T, ρt, input_output, Ls);
 
 p = heatmap(
     T,
@@ -154,20 +154,20 @@ u2_new = conj.(reverse(v2_p))
 nothing # hide
 
 # The pulse from input cavity $u_2$ is scattered on the cavity $u_1$. This distortion needs to be taken into account for the coupling of $u_2$, 
-# which is done with the function [`u_eff`](@ref). 
+# which is done with the function [`effective_input_mode`](@ref). 
 # The coupling of the $u_1$ cavity needs no adaptation, since it directly couples to the two-level system. 
 
-gu1_ = u_to_gu(u1_new, T)
+gu1_ = coupling_input(u1_new, T)
 
 u_new_data = [u1_new, u2_new]
 u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
 
 ## effective u2 mode and corresponding coupling
-u2_for_gu2 = u_eff(u_new_fct, T, 2)
-gu2_ = u_to_gu(u2_for_gu2, T)
+u2_for_gu2 = effective_input_mode(u_new_fct, T, 2)
+gu2_ = coupling_input(u2_for_gu2, T)
 
 ## coupling of the output mode
-gv1_ = v_to_gv(v1_new, T)
+gv1_ = coupling_output(v1_new, T)
 
 ## dictionary for the time-dependent functions
 g_sym = [gu1, gu2, gv1]

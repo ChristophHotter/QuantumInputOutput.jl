@@ -103,7 +103,7 @@ nothing # hide
 
 a_qo = destroy(bc)
 Ls(t) = √(γ_) * a_qo
-g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
+g1_m = correlation_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
@@ -129,7 +129,7 @@ G = G_s2 ▷ G_v
 H_2 = hamiltonian(G)
 L_2 = lindblad(G)[1]
 
-gv_t = v_to_gv(v_mode, T)
+gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict(p => p_t, gv => gv_t)
 
 bv = FockBasis(n_cut)

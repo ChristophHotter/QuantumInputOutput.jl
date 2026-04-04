@@ -64,7 +64,7 @@ u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
-gu_t = u_to_gu(u1, T)
+gu_t = coupling_input(u1, T)
 dict_p_t = Dict(gu => gu_t)
 
 ## numeric bases 
@@ -110,7 +110,7 @@ nothing # hide
 # In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.  
 
 Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-g1_m = two_time_corr_matrix(T, ρt, input_output_1, Ls)
+g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
 nothing # hide
 
 #
@@ -143,7 +143,7 @@ p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
 ## time-dependent coupling for the output mode $v(t)$
-gv_t = v_to_gv(v_mode, T)
+gv_t = coupling_output(v_mode, T)
 
 dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 

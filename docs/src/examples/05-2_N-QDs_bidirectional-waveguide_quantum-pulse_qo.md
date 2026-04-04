@@ -4,7 +4,7 @@ EditURL = "../../../examples/05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 
 # Quantum Pulse Bi-Directional Waveguide
 
-This example mirrors the example `Bi-Directional Waveguide` but uses the numeric SLH struct [`SLHqo`](@ref), to circumvent the symbolic derivation part.
+This example mirrors the example `Bi-Directional Waveguide` but passes numeric operators directly to [`SLH`](@ref), circumventing the symbolic derivation part.
 Furthermore it drives the system with a *quantum* single-photon pulse via a virtual cavity.
 
 As usual, we start by loading the packages and defining the operators and parameters of the system.
@@ -48,17 +48,17 @@ T = [0:0.005:1;]*Tend
 # u1(t) = sqrt(1 / (σt * √(2π)) * exp(-0.5 * (t - t0)^2 / σt^2)) # hide
 u1(t) = 1/(sqrt(σt)*π^(1/4)) * exp(-(t - t0)^2 / (2*σt^2))
 
-gu_t = u_to_gu(u1, T)
+gu_t = coupling_input(u1, T)
 nothing # hide
 ````
 
-We use the [`SLHqo`](@ref) to directly use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions to the model the system.
+We pass [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators directly to [`SLH`](@ref) to model the system numerically.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
-G_u = SLHqo(1, t -> gu_t(t) * a_u, 0*one(b))
-G_ϕ(i, j) = SLHqo(exp(1im * ϕn[i]), 0*one(b), 0*one(b))
-G_R(i) = SLHqo(1, √(γRn[i]) * σ(i, 1, 2), -Δn[i] * σ(i, 2, 2))
-G_L(i) = SLHqo(1, √(γLn[i]) * σ(i, 1, 2), 0*one(b))
+G_u = SLH(1, t -> gu_t(t) * a_u, 0*one(b))
+G_ϕ(i, j) = SLH(exp(1im * ϕn[i]), 0*one(b), 0*one(b))
+G_R(i) = SLH(1, √(γRn[i]) * σ(i, 1, 2), -Δn[i] * σ(i, 2, 2))
+G_L(i) = SLH(1, √(γLn[i]) * σ(i, 1, 2), 0*one(b))
 
 # Cascade right-moving channel
 # G_R_t = G_d ▷ cascade([G_R(i) ▷ G_ϕ(i, i + 1) for i=1:N-1]...) ▷ G_R(N) # for N > 1 # hide

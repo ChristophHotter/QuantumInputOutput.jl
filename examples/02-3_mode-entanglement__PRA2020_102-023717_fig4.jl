@@ -93,7 +93,7 @@ t_1, ρt_1 = timeevolution.master_dynamic(T, ψ0, input_output_1)
 nothing # hide
 
 Ls = √(γ_) * a_qo
-g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
+g1_m = correlation_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
@@ -106,11 +106,11 @@ nothing # hide
 
 # After identifying the two modes, we add two cascaded virtual output cavities.
 # The coupling of the second cavity must be corrected for the reshaping caused by
-# the first output cavity, which is done with [`v_eff`](@ref).
+# the first output cavity, which is done with [`effective_output_mode`](@ref).
 
-gv1_t = v_to_gv(v1_mode, T)
-v2_eff = v_eff([v1_mode, v2_mode], T, 2)
-gv2_t = v_to_gv(v2_eff, T)
+gv1_t = coupling_output(v1_mode, T)
+v2_eff = effective_output_mode([v1_mode, v2_mode], T, 2)
+gv2_t = coupling_output(v2_eff, T)
 
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
 dict_p_t_2 = Dict(gv1 => gv1_t, gv2 => gv2_t)

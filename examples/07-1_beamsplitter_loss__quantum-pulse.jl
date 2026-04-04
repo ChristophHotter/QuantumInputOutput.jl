@@ -69,8 +69,8 @@ T = [0:0.004:1;] * T_end
 ΔT = T[2] - T[1]
 
 ## time-dependent coupling for the virtual cavities
-gu_t = u_to_gu(u, T)
-gv_t = v_to_gv(u, T) # v(t) = u(t)
+gu_t = coupling_input(u, T)
+gv_t = coupling_output(u, T) # v(t) = u(t)
 dict_p_t = Dict(gu => gu_t, gv => gv_t)
 
 ## beam splitter parameters 

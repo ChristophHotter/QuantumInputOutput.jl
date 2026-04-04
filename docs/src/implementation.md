@@ -32,7 +32,7 @@ L = lindblad(G_cas)
 
 For networks with internal loops, the symbolic model can be reduced directly with [`feedback`](@ref), which applies the SLH feedback reduction rule before translation. This keeps the symbolic workflow consistent: build a network from cascades and concatenations, eliminate internal connections symbolically, and only then translate the reduced Hamiltonian and Lindblad operators to numerics.
 
-If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, the [`SLHqo`](@ref) type skips the symbolic layer and allows time-dependent `L` or `H` as callables while still using the same cascade, concatenate, and feedback rules. This can be much faster. 
+If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, you can pass numeric operators and callables directly to [`SLH`](@ref), which supports both symbolic and numeric operator types as well as time-dependent `L` or `H` while still using the same cascade, concatenate, and feedback rules. This can be much faster. 
 
 ## Translate to numerics
 
@@ -51,7 +51,7 @@ bv = FockBasis(2)
 b = bu ⊗ bs ⊗ bv
 
 dict_p = Dict(γ => 1.0, gv => 0.0)
-gu_t = u_to_gu(t -> exp(-t^2), 0:0.01:5)
+gu_t = coupling_input(t -> exp(-t^2), 0:0.01:5)
 dict_p_t = Dict(gu => gu_t)
 
 H_QO = translate_qo(H, b; parameter=dict_p, time_parameter=dict_p_t)
@@ -71,8 +71,8 @@ Quantum pulses are encoded through virtual cavities. Given a normalized input mo
 
 The implementation uses cumulative numerical integration on a time grid `T` and a linear interpolation. 
 
-- [`u_to_gu`](@ref) and [`v_to_gv`](@ref) build interpolated couplings from sampled modes
-- [`u_to_gu_Gauss`](@ref) and [`v_to_gv_Gauss`](@ref) provide analytic expressions for Gaussian pulses 
+- [`coupling_input`](@ref) and [`coupling_output`](@ref) build interpolated couplings from sampled modes
+- For Gaussian pulses, pass a [`Gaussian`](@ref) descriptor to [`coupling_input`](@ref) or [`coupling_output`](@ref) for analytic expressions
 
 ```julia
 T = [0:0.002:1;]*12
@@ -80,11 +80,11 @@ T = [0:0.002:1;]*12
 τ = 4.0
 u(t) = 1/(√(σ)*π^(1/4)) * exp(-0.5 * ((t - τ) / σ)^2)
 
-gu_t = u_to_gu(u, T)
-gv_t = v_to_gv(u, T)
+gu_t = coupling_input(u, T)
+gv_t = coupling_output(u, T)
 ```
 
-For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. The effective input mode ``u_i^{\mathrm{eff}}(t)`` and output mode ``v_i^{\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`u_eff`](@ref) and [`v_eff`](@ref).  
+For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. The effective input mode ``u_i^{\mathrm{eff}}(t)`` and output mode ``v_i^{\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`effective_input_mode`](@ref) and [`effective_output_mode`](@ref).  
 
 ## Output modes and the correlation function
 
@@ -94,13 +94,13 @@ The dominant output modes are extracted by computing the two-time correlation ma
 g^{(1)}(t_1, t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle
 ```
 
-and diagonalizing it. In this package, [`two_time_corr_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $L_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $L_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
+and diagonalizing it. In this package, [`correlation_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $L_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $L_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
 
 The eigenvectors of the matrix $g^{(1)}(t_1, t_2)$ correspond to temporal modes and the eigenvalues to their mean photon-number weights. The full procedure is illustrated in the [Tutorial](@ref). 
 
 ```julia
 Ls(t) = gu_t(t) * au_qo + √(1.0) * c_qo
-g1 = two_time_corr_matrix(T, ρt, input_output_1, Ls)
+g1 = correlation_matrix(T, ρt, input_output_1, Ls)
 F = eigen(g1)
 v_mode = F.vectors[:, end] / sqrt(T[2] - T[1])
 ```
@@ -121,7 +121,7 @@ A(t) = \frac{1}{2}\begin{bmatrix}
 \end{bmatrix}
 ```
 
-The functions [`interaction_picture_A_2modes`](@ref), [`interaction_picture_A_3modes`](@ref), and [`interaction_picture_A_4modes`](@ref) build the coupling matrices for two, three and four modes. For two equal modes ($u(t) = v(t)$) the analytic solution of $M(t)$ is provided by [`interaction_picture_M_2modes_equal`](@ref).
+The function [`coupling_matrix`](@ref) builds the coupling matrix for an arbitrary number of modes. The ODE for the coefficient matrix $M(t)$ is solved by [`solve_mode_evolution`](@ref). For two equal modes ($u(t) = v(t)$) the analytic solution of $M(t)$ is provided by [`solve_mode_evolution_symmetric`](@ref).
 
 Using the interaction picture for scattering with a Fock state $| n=20 \rangle$ on a two-level system, is  demonstrated in the example [Interaction Picture Scattering with a Quantum Pulse](examples/06-1_interaction-picture__PRA2023_107-013706_fig2.md). 
 
@@ -129,8 +129,8 @@ Using the interaction picture for scattering with a Fock state $| n=20 \rangle$ 
 
 Pulse propagation delays are modeled by a virtual delay cavity that absorbs a pulse `v(t)` while emitting a target pulse `u(t)` with a controlled delay. The functions
 
-- [`uv_to_gin`](@ref)
-- [`uv_to_gout`](@ref)
+- [`coupling_delay_in`](@ref)
+- [`coupling_delay_out`](@ref)
 
 compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for this delay cavity, according to
 
@@ -140,6 +140,6 @@ compute the in-coupling and out-coupling strengths `g_in(t)` and `g_out(t)` for 
 \tilde g_{\mathrm{in},v,u}(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2 - \int_0^t dt' \,|u(t')|^2}}.
 ```
 
-The implementation mirrors [`u_to_gu`](@ref) and [`v_to_gv`](@ref): compute cumulative integrals on a time grid and return interpolated time-dependent couplings. 
+The implementation mirrors [`coupling_input`](@ref) and [`coupling_output`](@ref): compute cumulative integrals on a time grid and return interpolated time-dependent couplings. 
 
 A simple single-pulse case is demonstrated in the example [Simple Pulse Delay with a Virtual Cavity](examples/08-1_pulse-delay__simple.md), where an input pulse is emitted, delayed by a virtual cavity, and captured into an output cavity. 

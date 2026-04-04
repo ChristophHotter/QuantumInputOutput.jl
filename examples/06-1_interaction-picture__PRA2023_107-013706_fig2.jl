@@ -83,12 +83,12 @@ T_end = 12.0
 T = [0:0.005:1;] * T_end
 
 ## virtual-cavity couplings for input/output modes
-gu_t = u_to_gu(u, T)
-gv_t = v_to_gv(u, T) # identical output mode v(t) = u(t)
+gu_t = coupling_input(u, T)
+gv_t = coupling_output(u, T) # identical output mode v(t) = u(t)
 
 ## interaction-picture coefficient matrix M(t) for u ↔ v
-A_uv = interaction_picture_A_2modes(gu_t, gv_t)
-M_t = interaction_picture_M(A_uv, T)
+A_uv = coupling_matrix((gu_t, gv_t))
+M_t = solve_mode_evolution(A_uv, T)
 
 ## constant and time-dependent parameters
 dict_p = Dict(γ => γ_)

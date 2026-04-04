@@ -71,13 +71,13 @@ T = [0:0.002:1;] * T_end
 ## time-dependent couplings for input and output modes
 u1 = u
 u2 = u
-gu1_t = u_to_gu(u1, T)
-gu2_t = u_to_gu(u2, T)
+gu1_t = coupling_input(u1, T)
+gu2_t = coupling_input(u2, T)
 
 v1(t) = u(t)
 v2(t) = u(t)
-gv1_t = v_to_gv(v1, T)
-gv2_t = v_to_gv(v2, T)
+gv1_t = coupling_output(v1, T)
+gv2_t = coupling_output(v2, T)
 
 dict_p_t = Dict(gu1 => gu1_t, gu2 => gu2_t, gv1 => gv1_t, gv2 => gv2_t)
 
