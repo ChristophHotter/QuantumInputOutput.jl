@@ -39,7 +39,8 @@ function _correlation_loop(solve_fn, T, ρt, Ls_vec, Ls_dag_vec)
     @assert l_T == length(ρt)
 
     g1_m = zeros(ComplexF64, l_T, l_T)
-    for it = 1:(l_T-1)
+    # Each iteration solves an independent master equation — parallelise
+    Threads.@threads for it = 1:(l_T-1)
         ρ0_it = Ls_vec[it] * ρt[it]
         τ_, ρ_bar_τ = solve_fn(@view(T[it:end]), ρ0_it)
 

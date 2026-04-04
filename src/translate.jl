@@ -116,17 +116,18 @@ function _translate_qo(
     OpType = typeof(first_translated isa Function ? first_translated(0.0) : first_translated)
     FW = FunctionWrapper{OpType,Tuple{Float64}}
 
-    args_wrapped = Vector{FW}(undef, length(args))
-    args_wrapped[1] = FW(first_translated isa Function ? first_translated : (_ -> first_translated))
-    for k in 2:length(args)
-        a_k = _translate_qo(args[k], b; parameter, time_parameter, level_map, operators, op_type = sparse)
-        args_wrapped[k] = FW(a_k isa Function ? a_k : (_ -> a_k))
+    args_wrapped = ntuple(length(args)) do k
+        a_k = if k == 1
+            first_translated
+        else
+            _translate_qo(args[k], b; parameter, time_parameter, level_map, operators, op_type = sparse)
+        end
+        FW(a_k isa Function ? a_k : (_ -> a_k))
     end
 
-    n = length(args_wrapped)
     return t -> begin
         result = args_wrapped[1](t)
-        for i in 2:n
+        for i in 2:length(args_wrapped)
             result = result + args_wrapped[i](t)
         end
         result

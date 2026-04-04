@@ -44,7 +44,9 @@ end
 
 function _compute_coupling(mode::Vector, T::Vector, denom_fn)
     l_T = length(T)
-    ∫m2 = cumul_integrate(T, abs2.(mode))
+    buf = Vector{Float64}(undef, l_T)
+    map!(abs2, buf, mode)
+    ∫m2 = cumul_integrate(T, buf)
     g = zeros(ComplexF64, l_T)
     @inbounds for i = 2:l_T
         d = denom_fn(∫m2[i])
@@ -267,8 +269,11 @@ effective_input_mode(
 
 function _compute_coupling_delay(num_mode::Vector, u::Vector, v::Vector, T::Vector)
     l_T = length(T)
-    ∫u2 = cumul_integrate(T, abs2.(u))
-    ∫v2 = cumul_integrate(T, abs2.(v))
+    buf = Vector{Float64}(undef, l_T)
+    map!(abs2, buf, u)
+    ∫u2 = cumul_integrate(T, buf)
+    map!(abs2, buf, v)
+    ∫v2 = cumul_integrate(T, buf)
     g = zeros(ComplexF64, l_T)
     @inbounds for i = 2:l_T
         d = abs(∫v2[i] - ∫u2[i])
