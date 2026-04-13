@@ -73,6 +73,27 @@ using Test
         @test isequal(Gc, Gc2)
     end
 
+    @testset "two-port symbolic cascade" begin
+        hu2 = FockSpace(:u2)
+        hv2 = FockSpace(:v2)
+        h2 = hu1 ⊗ hu2 ⊗ hv1 ⊗ hv2
+
+        au1 = Destroy(h2, :a_u1, 1)
+        au2 = Destroy(h2, :a_u2, 2)
+        av1 = Destroy(h2, :a_v1, 3)
+        av2 = Destroy(h2, :a_v2, 4)
+
+        gu1, gu2, gv1, gv2, t, r = rnumbers("g_u1 g_u2 g_v1 g_v2 t r")
+
+        G_bs = SLH([r t; t -r], [0, 0], 0)
+        G_out = SLH(1, gv1' * av1, 0) ⊞ SLH(1, gv2' * av2, 0)
+        G_cas = G_bs ▷ G_out
+
+        @test length(lindblad(G_cas)) == 2
+        @test iszero(simplify(lindblad(G_cas)[1] - (gv1' * av1)))
+        @test iszero(simplify(lindblad(G_cas)[2] - (gv2' * av2)))
+    end
+
     @testset "numeric type stability" begin
         bc = FockBasis(4)
         a_op = destroy(bc)

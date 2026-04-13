@@ -212,8 +212,9 @@ end
     end
     exprs = []
     for i = 1:N
-        terms = [:(tmp_$(i)_1 = _mul(S[$i, 1], L[1]))]
-        acc = :tmp_$(Symbol("$(i)_1"))
+        first_name = Symbol("tmp_$(i)_1")
+        terms = [:($first_name = _mul(S[$i, 1], L[1]))]
+        acc = first_name
         for j = 2:N
             tname = Symbol("tmp_$(i)_$(j)")
             push!(terms, :($tname = _add($acc, _mul(S[$i, $j], L[$j]))))
