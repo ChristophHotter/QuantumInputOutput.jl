@@ -11,6 +11,30 @@ using Test
     hs = FockSpace(:s)
     a = Destroy(hs, :a, 1)
 
+    # # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
+    # s11_r = rnumber("s11_r")
+    # s12_r = rnumber("s12_r")
+    # s21_r = rnumber("s21_r")
+    # s22_r = rnumber("s22_r")
+    # l1_r = rnumber("l1_r")
+    # l2_r = rnumber("l2_r")
+    # #
+    # s11_i = rnumber("s11_i")
+    # s12_i = rnumber("s12_i")
+    # s21_i = rnumber("s21_i")
+    # s22_i = rnumber("s22_i")
+    # l1_i = rnumber("l1_i")
+    # l2_i = rnumber("l2_i")
+    # #
+    # s11 = s11_r + 1im*s11_i
+    # s12 = s12_r + 1im*s12_i
+    # s21 = s21_r + 1im*s21_i
+    # s22 = s22_r + 1im*s22_i
+    # l1 = l1_r + 1im*l1_i
+    # l2 = l2_r + 1im*l2_i
+
+    # h0 = rnumber("h0")
+
     s11 = 0.1 + 1im*0.2
     s12 = 0.3 + 1im*0.24
     s21 = 0.5 + 1im*0.23
@@ -34,6 +58,10 @@ using Test
     @test abs(hamiltonian(G_red) - expected_H) < 1e-10
 
     @testset "coherent-feedback OPO loop" begin
+        # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
+        # κ = rnumber("κ")
+        # ϵ = rnumber("ϵ")
+        # η = rnumber("η")
         κ = 0.7
         ϵ = 0.45
         η = 0.65
