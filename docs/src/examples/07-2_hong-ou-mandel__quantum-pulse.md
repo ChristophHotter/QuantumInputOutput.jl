@@ -38,12 +38,12 @@ nothing # hide
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 # input cavities, beam splitter, and output cavities
 S_bs = [r t; t -r]
-G_u1 = SLH(1, gu1 * au1, 0)
-G_u2 = SLH(1, gu2 * au2, 0)
+G_u1 = SLH(1, gu1' * au1, 0)
+G_u2 = SLH(1, gu2' * au2, 0)
 G_in = G_u1 ⊞ G_u2
 G_bs = SLH(S_bs, [0, 0], 0)
-G_v1 = SLH(1, gv1 * av1, 0)
-G_v2 = SLH(1, gv2 * av2, 0)
+G_v1 = SLH(1, gv1' * av1, 0)
+G_v2 = SLH(1, gv2' * av2, 0)
 G_out = G_v1 ⊞ G_v2
 G = G_in ▷ G_bs ▷ G_out
 nothing # hide
@@ -55,6 +55,11 @@ H = hamiltonian(G)
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 L = lindblad(G)
+L[1]
+````
+
+````@example 07-2_hong-ou-mandel__quantum-pulse
+L[2]
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse

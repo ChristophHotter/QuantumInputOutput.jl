@@ -41,10 +41,10 @@ G_p = SLH(1, 0, 0)
 S_bs = [r t; t -r]
 
 # input cavity, beam splitter, and output cavity
-G_u = SLH(1, gu * au, 0)
+G_u = SLH(1, gu' * au, 0)
 G_in = G_u ⊞ G_p
 G_bs = SLH(S_bs, [0, 0], 0)
-G_v = SLH(1, gv * av, 0)
+G_v = SLH(1, gv' * av, 0)
 # G_out = G_v ⊞ G_p # reflection is tracked
 G_out = G_p ⊞ G_v # transmission is tracked
 
@@ -58,6 +58,11 @@ H = hamiltonian(G)
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse
 L = lindblad(G)
+L[1]
+````
+
+````@example 07-1_beamsplitter_loss__quantum-pulse
+L[2]
 ````
 
 ````@example 07-1_beamsplitter_loss__quantum-pulse

@@ -38,9 +38,9 @@ nothing # hide
 We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-G_u = SLH(1, gu*au, 0) # input cavity
+G_u = SLH(1, gu'*au, 0) # input cavity
 G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
-G_v = SLH(1, gv*av, 0) # output cavity
+G_v = SLH(1, gv'*av, 0) # output cavity
 
 G_cas = ▷(G_u, G_c, G_v)
 nothing # hide
@@ -63,7 +63,7 @@ To solve the dynamics of the system we translate the symbolic expressions into n
 
 p_sym = [γ, Δ, gv]
 p_num = [γ_, Δ_, 0] # gv=0
-dict_p = Dict(p_sym .=> p_num);
+dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input mode
 σ = 1/γ_

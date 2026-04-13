@@ -33,9 +33,9 @@ av_sym = Destroy(h, :a_v, 3)
 gu, γ, gv = rnumbers("gu γ gv")
 
 # cascade the SLH elements
-G_u = SLH(1, gu * au_sym, 0)
+G_u = SLH(1, gu' * au_sym, 0)
 G_s = SLH(1, sqrt(γ) * σ12_sym, 0)
-G_v = SLH(1, gv * av_sym, 0)
+G_v = SLH(1, gv' * av_sym, 0)
 G_cas = ▷(G_u, G_s, G_v)
 nothing # hide
 ````

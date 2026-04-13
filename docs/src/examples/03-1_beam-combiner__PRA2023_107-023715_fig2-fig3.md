@@ -43,10 +43,10 @@ nothing #hide
 We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_a = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # scattering atom
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
 
 G_cas = cascade(G_u2, G_u1, G_a, G_v1)
 nothing # hide
@@ -181,11 +181,8 @@ gu1_ = coupling_input(u1_new, T)
 
 u_new_data = [u1_new, u2_new]
 u_new_fct = [LinearInterpolation(u, T) for u in u_new_data]
-````
 
-effective u2 mode and corresponding coupling
-
-````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
+# effective u2 mode and corresponding coupling
 u2_for_gu2 = effective_input_mode(u_new_fct, T, 2)
 gu2_ = coupling_input(u2_for_gu2, T)
 

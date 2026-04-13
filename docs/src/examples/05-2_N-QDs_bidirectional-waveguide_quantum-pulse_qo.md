@@ -52,7 +52,7 @@ gu_t = coupling_input(u1, T)
 nothing # hide
 ````
 
-We pass [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators directly to [`SLH`](@ref) to model the system numerically.
+We use the [`SLH`](@ref) to directly use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions to the model the system.
 
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 G_u = SLH(1, t -> gu_t(t) * a_u, 0*one(b))

@@ -178,6 +178,7 @@ We derive the equations of motion for system with a second-order mean-field appr
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 J_add = [√(γ)*σ(α, 1, 2) for α = 1:Natoms]
 eqs2 = meanfield([a'a, σ(1, 2, 2)], H2, [L2_L, L2_R, J_add...]; order = 2)
+nothing # hide
 ````
 
 ```math

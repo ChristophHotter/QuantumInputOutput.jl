@@ -36,18 +36,18 @@ gu, gin, gout, gv = cnumbers("g_u g_in g_out g_v")
 nothing # hide
 ````
 
-The input cavity couples ($g_u(t)*a_u$) into the input port of the delay cavity ($g_{in}(t)*a_d$) and the delay cavity couples
-the photons via the output port ($g_{out}(t)*a_d$) into the the output cavity ($g_v(t)*a_v$).
+The input cavity couples ($g_u(t)'*a_u$) into the input port of the delay cavity ($g_{in}(t)*a_d$) and the delay cavity couples
+the photons via the output port ($g_{out}(t)*a_d$) into the the output cavity ($g_v(t)'*a_v$).
 This leads to the following cascade of SLH elements.
 
 ````@example 08-1_pulse-delay__simple
-G_u = SLH(1, gu*au, 0)
+G_u = SLH(1, gu'*au, 0)
 G_u2 = concatenate(G_u, SLH(1, 0, 0))
 
 S2 = Matrix(I, 2, 2)
 G_d = SLH(S2, [gin*ad, gout*ad], 0)
 
-G_v = SLH(1, gv*av, 0)
+G_v = SLH(1, gv'*av, 0)
 G_v2 = concatenate(SLH(1, 0, 0), G_v)
 
 G_cas = cascade(G_u2, G_d, G_v2)
@@ -156,6 +156,11 @@ H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
 
 ````@example 08-1_pulse-delay__simple
 L_int_sym = simplify.(substitute_operators.(L, Ref(int_dict)))
+L_int_sym[1]
+````
+
+````@example 08-1_pulse-delay__simple
+L_int_sym[2]
 ````
 
 ````@example 08-1_pulse-delay__simple
