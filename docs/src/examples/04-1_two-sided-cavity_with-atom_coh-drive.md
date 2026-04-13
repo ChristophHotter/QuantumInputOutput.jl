@@ -13,7 +13,6 @@ However, for the numerical simulation of the empty cavity we provide a dictionar
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
-using QuantumCumulants
 using Plots
 ````
 
@@ -51,28 +50,18 @@ nothing # hide
 Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule.
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-H1 = get_hamiltonian(G_cav_L_R_drive)
+H1 = hamiltonian(G_cav_L_R_drive)
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-L1_L = get_lindblad(G_cav_L_R_drive)[1]
+L1_L = lindblad(G_cav_L_R_drive)[1]
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-L1_R = get_lindblad(G_cav_L_R_drive)[2]
+L1_R = lindblad(G_cav_L_R_drive)[2]
 ````
 
-Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term. To show the meanfield equation for the intra-cavity field we use the function `meanfield` of [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl). We could, in principle, also proceed by solving this equation, see e.g. the example `Mean-field Two-sided Cavity`.
-
-````@example 04-1_two-sided-cavity_with-atom_coh-drive
-eqs_a = meanfield([a], H1, [L1_L, L1_R])
-nothing  # hide
-````
-
-```math
-\begin{align} \frac{d}{dt} \langle a\rangle &= 1 i \Delta \langle a\rangle -1.0 \sqrt{\kappa{L}} E -0.5 \left( \left( \sqrt{\kappa{L}} \right)^{2} + \left( \sqrt{\kappa_{R}} \right)^{2} \right) \langle a\rangle \end{align}
-```
-
+Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term.
 To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`translate_qo`](@ref).
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive

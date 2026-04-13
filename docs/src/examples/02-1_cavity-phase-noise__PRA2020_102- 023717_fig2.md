@@ -36,7 +36,7 @@ nothing # hide
 We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-G_u = SLH(1, gu*au, 0) # input cavity
+G_u = SLH(1, gu'*au, 0) # input cavity
 G_c = SLH(1, √(γ)*c, Δ*c'c) # scattering cavity
 
 G_cas = ▷(G_u, G_c)
@@ -44,11 +44,11 @@ nothing # hide
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
-L = get_lindblad(G_cas)[1] # only one Lindblad in this example
+L = lindblad(G_cas)[1] # only one Lindblad in this example
 ````
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
@@ -68,7 +68,7 @@ u(t) = 1/(sqrt(τ)*π^(1/4)) * exp(-(t - tp)^2 / (2*τ^2))
 T = [0:0.002:1;]*14τ
 ΔT = T[2] - T[1]
 
-gu_ = u_to_gu(u, T)
+gu_ = coupling_input(u, T)
 dict_p_t = Dict(gu => gu_)
 
 # numeric bases
@@ -105,7 +105,7 @@ We calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L
 
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 Ls(t) = (gu_(t))'*au_qo + √(γ_)*c_qo
-g1_m = two_time_corr_matrix(T, ρt, input_output, Ls);
+g1_m = correlation_matrix(T, ρt, input_output, Ls);
 nothing # hide
 ````
 

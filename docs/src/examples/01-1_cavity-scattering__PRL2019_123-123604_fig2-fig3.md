@@ -38,20 +38,20 @@ nothing # hide
 We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-G_u = SLH(1, gu*au, 0) # input cavity
+G_u = SLH(1, gu'*au, 0) # input cavity
 G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
-G_v = SLH(1, gv*av, 0) # output cavity
+G_v = SLH(1, gv'*av, 0) # output cavity
 
 G_cas = ▷(G_u, G_c, G_v)
 nothing # hide
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
-L = get_lindblad(G_cas)[1] # only one Lindblad term in this example
+L = lindblad(G_cas)[1] # only one Lindblad term in this example
 ````
 
 To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.
@@ -63,7 +63,7 @@ To solve the dynamics of the system we translate the symbolic expressions into n
 
 p_sym = [γ, Δ, gv]
 p_num = [γ_, Δ_, 0] # gv=0
-dict_p = Dict(p_sym .=> p_num);
+dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input mode
 σ = 1/γ_
@@ -73,7 +73,7 @@ u1(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
 T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
-gu_t = u_to_gu(u1, T)
+gu_t = coupling_input(u1, T)
 dict_p_t = Dict(gu => gu_t)
 
 # numeric bases
@@ -126,7 +126,7 @@ In order to determine suitable temporal output modes we calculate the two-time a
 
 ````@example 01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3
 Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-g1_m = two_time_corr_matrix(T, ρt, input_output_1, Ls)
+g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
 nothing # hide
 ````
 
@@ -164,7 +164,7 @@ p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
 # time-dependent coupling for the output mode $v(t)$
-gv_t = v_to_gv(v_mode, T)
+gv_t = coupling_output(v_mode, T)
 
 dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 

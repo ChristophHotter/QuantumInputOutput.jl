@@ -39,7 +39,7 @@ We use the symbolic operators and parameters to define the SLH triples and casca
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
 G_u = SLH(1, √(Γ)*au, 0) # input cavity
 G_c = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # two-level atom
-G_v = SLH(1, gv*av, 0) # output cavity
+G_v = SLH(1, gv'*av, 0) # output cavity
 
 G_cas = G_u ▷ G_c ▷ G_v
 nothing # hide

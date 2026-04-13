@@ -60,8 +60,8 @@ L_atom = [0, 0, √(γ/2)*σ(1, 2), √(γ/2)*σ(1, 2)]
 G_atom = SLH(I4, L_atom, Δ*σ(2, 2))
 
 G_u_bs_d1_d2_atom = G_u_bs_d1_d2 ▷ G_atom
-H = get_hamiltonian(G_u_bs_d1_d2_atom)
-L = get_lindblad(G_u_bs_d1_d2_atom)
+H = hamiltonian(G_u_bs_d1_d2_atom)
+L = lindblad(G_u_bs_d1_d2_atom)
 
 #
 

@@ -1,7 +1,10 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using QuantumOptics
 using SymbolicUtils
+using FunctionWrappers: FunctionWrapper
 using LinearAlgebra
+using StaticArrays
 using Test
 
 @testset "feedback reduction" begin
@@ -44,23 +47,24 @@ using Test
     G_red = feedback(G, 1, 1)
 
     loop_gain = (1 - s11)^(-1)
-    expected_S = reshape([simplify(s22 + s21 * loop_gain * s12)], 1, 1)
-    expected_L = [simplify(l2 + s21 * loop_gain * l1)]
+    expected_S = simplify(s22 + s21 * loop_gain * s12)
+    expected_L = simplify(l2 + s21 * loop_gain * l1)
     expected_term = simplify((l1' * s11 + l2' * s21) * loop_gain * l1)
     expected_H = simplify(h0 + (expected_term - expected_term') / (2im))
 
-    @test isequal((G_red.scattering .- expected_S)[1, 1], 0)
-    @test isequal((G_red.lindblad .- expected_L)[1], 0)
-    @test isequal(G_red.hamiltonian - expected_H, 0)
+    @test scattering(G_red) isa SMatrix{1,1}
+    @test abs(scattering(G_red)[1, 1] - expected_S) < 1e-10
+    @test abs(lindblad(G_red)[1] - expected_L) < 1e-10
+    @test abs(hamiltonian(G_red) - expected_H) < 1e-10
 
     @testset "coherent-feedback OPO loop" begin
         # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
-        κ = 0.7
-        ϵ = 0.45
-        η = 0.65
         # κ = rnumber("κ")
         # ϵ = rnumber("ϵ")
         # η = rnumber("η")
+        κ = 0.7
+        ϵ = 0.45
+        η = 0.65
 
         r = simplify(√(1 - η^2))
 
@@ -70,9 +74,9 @@ using Test
         G_loop = feedback(G_unconnected, 1 => 2, 2 => 1)
         l = simplify(η / (1 + r))
 
-        @test isequal(G_loop.scattering, ones(1, 1))
-        @test isequal(G_loop.lindblad, [simplify(l * √(κ) * a)])
-        @test isequal(simplify(G_loop.hamiltonian - get_hamiltonian(G_opo)), 0)
+        @test scattering(G_loop) isa SMatrix{1,1}
+        @test iszero(simplify(lindblad(G_loop)[1] - simplify(l * √(κ) * a)))
+        @test isequal(simplify(hamiltonian(G_loop) - hamiltonian(G_opo)), 0)
     end
 
     @testset "bidirectional waveguide matches cascade model" begin
@@ -103,9 +107,25 @@ using Test
         G_network = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
         G_feedback = feedback(G_network, 1 => 3, 3 => 5, 5 => 7, 8 => 6, 6 => 4, 4 => 2)
 
-        # @test isequal([G_feedback.scattering - get_scattering(G_manual)], zeros(2,2)) # TODO
-        @test isequal(G_feedback.lindblad[1], get_lindblad(G_manual)[2])
-        @test isequal(G_feedback.lindblad[2], get_lindblad(G_manual)[1])
-        @test isequal(simplify(G_feedback.hamiltonian - get_hamiltonian(G_manual)), 0)
+        @test isequal(lindblad(G_feedback)[1], lindblad(G_manual)[2])
+        @test isequal(lindblad(G_feedback)[2], lindblad(G_manual)[1])
+        @test isequal(simplify(hamiltonian(G_feedback) - hamiltonian(G_manual)), 0)
+    end
+
+    @testset "feedback preserves FunctionWrapper" begin
+        bc = FockBasis(4)
+        a_op = destroy(bc)
+        H_s = sparse(0.5 * dagger(a_op) * a_op)
+        L_s = sparse(sqrt(1.0) * a_op)
+        gu_f(t) = exp(-t^2) * sparse(a_op)
+        gv_f(t) = exp(-(t - 2)^2) * sparse(a_op)
+
+        G_cat = SLH(1, gu_f, H_s) ⊞ SLH(1, gv_f, H_s)
+        G_fb = feedback(G_cat, 1, 1)
+
+        LT = eltype(lindblad(G_fb))
+        @test LT <: FunctionWrapper
+        @test LT !== Any
+        @inferred lindblad(G_fb)[1](0.5)
     end
 end

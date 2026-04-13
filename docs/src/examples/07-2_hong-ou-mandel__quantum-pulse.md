@@ -38,23 +38,28 @@ nothing # hide
 ````@example 07-2_hong-ou-mandel__quantum-pulse
 # input cavities, beam splitter, and output cavities
 S_bs = [r t; t -r]
-G_u1 = SLH(1, gu1 * au1, 0)
-G_u2 = SLH(1, gu2 * au2, 0)
+G_u1 = SLH(1, gu1' * au1, 0)
+G_u2 = SLH(1, gu2' * au2, 0)
 G_in = G_u1 ⊞ G_u2
 G_bs = SLH(S_bs, [0, 0], 0)
-G_v1 = SLH(1, gv1 * av1, 0)
-G_v2 = SLH(1, gv2 * av2, 0)
+G_v1 = SLH(1, gv1' * av1, 0)
+G_v2 = SLH(1, gv2' * av2, 0)
 G_out = G_v1 ⊞ G_v2
 G = G_in ▷ G_bs ▷ G_out
 nothing # hide
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
-H = get_hamiltonian(G)
+H = hamiltonian(G)
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
-L = get_lindblad(G)
+L = lindblad(G)
+L[1]
+````
+
+````@example 07-2_hong-ou-mandel__quantum-pulse
+L[2]
 ````
 
 ````@example 07-2_hong-ou-mandel__quantum-pulse
@@ -71,13 +76,13 @@ T = [0:0.002:1;] * T_end
 # time-dependent couplings for input and output modes
 u1 = u
 u2 = u
-gu1_t = u_to_gu(u1, T)
-gu2_t = u_to_gu(u2, T)
+gu1_t = coupling_input(u1, T)
+gu2_t = coupling_input(u2, T)
 
 v1(t) = u(t)
 v2(t) = u(t)
-gv1_t = v_to_gv(v1, T)
-gv2_t = v_to_gv(v2, T)
+gv1_t = coupling_output(v1, T)
+gv2_t = coupling_output(v2, T)
 
 dict_p_t = Dict(gu1 => gu1_t, gu2 => gu2_t, gv1 => gv1_t, gv2 => gv2_t)
 

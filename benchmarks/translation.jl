@@ -29,8 +29,8 @@ function benchmark_translation!(SUITE)
     G_c = SLH(1, √(γ_sym) * c_, Δ_sym * c_'c_)
     G_v = SLH(1, gv_sym * av_, 0)
     G_cas = ▷(G_u, G_c, G_v)
-    H_sym = get_hamiltonian(G_cas)
-    L_sym = get_lindblad(G_cas)[1]
+    H_sym = hamiltonian(G_cas)
+    L_sym = lindblad(G_cas)[1]
 
     ## --- Static translation (no time dependence) ---
 
@@ -42,7 +42,6 @@ function benchmark_translation!(SUITE)
 
     dict_p_static = Dict([κ_R, κ_L, Δ_sym] .=> [1.5, 1.0, 0.2])
 
-    # Composite expression: operator + parameter + transition
     expr_composite = a * 3 + Δ_sym * σ(2, 2)
 
     SUITE["Translation"]["static"]["atom-cavity"] =
@@ -55,7 +54,6 @@ function benchmark_translation!(SUITE)
     E_t(t) = 2 * t + 1im
     dict_p_t = Dict(E => E_t)
 
-    # Expression with time-dependent + static parameters and operators
     expr_td = a * 3 * conj(E) + Δ_sym * σ(2, 2)
 
     SUITE["Translation"]["time-dependent"]["atom-cavity"] = @benchmarkable translate_qo(
@@ -65,15 +63,14 @@ function benchmark_translation!(SUITE)
         time_parameter = $dict_p_t,
     )
 
-    # Full cascade H and L translation (realistic workflow from example 06-1)
+    # Full cascade H and L translation
     γ_ = 1.0
     σ_pulse = 1 / γ_
     T = [0:0.002:1;] * 12σ_pulse
     u_pulse(t) = 1 / (sqrt(σ_pulse) * π^(1 / 4)) * exp(-(t - 4σ_pulse)^2 / (2 * σ_pulse^2))
-    gu_t = u_to_gu(u_pulse, T)
-    gv_t = v_to_gv(u_pulse, T)
+    gu_t = coupling_input(u_pulse, T)
+    gv_t = coupling_output(u_pulse, T)
 
-    # Realistic basis sizes from interaction picture example (n_ph=20)
     bu = FockBasis(20)
     bc3 = FockBasis(6)
     bv = FockBasis(6)

@@ -56,11 +56,11 @@ G_L_t = G_L(2) ▷ G_ϕ(1, 2) ▷ G_L(1)
 G_t = G_R_t ⊞ G_L_t
 nothing # hide
 
-H = get_hamiltonian(G_t)
+H = hamiltonian(G_t)
 ````
 
 ````@example 05-1_N-QDs_bidirectional-waveguide_coherent-pulse
-L = get_lindblad(G_t)
+L = lindblad(G_t)
 L_R = L[1]
 ````
 

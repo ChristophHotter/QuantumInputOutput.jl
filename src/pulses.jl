@@ -2,128 +2,165 @@
 ### functions for virtual cavities ###
 ######################################
 
-_tol_div = 1e-10 #12
-_extrapolate = ExtrapolationType.Extension
-_ϵu = 1e-10
-_ϵv = 1e-10
+const _tol_div = 1e-10
+const _extrapolate = ExtrapolationType.Extension
+const _ϵ = 1e-10
 
 _mode_interp(mode::AbstractVector, T::AbstractVector) =
     LinearInterpolation(mode, T; extrapolation = _extrapolate)
 _mode_interp(mode, T::AbstractVector) = mode
 
-"""
-    u_to_gu(u, T)
+# ──────────────────────────────────────────────
+# Gaussian pulse type
+# ──────────────────────────────────────────────
 
-Compute the virtual-cavity coupling ``g_u(t)`` from an input mode `u(t)` sampled on `T` with a linear interpolation.
-Returns a callable `t -> g_u(t)`.
 """
-function u_to_gu(u::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
-    gu_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        if abs(sqrt(1 - ∫u2_t[i])) > _tol_div
-            gu_t[i] = u[i]' / sqrt(abs(1 - ∫u2_t[i]) + _ϵu)
-        end #else 0
-    end
-    gu_int = LinearInterpolation(gu_t, T; extrapolation = _extrapolate)
-    return t -> gu_int(t)
+    Gaussian(τ, σ; δ=0)
+
+Gaussian pulse shape descriptor with center time `τ`, width `σ`, and detuning `δ`.
+Use with `coupling_input` and `coupling_output` for analytical coupling formulas.
+"""
+struct Gaussian{T}
+    τ::T
+    σ::T
+    δ::T
 end
-u_to_gu(u::Function, T::Vector) = u_to_gu(u.(T), T)
-u_to_gu(u::LinearInterpolation, T::Vector) = u_to_gu(u.(T), T)
+Gaussian(τ, σ; δ = zero(τ)) = Gaussian(promote(τ, σ, δ)...)
 
-"""
-    v_to_gv(v, T)
-
-Compute the virtual-cavity coupling ``g_v(t)`` from an output mode `v(t)` sampled on `T` with a linear interpolation.
-Returns a callable `t -> g_v(t)`.
-"""
-function v_to_gv(v::Vector, T::Vector)
-    l_T = length(T)
-    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
-    gv_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        if abs(sqrt(∫v2_t[i])) > _tol_div
-            gv_t[i] = -v[i]' / sqrt(∫v2_t[i] + _ϵv)
-        end # else 0
-    end
-    gv_int = LinearInterpolation(gv_t, T; extrapolation = _extrapolate)
-    return t -> gv_int(t)
-end
-v_to_gv(v::Function, T::Vector) = v_to_gv(v.(T), T)
-v_to_gv(v::LinearInterpolation, T::Vector) = v_to_gv(v.(T), T)
-
-"""
-    u_to_gu_Gauss(τ, σ; δ=0)
-
-Compute ``g_u(t)`` for a Gaussian input mode `u(t)` with delay `τ`, width `σ`, and detuning `δ`:
-
-`` u(t) = 1/\\sqrt{ \\sigma \\sqrt{\\pi} } e^{-(t - \\tau)^2 / 2 \\sigma^2 )}  e^{i \\delta t} ``
-
-
-Returns a callable `t -> g_u(t)`.
-"""
-function u_to_gu_Gauss(τ, σ; δ = 0) # slower than u_to_gu
-    if δ==0 # type stable
-        u = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2)
+function _gaussian_mode(g::Gaussian)
+    τ, σ, δ = g.τ, g.σ, g.δ
+    mode = if δ == 0
+        t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2)
     else
-        u = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2) * exp(1im*δ*t)
+        t -> 1 / (√(σ) * π^(1 / 4)) * exp(-0.5 * (t - τ)^2 / σ^2) * exp(1im * δ * t)
     end
-    ∫u_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    f = t_ -> u(t_)' / √(abs(1 - ∫u_2_t(t_)) + _ϵu)
-    return f
-end
-"""
-    v_to_gv_Gauss(τ, σ; δ=0)
-
-Compute ``g_v(t)`` for a Gaussian output mode `v(t)` with delay `τ`, width `σ`, and detuning `δ`:
-
-`` v(t) = 1/\\sqrt{ \\sigma \\sqrt{\\pi} } e^{-(t - \\tau)^2 / 2 \\sigma^2 )}  e^{i \\delta t} ``
-
-Returns a callable `t -> g_v(t)`.
-"""
-function v_to_gv_Gauss(τ, σ; δ = 0) # slower than v_to_gv
-    if δ==0 # type stable
-        v = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2)
-    else
-        v = t -> 1/(√(σ)*π^(1/4)) * exp(-0.5*(t - τ)^2/σ^2) * exp(1im*δ*t)
-    end
-    ∫v_2_t(t_) = 0.5 * (erf((t_ - τ) / σ) + erf(τ / σ))
-    f = t_ -> -v(t_)' / √(∫v_2_t(t_) + _ϵv)
-    return f
+    ∫mode2 = t -> 0.5 * (erf((t - τ) / σ) + erf(τ / σ))
+    return mode, ∫mode2
 end
 
-"""
-    v_eff(v_fcts, gv_fcts, T, i)
-    v_eff(v_fcts, T, i)
+# ──────────────────────────────────────────────
+# Shared coupling core
+# ──────────────────────────────────────────────
 
-Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` for a system with multiple output modes, 
-due to the pulse distortion from the preceding output cavities.  
-The returned mode function is the relevant one for ``g_{v_i}``. 
-The output modes in the list `v_fcts` need to be sorted starting with the first 
-output cavity after the system. 
-
-All kwargs are passed on to the ODE solver.     
-"""
-function v_eff(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
-    @assert i > 1
-    function multiple_outputs_α(dα, α, p, t) # only for i>1
-        for j = 1:(i-1)
-            dα[j] =
-                -gv_fcts[j](t) *
-                (v_fcts[i](t) + sum((gv_fcts[k](t))' * α[k] for k = 1:(j-1); init = 0.0)) -
-                0.5 * abs2(gv_fcts[j](t)) * α[j]
+function _compute_coupling(mode::Vector, T::Vector, denom_fn)
+    l_T = length(T)
+    buf = Vector{Float64}(undef, l_T)
+    map!(abs2, buf, mode)
+    ∫m2 = cumul_integrate(T, buf)
+    g = zeros(ComplexF64, l_T)
+    @inbounds for i = 2:l_T
+        d = denom_fn(∫m2[i])
+        if sqrt(abs(d)) > _tol_div
+            g[i] = mode[i]' / sqrt(d)
         end
     end
-    u0 = zeros(ComplexF64, i-1)
-    tspan = (T[1], T[end])
-    prob = ODEProblem(multiple_outputs_α, u0, tspan)
-    sol_α = solve(prob, alg; kwargs...)
-    v_i_im1(t) = v_fcts[i](t) + sum((gv_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
-    return v_i_im1
+    return LinearInterpolation(g, T; extrapolation = _extrapolate)
 end
-v_eff(v_fcts, T, i) = v_eff(v_fcts, [v_to_gv(v_, T) for v_ in v_fcts], T, i)
-function v_eff(
+
+# ──────────────────────────────────────────────
+# coupling_input / coupling_output
+# ──────────────────────────────────────────────
+
+"""
+    coupling_input(u, T)
+
+Compute the virtual-cavity input coupling ``g_u(t)`` from an input mode `u(t)`
+sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+"""
+coupling_input(u::Vector, T::Vector) = _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
+coupling_input(u::Function, T::Vector) = coupling_input(u.(T), T)
+coupling_input(u::LinearInterpolation, T::Vector) = coupling_input(u.(T), T)
+
+"""
+    coupling_input(g::Gaussian)
+
+Analytical input coupling ``g_u(t)`` for a Gaussian pulse.
+"""
+function coupling_input(g::Gaussian)
+    mode, ∫m2 = _gaussian_mode(g)
+    return t -> mode(t)' / √(abs(1 - ∫m2(t)) + _ϵ)
+end
+
+"""
+    coupling_output(v, T)
+
+Compute the virtual-cavity output coupling ``g_v(t)`` from an output mode `v(t)`
+sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+"""
+coupling_output(v::Vector, T::Vector) = _compute_coupling(-v, T, x -> x + _ϵ)
+coupling_output(v::Function, T::Vector) = coupling_output(v.(T), T)
+coupling_output(v::LinearInterpolation, T::Vector) = coupling_output(v.(T), T)
+
+"""
+    coupling_output(g::Gaussian)
+
+Analytical output coupling ``g_v(t)`` for a Gaussian pulse.
+"""
+function coupling_output(g::Gaussian)
+    mode, ∫m2 = _gaussian_mode(g)
+    return t -> -mode(t)' / √(∫m2(t) + _ϵ)
+end
+
+# ──────────────────────────────────────────────
+# effective_output_mode (was v_eff)
+# ──────────────────────────────────────────────
+
+"""
+    effective_output_mode(v_fcts, gv_fcts, T, i)
+    effective_output_mode(v_fcts, T, i)
+
+Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` for a system with multiple
+output modes, due to the pulse distortion from the preceding output cavities.
+The output modes in `v_fcts` must be sorted starting with the first output cavity after the system.
+
+All kwargs are passed on to the ODE solver.
+"""
+function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
+    @assert i > 1
+    n = i - 1
+    # Capture as tuples for concrete closure types
+    gv_t = ntuple(k -> gv_fcts[k], n)
+    v_i = v_fcts[i]
+    gv_all = ntuple(k -> gv_fcts[k], n)
+    function multiple_outputs_α!(dα, α, p, t)
+        gv_buf = p
+        @inbounds for k = 1:n
+            gv_buf[k] = gv_t[k](t)
+        end
+        vi_t = v_i(t)
+        @inbounds for j = 1:n
+            coupling_sum = zero(ComplexF64)
+            for k = 1:(j-1)
+                coupling_sum += gv_buf[k]' * α[k]
+            end
+            dα[j] = -gv_buf[j] * (vi_t + coupling_sum) - 0.5 * abs2(gv_buf[j]) * α[j]
+        end
+    end
+    u0 = zeros(ComplexF64, n)
+    p = Vector{ComplexF64}(undef, n)
+    tspan = (T[1], T[end])
+    prob = ODEProblem(multiple_outputs_α!, u0, tspan, p)
+    sol_α = solve(prob, alg; kwargs...)
+    function v_i_eff(t)
+        α_t = sol_α(t)
+        result = v_i(t)
+        @inbounds for k = 1:n
+            result += gv_all[k](t)' * α_t[k]
+        end
+        return result
+    end
+    return v_i_eff
+end
+
+effective_output_mode(v_fcts, T, i; kwargs...) = effective_output_mode(
+    v_fcts,
+    [coupling_output(v_, T) for v_ in v_fcts],
+    T,
+    i;
+    kwargs...,
+)
+
+function effective_output_mode(
     v_data::AbstractVector{<:AbstractVector},
     gv_data::AbstractVector{<:AbstractVector},
     T::AbstractVector,
@@ -133,48 +170,81 @@ function v_eff(
 )
     v_fcts = [_mode_interp(v_, T) for v_ in v_data]
     gv_fcts = [_mode_interp(gv_, T) for gv_ in gv_data]
-    return v_eff(v_fcts, gv_fcts, T, i; alg, kwargs...)
+    return effective_output_mode(v_fcts, gv_fcts, T, i; alg, kwargs...)
 end
-v_eff(
+
+effective_output_mode(
     v_data::AbstractVector{<:AbstractVector},
     T::AbstractVector,
     i;
     alg = Tsit5(),
     kwargs...,
-) = v_eff(v_data, [v_to_gv(v_, T).(T) for v_ in v_data], T, i; alg, kwargs...)
+) = effective_output_mode(
+    v_data,
+    [coupling_output(v_, T).(T) for v_ in v_data],
+    T,
+    i;
+    alg,
+    kwargs...,
+)
+
+# ──────────────────────────────────────────────
+# effective_input_mode (was u_eff)
+# ──────────────────────────────────────────────
 
 """
-    u_eff(u_fcts, gu_fcts, T, i)
-    u_eff(u_fcts, T, i)
+    effective_input_mode(u_fcts, gu_fcts, T, i)
+    effective_input_mode(u_fcts, T, i)
 
-Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` for a system with multiple input modes, 
-due to the pulse distortion from the subsequent input cavities.  
-The returned mode function is the relevant one for ``g_{u_i}``. 
-The input modes in the list `u_fcts` need to be sorted starting with the first 
-input cavity before the system. 
+Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` for a system with multiple
+input modes, due to the pulse distortion from the subsequent input cavities.
+The input modes in `u_fcts` must be sorted starting with the first input cavity before the system.
 
-All kwargs are passed on to the ODE solver.   
+All kwargs are passed on to the ODE solver.
 """
-function u_eff(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
+function effective_input_mode(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
-    function multiple_inputs_α(dα, α, p, t) # only for i>1
-        for j = 1:(i-1)
-            dα[j] =
-                -gu_fcts[j](t) *
-                (u_fcts[i](t) - sum((gu_fcts[i](t))' * α[k] for k = 1:(j-1); init = 0.0)) +
-                0.5 * abs2(gu_fcts[j](t)) * α[j]
+    n = i - 1
+    # Capture as tuples for concrete closure types
+    gu_t = ntuple(k -> gu_fcts[k], n)
+    u_i = u_fcts[i]
+    gu_i = gu_fcts[i]
+    gu_all = ntuple(k -> gu_fcts[k], n)
+    function multiple_inputs_α!(dα, α, p, t)
+        gu_buf = p
+        @inbounds for k = 1:n
+            gu_buf[k] = gu_t[k](t)
         end
-        # 2 Typos in PRA2020-Kiilerich Eq.(A15): last term "-" → "+" and |g_ui|² → |g_uj|²
+        ui_t = u_i(t)
+        gui_t = gu_i(t)
+        @inbounds for j = 1:n
+            coupling_sum = zero(ComplexF64)
+            for k = 1:(j-1)
+                coupling_sum += gui_t' * α[k]
+            end
+            dα[j] = -gu_buf[j] * (ui_t - coupling_sum) + 0.5 * abs2(gu_buf[j]) * α[j]
+        end
     end
-    u0 = zeros(ComplexF64, i-1)
+    u0 = zeros(ComplexF64, n)
+    p = Vector{ComplexF64}(undef, n)
     tspan = (T[1], T[end])
-    prob = ODEProblem(multiple_inputs_α, u0, tspan)
+    prob = ODEProblem(multiple_inputs_α!, u0, tspan, p)
     sol_α = solve(prob, alg; kwargs...)
-    u_i_im1(t) = u_fcts[i](t) - sum((gu_fcts[k](t))' * sol_α(t)[k] for k = 1:(i-1))
-    return u_i_im1
+    function u_i_eff(t)
+        α_t = sol_α(t)
+        result = u_i(t)
+        @inbounds for k = 1:n
+            result -= gu_all[k](t)' * α_t[k]
+        end
+        return result
+    end
+    return u_i_eff
 end
-u_eff(u_fcts, T, i) = u_eff(u_fcts, [u_to_gu(u_, T) for u_ in u_fcts], T, i)
-function u_eff(
+
+effective_input_mode(u_fcts, T, i; kwargs...) =
+    effective_input_mode(u_fcts, [coupling_input(u_, T) for u_ in u_fcts], T, i; kwargs...)
+
+function effective_input_mode(
     u_data::AbstractVector{<:AbstractVector},
     gu_data::AbstractVector{<:AbstractVector},
     T::AbstractVector,
@@ -184,62 +254,64 @@ function u_eff(
 )
     u_fcts = [_mode_interp(u_, T) for u_ in u_data]
     gu_fcts = [_mode_interp(gu_, T) for gu_ in gu_data]
-    return u_eff(u_fcts, gu_fcts, T, i; alg, kwargs...)
+    return effective_input_mode(u_fcts, gu_fcts, T, i; alg, kwargs...)
 end
-u_eff(
+
+effective_input_mode(
     u_data::AbstractVector{<:AbstractVector},
     T::AbstractVector,
     i;
     alg = Tsit5(),
     kwargs...,
-) = u_eff(u_data, [u_to_gu(u_, T).(T) for u_ in u_data], T, i; alg, kwargs...)
+) = effective_input_mode(
+    u_data,
+    [coupling_input(u_, T).(T) for u_ in u_data],
+    T,
+    i;
+    alg,
+    kwargs...,
+)
 
-"""
-    uv_to_gout(u, v, T)
+# ──────────────────────────────────────────────
+# coupling_delay_out / coupling_delay_in
+# ──────────────────────────────────────────────
 
-Compute the out-coupling strength ``\\tilde g_{\\mathrm{out},u,v}(t)`` for a delay cavity
-that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
-Returns callable `t -> g_out(t)` based on samples on `T` with a linear interpolation.
-"""
-function uv_to_gout(u::Vector, v::Vector, T::Vector)
+function _compute_coupling_delay(num_mode::Vector, u::Vector, v::Vector, T::Vector)
     l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
-    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
-    gout_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        denom = abs(∫v2_t[i] - ∫u2_t[i])
-        if abs(sqrt(denom)) > _tol_div
-            gout_t[i] = u[i]' / sqrt(denom + _ϵu)
+    buf = Vector{Float64}(undef, l_T)
+    map!(abs2, buf, u)
+    ∫u2 = cumul_integrate(T, buf)
+    map!(abs2, buf, v)
+    ∫v2 = cumul_integrate(T, buf)
+    g = zeros(ComplexF64, l_T)
+    @inbounds for i = 2:l_T
+        d = abs(∫v2[i] - ∫u2[i])
+        if sqrt(abs(d)) > _tol_div
+            g[i] = num_mode[i]' / sqrt(d + _ϵ)
         end
     end
-    gout_int = LinearInterpolation(gout_t, T; extrapolation = _extrapolate)
-    return t -> gout_int(t)
+    return LinearInterpolation(g, T; extrapolation = _extrapolate)
 end
-uv_to_gout(u::Function, v::Function, T::Vector) = uv_to_gout(u.(T), v.(T), T)
-uv_to_gout(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
-    uv_to_gout(u.(T), v.(T), T)
 
 """
-    uv_to_gin(u, v, T)
+    coupling_delay_out(u, v, T)
 
-Compute the in-coupling strength ``\\tilde g_{\\mathrm{in},v,u}(t)`` for a delay cavity
-that absorbs an incoming pulse `v(t)` while simultaneously emitting the desired pulse `u(t)`.
-Returns callable `t -> g_in(t)` based on samples on `T` with a linear interpolation. 
+Compute the out-coupling strength for a delay cavity.
+Returns `LinearInterpolation` directly.
 """
-function uv_to_gin(u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    ∫u2_t = cumul_integrate(T, abs2.(u)) .+ 0im
-    ∫v2_t = cumul_integrate(T, abs2.(v)) .+ 0im
-    gin_t = zeros(ComplexF64, l_T)
-    for i = 2:l_T
-        denom = abs(∫v2_t[i] - ∫u2_t[i])
-        if abs(sqrt(denom)) > _tol_div
-            gin_t[i] = -v[i]' / sqrt(denom + _ϵv)
-        end
-    end
-    gin_int = LinearInterpolation(gin_t, T; extrapolation = _extrapolate)
-    return t -> gin_int(t)
-end
-uv_to_gin(u::Function, v::Function, T::Vector) = uv_to_gin(u.(T), v.(T), T)
-uv_to_gin(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
-    uv_to_gin(u.(T), v.(T), T)
+coupling_delay_out(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(u, u, v, T)
+coupling_delay_out(u::Function, v::Function, T::Vector) =
+    coupling_delay_out(u.(T), v.(T), T)
+coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
+    coupling_delay_out(u.(T), v.(T), T)
+
+"""
+    coupling_delay_in(u, v, T)
+
+Compute the in-coupling strength for a delay cavity.
+Returns `LinearInterpolation` directly.
+"""
+coupling_delay_in(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(-v, u, v, T)
+coupling_delay_in(u::Function, v::Function, T::Vector) = coupling_delay_in(u.(T), v.(T), T)
+coupling_delay_in(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
+    coupling_delay_in(u.(T), v.(T), T)

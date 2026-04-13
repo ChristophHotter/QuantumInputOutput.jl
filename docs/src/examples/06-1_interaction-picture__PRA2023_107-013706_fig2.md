@@ -33,25 +33,25 @@ av_sym = Destroy(h, :a_v, 3)
 gu, γ, gv = rnumbers("gu γ gv")
 
 # cascade the SLH elements
-G_u = SLH(1, gu * au_sym, 0)
+G_u = SLH(1, gu' * au_sym, 0)
 G_s = SLH(1, sqrt(γ) * σ12_sym, 0)
-G_v = SLH(1, gv * av_sym, 0)
+G_v = SLH(1, gv' * av_sym, 0)
 G_cas = ▷(G_u, G_s, G_v)
 nothing # hide
 ````
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
-H = get_hamiltonian(G_cas)
+H = hamiltonian(G_cas)
 ````
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
-L = get_lindblad(G_cas)[1]
+L = lindblad(G_cas)[1]
 ````
 
 Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$.
 
 ````@example 06-1_interaction-picture__PRA2023_107-013706_fig2
-H_uv = get_hamiltonian(▷(G_u, G_v))
+H_uv = hamiltonian(▷(G_u, G_v))
 ````
 
 To do so, we first subtract $H_{uv}$ from $H$ and then replace the virtual cavity operators $a_v$ and $a_u$ as described in the [Theory](@ref) section.
@@ -94,12 +94,12 @@ T_end = 12.0
 T = [0:0.005:1;] * T_end
 
 # virtual-cavity couplings for input/output modes
-gu_t = u_to_gu(u, T)
-gv_t = v_to_gv(u, T) # identical output mode v(t) = u(t)
+gu_t = coupling_input(u, T)
+gv_t = coupling_output(u, T) # identical output mode v(t) = u(t)
 
 # interaction-picture coefficient matrix M(t) for u ↔ v
-A_uv = interaction_picture_A_2modes(gu_t, gv_t)
-M_t = interaction_picture_M(A_uv, T)
+A_uv = coupling_matrix((gu_t, gv_t))
+M_t = solve_mode_evolution(A_uv, T)
 
 # constant and time-dependent parameters
 dict_p = Dict(γ => γ_)

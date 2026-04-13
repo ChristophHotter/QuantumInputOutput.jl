@@ -1,40 +1,47 @@
-# # Bi-Directional Waveguide via Feedback Reduction
-#
-# This example reconstructs the `N=2` bidirectional-waveguide model using the
-# SLH feedback reduction rule. The resulting Hamiltonian and Lindblad operators
-# are then used to simulate the transmitted and reflected intensities for a
-# coherent input pulse. 
+```@meta
+EditURL = "../../../examples/05-3_N-QDs_bidirectional-waveguide_feedback-reduction.jl"
+```
 
+# Bi-Directional Waveguide via Feedback Reduction
+
+This example reconstructs the `N=2` bidirectional-waveguide model using the
+SLH feedback reduction rule. The resulting Hamiltonian and Lindblad operators
+are then used to simulate the transmitted and reflected intensities for a
+coherent input pulse.
+
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
 using LinearAlgebra
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 N = 2
 
-## symbolic Hilbert space
+# symbolic Hilbert space
 ha(i) = NLevelSpace("a$(i)", 2)
 h = tensor([ha(i) for i = 1:N]...)
 
-## symbolic operators
+# symbolic operators
 σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
 
-## symbolic parameters
+# symbolic parameters
 γR(i) = rnumber("γ^{($(i))}_R")
 γL(i) = rnumber("γ^{($(i))}_L")
 Δ(i) = rnumber("Δ_{$(i)}")
 ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}")
 Ein = rnumber("E_{in}")
 nothing # hide
+````
 
-# Each quantum dot is treated as a two-port component: port 1 couples to the
-# right-moving field and port 2 couples to the left-moving field. We concatenate
-# the source, the two dots, and the phase shifter, and then eliminate the
-# internal waveguide links with six feedback reductions.
+Each quantum dot is treated as a two-port component: port 1 couples to the
+right-moving field and port 2 couples to the left-moving field. We concatenate
+the source, the two dots, and the phase shifter, and then eliminate the
+internal waveguide links with six feedback reductions.
 
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 I2 = Matrix{Int}(I, 2, 2)
 G_in = SLH(I2, [Ein, 0], 0)
 G_qd(i) = SLH(I2, [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)], -Δ(i) * σ(i, 2, 2))
@@ -43,19 +50,21 @@ G_phase(i, j) = SLH([exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))], [0, 0], 0)
 G_unc = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
 G_t = feedback(G_unc, 1 => 3, 3 => 5, 5 => 7, 8 => 6, 6 => 4, 4 => 2)
 nothing # hide
+````
 
-# The reduced model has two external ports. In the remaining port order, the
-# first Lindblad operator corresponds to the reflected left-moving output and the
-# second one to the transmitted right-moving output.
+The reduced model has two external ports. In the remaining port order, the
+first Lindblad operator corresponds to the reflected left-moving output and the
+second one to the transmitted right-moving output.
 
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 H = hamiltonian(G_t)
 L = lindblad(G_t)
 L_L = L[1]
 L_R = L[2]
 nothing # hide
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 γ_ = 1.0
 β = 0.9
 γRn = fill(γ_ * β / 2, N)
@@ -81,9 +90,9 @@ p_num = [γRn; γLn; Δn; ϕn]
 dict_p = Dict(p_sym .=> p_num)
 dict_p_t = Dict(Ein => Ein_t)
 nothing # hide
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 ba = NLevelBasis(2)
 b = tensor([ba for _ = 1:N]...)
 
@@ -100,16 +109,16 @@ function input_output(t, ρ)
     return Ht, J, dagger.(J)
 end
 nothing # hide
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 T = collect(0.0:0.005:1.0) .* Tend
 ψ0 = tensor([nlevelstate(ba, 1) for _ = 1:N]...)
 t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 I_R = zeros(length(t))
 I_L = zeros(length(t))
 
@@ -120,9 +129,9 @@ for (i, ti) in enumerate(t)
     I_L[i] = real(expect(LL' * LL, ρt[i]))
 end
 nothing # hide
+````
 
-#
-
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 p = plot(t, I_R; label = "Transmission")
 plot!(p, t, I_L; label = "Reflection")
 plot!(p, t, abs2.(Ein_t.(t)); color = :grey, ls = :dash, label = "Input")
@@ -135,11 +144,13 @@ plot!(
     size = (500, 320),
 )
 p
+````
 
-# ## Package versions
+## Package versions
 
-# These results were obtained using the following versions:
+These results were obtained using the following versions:
 
+````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 using InteractiveUtils
 versioninfo()
 
@@ -148,3 +159,9 @@ Pkg.status(
     ["QuantumInputOutput", "SecondQuantizedAlgebra", "QuantumOptics", "Plots"],
     mode = PKGMODE_MANIFEST,
 )
+````
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+

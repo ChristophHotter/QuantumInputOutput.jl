@@ -5,6 +5,7 @@ using QuantumOptics
 using QuantumOpticsBase
 using SymbolicUtils
 using LinearAlgebra
+using FunctionWrappers
 
 const SUITE = BenchmarkGroup()
 

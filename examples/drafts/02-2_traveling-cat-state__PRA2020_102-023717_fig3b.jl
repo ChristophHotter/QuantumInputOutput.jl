@@ -37,8 +37,8 @@ nothing # hide
 H_s = p / 2 * (a'^2 + a^2) - K / 2 * (a'^2) * (a^2) + Δ * a' * a
 G_s = SLH(1, √(γ) * a, H_s)
 
-H = get_hamiltonian(G_s)
-L = get_lindblad(G_s)[1]
+H = hamiltonian(G_s)
+L = lindblad(G_s)[1]
 nothing # hide
 
 # Next, we define the numerical parameters from Sec. II.D. The classical pump
@@ -103,7 +103,7 @@ nothing # hide
 
 a_qo = destroy(bc)
 Ls(t) = √(γ_) * a_qo
-g1_m = two_time_corr_matrix(T, ρt_1, input_output_1, Ls)
+g1_m = correlation_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
@@ -126,10 +126,10 @@ G_s2 = SLH(1, √(γ) * a2, H_s2)
 G_v = SLH(1, gv * av, 0)
 G = G_s2 ▷ G_v
 
-H_2 = get_hamiltonian(G)
-L_2 = get_lindblad(G)[1]
+H_2 = hamiltonian(G)
+L_2 = lindblad(G)[1]
 
-gv_t = v_to_gv(v_mode, T)
+gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict(p => p_t, gv => gv_t)
 
 bv = FockBasis(n_cut)
