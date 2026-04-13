@@ -88,12 +88,7 @@ end
     SLH{N, ST, LT, HT}
 
 SLH triple with scattering matrix `S`, Lindblad vector `L`, and Hamiltonian `H`.
-`N` is the number of ports (channels). Uses `SMatrix` and `SVector` from StaticArrays
-for stack-allocated, type-stable storage.
-
-Works for both symbolic (SecondQuantizedAlgebra) and numeric (QuantumOptics) operators.
-Time-dependent elements are wrapped with `FunctionWrapper{ConcreteOpType, Tuple{Float64}}`
-for concrete types.
+`S` and `L` can also be vectors of scattering matrices and Lindblad terms.
 
 See also [`▷`](@ref), [`⊞`](@ref), [`feedback`](@ref)
 """
@@ -242,7 +237,7 @@ end
 
 # ──────────────────────────────────────────────
 # Cascade: ▷
-# [C2 fix]: Val(N*N) for ntuple in S2_adj construction
+# Val(N*N) for ntuple in S2_adj construction
 # ──────────────────────────────────────────────
 
 """
@@ -340,8 +335,8 @@ concatenate(args...) = ⊞(args...)
 
 # ──────────────────────────────────────────────
 # Feedback reduction
-# [C1 fix]: dispatch through Val(N-1) so M is a type parameter
-# [C2 fix]: all ntuple calls use Val
+# dispatch through Val(N-1) so M is a type parameter
+# all ntuple calls use Val
 # ──────────────────────────────────────────────
 
 function _drop_row_col(S::SMatrix{N,N}, row::Int, col::Int, ::Val{M}) where {N,M}

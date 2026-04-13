@@ -11,9 +11,17 @@ _as_time_function(x) = x  # anything callable passes through
     coupling_matrix(gs::Tuple)
 
 Build the antisymmetric coupling coefficient matrix `A(t)` from a tuple of
-coupling functions/constants `gs`. Returns a closure `t -> SMatrix{N,N,ComplexF64}`.
+coupling functions/constants `gs = (g_1, ..., g_N)`. Returns a closure `t -> A(t)`.
 
-Constructs `SMatrix` directly via `ntuple` for zero-allocation construction.
+```math
+A_{ij}(t) = \\frac{1}{2} \\begin{cases}
+0 & i = j \\\\
+g_i(t)\\, g_j^*(t) & i < j \\\\
+-g_i^*(t)\\, g_j(t) & i > j
+\\end{cases}
+```
+
+All couplings may be time-dependent or constant.
 """
 function coupling_matrix(gs::NTuple{N}) where {N}
     gfs = map(_as_time_function, gs)
@@ -40,9 +48,9 @@ coupling_matrix(g1, g2, gs...) = coupling_matrix((g1, g2, gs...))
     solve_mode_evolution(A::Function, T; alg=Tsit5(), kwargs...)
 
 Solve the interaction-picture coefficient-matrix ODE `dM/dt = A(t) M(t)` with `M(0) = I`.
-Uses in-place ODE formulation (`mul!`) for zero allocations per step.
-
 Returns the ODE solution directly (callable as `sol(t)`).
+
+All kwargs are passed on to the ODE solver.
 """
 function solve_mode_evolution(A::Function, T; alg = Tsit5(), kwargs...)
     T0 = T[1]
@@ -61,7 +69,20 @@ end
     solve_mode_evolution_symmetric(u, T)
 
 Analytic interaction-picture coefficient matrix for two modes when `u(t) = v(t)`.
-Returns `t -> SMatrix{2,2,Float64}`.
+Returns a callable `t -> M(t)` where
+
+```math
+M(t) = \\begin{bmatrix}
+\\cos \\theta(t) & -\\sin \\theta(t) \\\\
+\\sin \\theta(t) & \\cos \\theta(t)
+\\end{bmatrix},
+```
+
+where
+
+```math
+\\sin^2 \\theta(t) = \\int_0^t |u(t')|^2\\,dt'.
+```
 """
 function solve_mode_evolution_symmetric(u, T)
     u_vals = u isa Function ? u.(T) : u

@@ -109,8 +109,11 @@ end
     effective_output_mode(v_fcts, gv_fcts, T, i)
     effective_output_mode(v_fcts, T, i)
 
-Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` accounting for pulse
-distortion from preceding output cavities.
+Compute the effective output mode ``v_i^{\\mathrm{eff}}(t)`` for a system with multiple
+output modes, due to the pulse distortion from the preceding output cavities.
+The output modes in `v_fcts` must be sorted starting with the first output cavity after the system.
+
+All kwargs are passed on to the ODE solver.
 """
 function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
@@ -193,8 +196,11 @@ effective_output_mode(
     effective_input_mode(u_fcts, gu_fcts, T, i)
     effective_input_mode(u_fcts, T, i)
 
-Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` accounting for pulse
-distortion from subsequent input cavities.
+Compute the effective input mode ``u_i^{\\mathrm{eff}}(t)`` for a system with multiple
+input modes, due to the pulse distortion from the subsequent input cavities.
+The input modes in `u_fcts` must be sorted starting with the first input cavity before the system.
+
+All kwargs are passed on to the ODE solver.
 """
 function effective_input_mode(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1

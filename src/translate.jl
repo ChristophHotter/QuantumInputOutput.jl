@@ -13,7 +13,7 @@ _translate_numeric_raw(op, b; level_map = nothing, operators = Dict(), op_type =
 _translate_one(b, operators, op_type) =
     isempty(operators) ? op_type(one(b)) : op_type(one(basis(first(values(operators)))))
 
-# [I4+I5 fix]: simplified, no applicable(), values are Number → wrap, anything else → pass through
+# simplified, no applicable(), values are Number → wrap, anything else → pass through
 function _normalize_time_parameter(time_parameter)
     if isempty(time_parameter)
         return time_parameter
@@ -26,7 +26,7 @@ function _normalize_time_parameter(time_parameter)
     return out
 end
 
-# [C5 fix]: use Tuple + map instead of generator splat to avoid per-call allocation
+# use Tuple + map instead of generator splat to avoid per-call allocation
 function _translate_prefactor(arg_c, time_parameter)
     keys_ = collect(keys(time_parameter))
     values_tuple = Tuple(values(time_parameter))
@@ -42,8 +42,14 @@ end
     translate_qo(op, b::QuantumOpticsBase.Basis; parameter=Dict(), time_parameter=Dict(),
               level_map=nothing, operators=Dict(), op_type=sparse)
 
-Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator.
-Time-dependent parameters are normalized ONCE at this entry point.
+Translate a symbolic operator `op` into a numeric QuantumOptics.jl operator with the corresponding basis `b`.
+The dictionary `parameter` substitutes symbolic parameters with numbers. Time-dependent functions can be provide
+with the dictionary `time_parameter`.
+If `time_parameter` is non-empty, the result is a time-dependent function `t -> op(t)`.
+The kwarg `level_map=nothing` is used to provide the names of levels for `transition` operators.
+The operator type which should be returned can be set with the kwarg `op_type=sparse` and
+a list of user-defined operators (e.g. on a different basis than `b`) can be provided with the
+dictionary `operators=Dict()`. These operators will then be used to replace the symbolic expressions.
 """
 function translate_qo(
     op,
