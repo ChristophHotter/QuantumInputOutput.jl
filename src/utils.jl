@@ -25,6 +25,6 @@ end
 
 function _extend_with_adjoint(dict::Dict)
     pairs_ = collect(dict)
-    adj_pairs = [SQA.adjoint(k) => SQA.adjoint(v) for (k, v) in pairs_]
+    adj_pairs = [Base.adjoint(k) => Base.adjoint(v) for (k, v) in pairs_]
     return Dict(vcat(pairs_, adj_pairs))
 end
