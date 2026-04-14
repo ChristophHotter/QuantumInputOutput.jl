@@ -28,10 +28,10 @@ if isempty(VERSION.prerelease)
     end
 end
 
-# @testset "Concretely typed" begin
+@testset "Concretely typed" begin
     import QuantumInputOutput as QIO
     using CheckConcreteStructs
 
-    all_concrete(QIO.SLH) # TODO
+    all_concrete(QIO.SLH(1, 0, 0)) # TODO
     all_concrete(QIO.Gaussian)
-# end
+end
