@@ -1,4 +1,4 @@
-using StaticArrays
+using StaticArrays: StaticArrays, SMatrix, SVector
 using FunctionWrappers: FunctionWrapper
 
 # NOTE: FunctionWrapper is callable but NOT <: Function.
@@ -451,6 +451,3 @@ function _feedback_maps(n::Int, connections)
     end
     return mapped
 end
-
-Base.length(h::SecondQuantizedAlgebra.ConcreteHilbertSpace) = 1
-Base.length(h::ProductSpace) = length(h.spaces)
