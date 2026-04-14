@@ -32,6 +32,6 @@ end
     import QuantumInputOutput as QIO
     using CheckConcreteStructs
 
-    all_concrete(QIO.SLH(1, 0, 0)) # TODO
+    all_concrete(typeof(QIO.SLH(1, 0, 0))) # TODO
     all_concrete(QIO.Gaussian)
 end
