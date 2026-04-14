@@ -3,9 +3,9 @@ using QuantumInputOutput, Test
 @testset "best practices" begin
     using Aqua
 
-    Aqua.test_ambiguities([QuantumInputOutput]; broken=false)
-    Aqua.test_piracies(QuantumInputOutput; broken=false)
-    Aqua.test_all(QuantumInputOutput; ambiguities=false, piracies=false)
+    Aqua.test_ambiguities([QuantumInputOutput]; broken = false)
+    Aqua.test_piracies(QuantumInputOutput; broken = false)
+    Aqua.test_all(QuantumInputOutput; ambiguities = false, piracies = false)
 end
 
 @testset "ExplicitImports" begin
@@ -14,7 +14,7 @@ end
     @test check_no_implicit_imports(QuantumInputOutput) == nothing
     @test check_all_explicit_imports_via_owners(QuantumInputOutput) == nothing
     @test check_no_stale_explicit_imports(QuantumInputOutput) == nothing
-    @test check_all_qualified_accesses_via_owners(QuantumInputOutput) == nothing 
+    @test check_all_qualified_accesses_via_owners(QuantumInputOutput) == nothing
     @test check_no_self_qualified_accesses(QuantumInputOutput) == nothing
 end
 
