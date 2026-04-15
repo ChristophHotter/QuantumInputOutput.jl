@@ -22,16 +22,12 @@
   - [ ] pulse delay 
   - [ ] better method for u_eff and v_eff (Victor)
 
-- [x] Formatter/SpellCheck
-
-- [ ] JET
-
-- [ ] Aqua
-
+- [] docu
+  - u_eff and v_eff theory 
+  - development status
 
 ## Additional TODOs
 
-- [ ] directly use gu(t) without substitution? (think about iscall)
 - [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
 - [ ] rename translate_qo (to to_numerics ?)
 
@@ -91,3 +87,7 @@
   - [x] interaction picture 
     - [x] general expression for A(t)
   - [x] two_time_corr_matrix for Ls const (see example 02-2)
+
+- [x] Formatter/SpellCheck
+- [x] JET
+- [x] Aqua
