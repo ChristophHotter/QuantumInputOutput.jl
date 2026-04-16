@@ -5,7 +5,7 @@ It combines a symbolic layer for the SLH formalism based on [SecondQuantizedAlge
 
 ## Key Features
 
-- SLH modeling with cascade (`▷`) and concatenate (`⊞`) rules
+- SLH modeling with cascade (`▷`), concatenate (`⊞`), and feedback reduction rules
 - Symbolic-to-numeric translation (including time-dependent couplings)
 - Virtual-cavity tools for temporal input and output modes
 - Two-time correlation functions and output-mode extraction
