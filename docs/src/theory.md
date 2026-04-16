@@ -46,7 +46,43 @@ $v(t)$, the coupling
 g_v(t) = -\frac{v^*(t)}{\sqrt{\int_0^t dt' \,|v(t')|^2}}
 ```
 
-absorbs that mode into the virtual output cavity. These expressions make it possible to treat input and output pulses as **single oscillator modes** in a cascaded network. Note, that this formalism can be extended to multiple input and output modes with modified couplings for each additional mode, see e.g. [A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717). 
+absorbs that mode into the virtual output cavity. These expressions make it possible to treat input and output pulses as **single oscillator modes** in a cascaded network. 
+
+For multiple input and output modes, one first constructs effective modes
+``u_i^{\mathrm{eff}}(t)`` and ``v_i^{\mathrm{eff}}(t)`` (which include distortions from
+the other virtual cavities). In recursive form (for ``j<i``):
+
+```math
+\dot\alpha_{v_i}^{(j)}(t) =
+-g_{v_j}(t)\,v_i^{(j-1)}(t)
++ \frac{1}{2}|g_{v_j}(t)|^2\alpha_{v_i}^{(j)}(t),
+\qquad
+v_i^{(j)}(t) = v_i^{(j-1)}(t) + g_{v_j}^*(t)\alpha_{v_i}^{(j)}(t),
+```
+
+```math
+\dot\alpha_{u_i}^{(j)}(t) =
+-g_{u_j}(t)\,u_i^{(j-1)}(t)
++ \frac{1}{2}|g_{u_j}(t)|^2\alpha_{u_i}^{(j)}(t),
+\qquad
+u_i^{(j)}(t) = u_i^{(j-1)}(t) - g_{u_j}^*(t)\alpha_{u_i}^{(j)}(t).
+```
+
+With ``u_i^{(0)}(t)=u_i(t)`` and ``v_i^{(0)}(t)=v_i(t)``, the effective modes are
+``u_i^{\mathrm{eff}}(t)=u_i^{(i-1)}(t)`` and ``v_i^{\mathrm{eff}}(t)=v_i^{(i-1)}(t)``.
+The corresponding couplings then follow from the single-mode expressions:
+
+```math
+g_{u_i}^{\mathrm{eff}}(t) =
+\frac{\big(u_i^{\mathrm{eff}}(t)\big)^*}{\sqrt{1 - \int_0^t dt' \,|u_i^{\mathrm{eff}}(t')|^2}},
+\qquad
+g_{v_i}^{\mathrm{eff}}(t) =
+-\frac{\big(v_i^{\mathrm{eff}}(t)\big)^*}{\sqrt{\int_0^t dt' \,|v_i^{\mathrm{eff}}(t')|^2}}.
+```
+
+This is the multi-mode extension used by [`effective_input_mode`](@ref) and
+[`effective_output_mode`](@ref), see e.g.
+[A. Kiilerich, et al., Phys. Rev. A 102, 023717 (2020)](https://doi.org/10.1103/PhysRevA.102.023717).
 
 ## SLH Networks for Cascaded Pulses
 
