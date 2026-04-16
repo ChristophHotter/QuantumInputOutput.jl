@@ -1,15 +1,9 @@
 # MAIN TODO - LIST:
 
-- [ ] clean up 
-  - [x] rm QC.jl 
-  - [ ] types
-  - [ ] rename translate_qo (to to_numerics ?)
-  - [ ] speed up derivation
-
 - [ ] examples
   - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
-  - [ ] SUPER example (Johannes)
-  - [ ] pulse delay advanced example (Victor paper)
+  - [ ] SUPER example 
+  - [ ] pulse delay advanced example
   - [x] feedback reduction (see SLH paper)  
   - [ ] cumulants correlation matrix modes 
   - [ ] H_loop in example 09-1 is not simplified correctly on the docu (locally it is fine; pkg versions)
@@ -25,30 +19,24 @@
   - [ ] u_Gaussian, v_Gaussian; slower?
 
 - [ ] more functionalities
-  - [x] feedback reduction
+  - [ ] pulse delay 
   - [ ] better method for u_eff and v_eff (Victor)
-  - [ ] interaction picture (Victor paper)
-    - [ ] general expression for A(t)
-  - [ ] pulse delay (Victor paper)
-  - [x] two_time_corr_matrix for Ls const (see example 02-2)
 
-- [x] Formatter/SpellCheck
-
-- [ ] JET
-
-- [ ] Aqua
-
+- [] docu
+  - u_eff and v_eff theory 
+  - development status
 
 ## Additional TODOs
 
-- [ ] SLH more specific types
-  - [ ] AbstractVector{<:QTerm}
-- [ ] directly use gu(t) without substitution? (think about iscall)
 - [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
+- [ ] rename translate_qo (to to_numerics ?)
 
 
 
 ## DONE
+- [x] rm QC.jl 
+- [x] types
+- [x] speed up derivation
 
 - [x] Translate function: 
     - [x] Try TimeDependentSums again (after solving the gu(t) mistake/problem) [~factor 2 slower!]
@@ -95,3 +83,11 @@
     - [x] arg u not needed?! 
   - [x] analytic expression for u=v
   - [x] kwarg for adjoint replacement in substitute_operators
+  - [x] feedback reduction
+  - [x] interaction picture 
+    - [x] general expression for A(t)
+  - [x] two_time_corr_matrix for Ls const (see example 02-2)
+
+- [x] Formatter/SpellCheck
+- [x] JET
+- [x] Aqua

@@ -1,16 +1,3 @@
-# move to SQA
-function numeric_average(op::SQA.QNumber, state::Vector; kwargs...)
-    op_num = sparse(to_numeric(op, state[1]; kwargs...))
-    return QuantumOpticsBase.expect(op_num, state)
-end
-function numeric_average(avg::Average, state::Vector; kwargs...)
-    op = undo_average(avg)
-    return numeric_average(op, state; kwargs...)
-end
-
-expect(avg::Average, state; kwargs...) = numeric_average(avg, state; kwargs...)
-expect(op::SQA.QNumber, state; kwargs...) = numeric_average(op, state; kwargs...)
-
 """
     substitute_operators(op, dict::Dict; replace_adjoint=true)
 
@@ -38,6 +25,6 @@ end
 
 function _extend_with_adjoint(dict::Dict)
     pairs_ = collect(dict)
-    adj_pairs = [SQA.adjoint(k) => SQA.adjoint(v) for (k, v) in pairs_]
+    adj_pairs = [Base.adjoint(k) => Base.adjoint(v) for (k, v) in pairs_]
     return Dict(vcat(pairs_, adj_pairs))
 end
