@@ -12,7 +12,7 @@ The typical workflow is:
 
 ## Key Features
 
-- SLH modeling with cascade and concatenate rules
+- SLH modeling with cascade, concatenate, and feedback reduction rules
 - Symbolic-to-numeric translation (including time-dependent couplings)
 - Utilities for pulse modes, virtual cavities, interaction picture and pulse delay
 - Two-time correlation functions and output-mode extraction

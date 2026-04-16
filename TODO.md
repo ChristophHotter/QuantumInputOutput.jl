@@ -1,12 +1,12 @@
-# MAIN TODO - LIST:
+# TODOs
 
 - [ ] examples
-  - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
   - [ ] SUPER example 
   - [ ] pulse delay advanced example
   - [x] feedback reduction (see SLH paper)  
   - [ ] cumulants correlation matrix modes 
   - [ ] H_loop in example 09-1 is not simplified correctly on the docu (locally it is fine; pkg versions)
+  - [ ] Multi-mode Dicke state superradiance (https://journals.aps.org/pra/abstract/10.1103/PhysRevA.103.033713)
   
 - [ ] create more tests (cov +80%)
   - [x] simple full example
@@ -23,12 +23,12 @@
   - [ ] better method for u_eff and v_eff (Victor)
 
 - [] docu
-  - u_eff and v_eff theory 
-  - development status
+  - [x] u_eff and v_eff theory 
+  - [ ] development status
 
 ## Additional TODOs
 
-- [ ] u_eff and v_eff equation (PRA 2020, appendix) theory,  API, implementation
+- [x] u_eff and v_eff equation (PRA 2020, appendix) theory, API, implementation
 - [ ] rename translate_qo (to to_numerics ?)
 
 

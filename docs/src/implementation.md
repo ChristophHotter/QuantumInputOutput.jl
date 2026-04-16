@@ -84,7 +84,21 @@ gu_t = coupling_input(u, T)
 gv_t = coupling_output(u, T)
 ```
 
-For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. The effective input mode ``u_i^{\mathrm{eff}}(t)`` and output mode ``v_i^{\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`effective_input_mode`](@ref) and [`effective_output_mode`](@ref).  
+For multiple input/output modes the distortion of the pulse due to the subsequent/preceding virtual cavities needs to be taken into account. The effective input mode ``u_i^{\mathrm{eff}}(t)`` and output mode ``v_i^{\mathrm{eff}}(t)`` for the virtual cavity `i` are constructed via [`effective_input_mode`](@ref) and [`effective_output_mode`](@ref). We first compute `u_i_eff` / `v_i_eff` and then pass them to [`coupling_input`](@ref) / [`coupling_output`](@ref).  
+
+```julia
+# Two input modes and two output modes on the same time grid T
+u_modes = [u1_mode, u2_mode]
+v_modes = [v1_mode, v2_mode]
+
+# Effective modes for the second virtual cavities: u_2^(1), v_2^(1)
+u2_eff = effective_input_mode(u_modes, T, 2)   # = u_2^eff = u_2^(2-1)
+v2_eff = effective_output_mode(v_modes, T, 2)  # = v_2^eff = v_2^(2-1)
+
+# Couplings from effective modes
+gu2_eff = coupling_input(u2_eff, T)
+gv2_eff = coupling_output(v2_eff, T)
+```
 
 ## Output modes and the correlation function
 
