@@ -136,6 +136,39 @@ using Test
         @test sum(abs.((F_multi(0.4) - expected).data)) < 1e-8
     end
 
+    @testset "translate_qo vector overload" begin
+        ops = [a, Δ, a * E]
+        translated_ops = translate_qo(
+            ops,
+            bc1;
+            parameter = dict_p1,
+            time_parameter = dict_p_t2,
+            operators = ops_dict,
+        )
+        @test length(translated_ops) == length(ops)
+        @test all(op -> op isa Function, translated_ops)
+        @test isequal(translated_ops[1](0.3), a_QO)
+        @test isequal(translated_ops[2](0.3), one(bc1) * Δn)
+        @test isequal(translated_ops[3](0.3), a_QO * E_t(0.3))
+    end
+
+    @testset "translate_qo SLH overload" begin
+        G_sym = SLH(1, [sqrt(κ_R) * a * E], Δ * a' * a)
+        H_QO, L_QO = translate_qo(
+            G_sym,
+            bc1;
+            parameter = dict_p1,
+            time_parameter = dict_p_t2,
+            operators = ops_dict,
+        )
+
+        @test H_QO isa Function
+        @test length(L_QO) == 1
+        @test L_QO[1] isa Function
+        @test sum(abs.((H_QO(0.4) - dense(Δn * dagger(a_QO) * a_QO)).data)) < 1e-8
+        @test sum(abs.((L_QO[1](0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) < 1e-8
+    end
+
     @testset "substitute_operators_qmul" begin
         h2 = FockSpace(:h2)
         a = Destroy(h2, :a, 1)
@@ -151,6 +184,8 @@ using Test
 
         @test isequal(simplify(y - (a_1*a_1*c1 + a_1*c3)), 0)
         @test isequal(simplify(y2 - (a_2*a_2*c1 + a_2*c3)), 0)
+
+        @test substitute_operators(5, dict_sub) == 5
     end
 
     @testset "substitute_operators adjoint in args_nc" begin
