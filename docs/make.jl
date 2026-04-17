@@ -37,7 +37,7 @@ makedocs(
     sitename = "QuantumInputOutput.jl",
     modules = QuantumInputOutput,
     format = Documenter.HTML(;
-        canonical = "https://ChristophHotter.github.io/QuantumInputOutput.jl",
+        canonical = "https://qojulia.github.io/QuantumInputOutput.jl",
     ),
     pages = pages,
     clean = true,
@@ -49,7 +49,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/ChristophHotter/QuantumInputOutput.jl",
+    repo = "github.com/qojulia/QuantumInputOutput.jl",
     devbranch = "main",
     target = "build",
     branch = "gh-pages",

@@ -13,8 +13,8 @@ It combines a symbolic layer for the SLH formalism based on [SecondQuantizedAlge
 
 ## Development status
 
-[![Tests](https://github.com/ChristophHotter/QuantumInputOutput.jl/actions/workflows/Tests.yml/badge.svg)](https://github.com/ChristophHotter/QuantumInputOutput.jl/actions/workflows/Tests.yml)
-[![Documentation dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://christophhotter.github.io/QuantumInputOutput.jl/dev/)
+[![Tests](https://github.com/qojulia/QuantumInputOutput.jl/actions/workflows/Tests.yml/badge.svg)](https://github.com/qojulia/QuantumInputOutput.jl/actions/workflows/Tests.yml)
+[![Documentation dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://qojulia.github.io/QuantumInputOutput.jl/dev/)
 
 Note that **QuantumInputOutput.jl** is still at an early stage of development.
 
