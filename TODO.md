@@ -11,20 +11,15 @@
 - [ ] create more tests (cov +80%)
   - [x] simple full example
   - [ ] QC.jl: comparison cavity drive with full quantum (example)
-  - [ ] translate.jl
-  - [ ] utils.jl
-  - [ ] codecov
+  - [x] translate.jl
+  - [x] utils.jl
+  - [x] codecov
   - [ ] interaction picture: test general A(t)
   - [ ] cumulants: comparison example 04-1 and 04-2
-  - [ ] u_Gaussian, v_Gaussian; slower?
 
 - [ ] more functionalities
   - [ ] pulse delay 
   - [ ] better method for u_eff and v_eff (Victor)
-
-- [] docu
-  - [x] u_eff and v_eff theory 
-  - [ ] development status
 
 ## Additional TODOs
 
@@ -91,3 +86,7 @@
 - [x] Formatter/SpellCheck
 - [x] JET
 - [x] Aqua
+  
+- [x] docu
+  - [x] u_eff and v_eff theory 
+  - [x] development status
