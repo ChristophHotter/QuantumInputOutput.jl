@@ -4,7 +4,7 @@ using QuantumOptics
 using SymbolicUtils
 using FunctionWrappers: FunctionWrapper
 using StaticArrays
-using Test 
+using Test
 
 @testset "SLH" begin
     hu1 = FockSpace(:u1)
