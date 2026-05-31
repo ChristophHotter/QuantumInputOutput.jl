@@ -80,6 +80,17 @@ using Test
     a_QO2 = destroy(bc1) ⊗ one(ba)
     σ_QO(i, j) = to_numeric(σ(i, j), b)
 
+    @test isequal(
+        a_QO2'σ_QO(1, 2),
+        dense(
+            translate_qo(
+                a'σ(1, 2),
+                b;
+                operators = Dict([a, σ(1, 2)] .=> [a_QO2, σ_QO(1, 2)]),
+                adjoint_ops = true,
+            ),
+        ),
+    )
     @test isequal(a_QO2, dense(to_numeric(a, b)))
     @test isequal(translate_qo(Δ, b; parameter = dict_p1), one(b)*Δn)
     F3 = translate_qo(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
