@@ -17,7 +17,7 @@ using Plots
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-@rnumbers E κ_L κ_R Δ g γ
+@variables E::Real κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
 Natoms = 2
 
 hc = FockSpace(:cavity)

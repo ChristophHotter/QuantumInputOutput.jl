@@ -26,7 +26,7 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 2)
 
 # symbolic parameters
-@rnumbers gu gv r t
+@variables gu::Real gv::Real r::Real t::Real
 nothing # hide
 ````
 

@@ -17,6 +17,9 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 
+[sources]
+SecondQuantizedAlgebra = {path = "/home/christoph/git/SecondQuantizedAlgebra.jl"}
+
 [compat]
 Aqua = "0.8"
 CheckConcreteStructs = "0.1"
@@ -29,14 +32,14 @@ LinearAlgebra = "1.10"
 ModelingToolkit = "10"
 NumericalIntegration = "0.3"
 OrdinaryDiffEq = "6"
-QuantumCumulants = "0.4"
+QuantumCumulants = "0.5"
 QuantumOptics = "1"
 QuantumOpticsBase = "0.4, 0.5"
-SecondQuantizedAlgebra = "0.4.5"
+SecondQuantizedAlgebra = "0.5"
 SpecialFunctions = "2"
 StaticArrays = "1"
-Symbolics = "6"
-SymbolicUtils = "3.6"
+Symbolics = "7"
+SymbolicUtils = "4.30"
 Test = "1.10"
 julia = "1.10"
 

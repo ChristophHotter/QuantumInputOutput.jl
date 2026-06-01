@@ -8,7 +8,7 @@ const _Callable = Union{Function,FunctionWrapper}
 # Dispatch helpers: symbolic vs numeric
 # ──────────────────────────────────────────────
 
-_adj(x::SQA.QNumber) = SQA._adjoint(x)
+_adj(x::Union{SQA.QField, BasicSymbolic, Symbolics.Num, Number}) = SQA.qadjoint(x)
 _adj(f::_Callable) = t -> adjoint(f(t))
 _adj(x) = adjoint(x)
 
@@ -25,6 +25,8 @@ _to_func(x) = _is_time_dep(x) ? x : (t -> x)
 _add(f::_Callable, g::_Callable) = t -> f(t) + g(t)
 _add(f::_Callable, x) = iszero(x) ? f : (t -> f(t) + x)
 _add(x, f::_Callable) = iszero(x) ? f : (t -> x + f(t))
+_add(x::Union{BasicSymbolic,Symbolics.Num}, y::SQA.QAdd) = _add(x * one(y), y)
+_add(x::SQA.QAdd, y::Union{BasicSymbolic,Symbolics.Num}) = _add(x, y * one(x))
 _add(x, y) = x + y
 
 _mul(f::_Callable, g::_Callable) = t -> f(t) * g(t)

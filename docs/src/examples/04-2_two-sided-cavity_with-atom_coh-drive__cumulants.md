@@ -10,14 +10,14 @@ Here we show how to solve the dynamics of the example `Two-sided Cavity with Ato
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumCumulants
-using ModelingToolkit
+using ModelingToolkitBase: @named, unknowns
 using OrdinaryDiffEq
 using QuantumOpticsBase
 using Plots
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-@rnumbers E κ_L κ_R Δ g γ
+@variables E::Real κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
 Natoms = 2
 
 hc = FockSpace(:cavity)

@@ -5,6 +5,7 @@
 # input mode $u(t)$.
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
@@ -21,7 +22,7 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 2)
 
 ## symbolic parameters
-@rnumbers gu gv r t
+@variables gu::Real gv::Real r::Real t::Real
 nothing # hide
 
 # In our example, we only have one input mode and one output mode, however, the beam splitter has two input and two output ports. 

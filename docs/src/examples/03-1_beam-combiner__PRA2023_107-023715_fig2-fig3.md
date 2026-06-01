@@ -35,8 +35,8 @@ au1 = Destroy(h, :au_1, 2)
 av1 = Destroy(h, :av_2, 4)
 
 # symbolic parameters
-@rnumbers γ Δ
-gu1, gu2, gv1 = cnumbers("gu_1 gu_2 gv_1");
+@variables γ::Real Δ::Real
+gu1, gu2, gv1 = complex_vars("gu_1 gu_2 gv_1");
 nothing #hide
 ````
 

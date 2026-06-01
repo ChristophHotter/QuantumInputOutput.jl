@@ -11,6 +11,7 @@
 # parameters for the driven KPO.
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
@@ -23,11 +24,11 @@ using DataInterpolations
 hc = FockSpace(:c)
 
 ## symbolic operator
-a = Destroy(hc, :a, 1)
+a = Destroy(hc, :a)
 
 ## symbolic parameters
-@rnumbers γ K Δ
-p = cnumber("p")
+@variables γ::Real K::Real Δ::Real
+p = complex_var("p")
 nothing # hide
 
 # The KPO Hamiltonian is
@@ -119,7 +120,7 @@ h = hc ⊗ hv
 
 a2 = Destroy(h, :a, 1)
 av = Destroy(h, :a_v, 2)
-gv = cnumber("g_v")
+gv = complex_var("g_v")
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)

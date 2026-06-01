@@ -9,6 +9,7 @@
 
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
@@ -32,8 +33,8 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 ## symbolic parameters
-@rnumbers γ g ω12
-gv1, gv2 = cnumbers("g_v1 g_v2")
+@variables γ::Real g::Real ω12::Real
+gv1, gv2 = complex_vars("g_v1 g_v2")
 nothing # hide
 
 # The localized system consists of a cavity mode coupled to a three-level

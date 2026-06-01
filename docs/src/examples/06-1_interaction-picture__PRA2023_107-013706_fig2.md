@@ -30,7 +30,7 @@ av_sym = Destroy(h, :a_v, 3)
 σ12_sym = Transition(h, :σ, 1, 2, 2)
 
 # symbolic parameters
-gu, γ, gv = rnumbers("gu γ gv")
+gu, γ, gv = real_vars("gu γ gv")
 
 # cascade the SLH elements
 G_u = SLH(1, gu' * au_sym, 0)
@@ -60,7 +60,7 @@ To do so, we first subtract $H_{uv}$ from $H$ and then replace the virtual cavit
 H_int_sym_ = simplify(H - H_uv)
 
 # symbolic coefficient matrix $M(t)$
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = complex_var("M_{$(i)$(j)}")
 a0_ls = [au_sym, av_sym]
 la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]

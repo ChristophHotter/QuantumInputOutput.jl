@@ -1,4 +1,5 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using FunctionWrappers: FunctionWrapper
@@ -17,15 +18,15 @@ using Test
     gu_t = coupling_input(u1, T)
 
     # -------- Example 05-1 style (symbolic -> numeric) --------
-    ha(i) = NLevelSpace("a$(i)", 2)
+    ha(i) = NLevelSpace(Symbol("a$(i)"), 2)
     h = tensor([ha(i) for i = 1:N]...)
-    σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
+    σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, α)
 
-    γR(i) = rnumber("γ^{($(i))}_R")
-    γL(i) = rnumber("γ^{($(i))}_L")
-    Δ(i) = rnumber("Δ_{$(i)}")
-    ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}")
-    Ein = rnumber("E_{in}")
+    γR(i) = real_var("γ^{($(i))}_R")
+    γL(i) = real_var("γ^{($(i))}_L")
+    Δ(i) = real_var("Δ_{$(i)}")
+    ϕ(i, j) = real_var("ϕ_{$(i)$(j)}")
+    Ein = real_var("E_{in}")
 
     G_d = SLH(1, Ein, 0)
     G_ϕ(i, j) = SLH(exp(1im * ϕ(i, j)), 0, 0)

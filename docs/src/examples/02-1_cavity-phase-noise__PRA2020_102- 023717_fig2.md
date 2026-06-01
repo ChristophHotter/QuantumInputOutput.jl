@@ -28,8 +28,8 @@ au = Destroy(h, :a_u, 1)
 c = Destroy(h, :c, 2)
 
 # symbolic parameters
-@rnumbers γ Δ γ_p
-gu, gv = rnumbers("g_u g_v")
+@variables γ::Real Δ::Real γ_p::Real
+gu, gv = real_vars("g_u g_v")
 nothing # hide
 ````
 

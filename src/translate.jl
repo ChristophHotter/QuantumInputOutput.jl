@@ -5,20 +5,20 @@ _translate_numeric(
     level_map = nothing,
     operators = Dict(),
     op_type = sparse,
-) = op_type(to_numeric(substitute(op, parameter), b, operators; level_map = level_map))
+) = op_type(to_numeric(substitute(op, parameter), b, operators))
 
 _translate_numeric_raw(op, b; level_map = nothing, operators = Dict(), op_type = sparse) =
-    op_type(to_numeric(op, b, operators; level_map = level_map))
+    op_type(to_numeric(op, b, operators))
 
 _translate_one(b, operators, op_type) =
     isempty(operators) ? op_type(one(b)) : op_type(one(basis(first(values(operators)))))
 
 function _translate_operator_dict(operators::Dict, adjoint_ops::Bool)
     if isempty(operators) || !adjoint_ops
-        return operators
+        return Dict{QSym,Any}(operators)
     end
 
-    operators_ = copy(operators)
+    operators_ = Dict{QSym,Any}(operators)
     for (k, v) in operators
         k_adj = Base.adjoint(k)
         if !haskey(operators_, k_adj)
@@ -36,21 +36,78 @@ function _normalize_time_parameter(time_parameter)
     KT = keytype(time_parameter)
     out = Dict{KT,Any}()
     for (k, v) in time_parameter
-        out[k] = v isa Number ? (t -> v) : v
+        vf = v isa Number ? (t -> v) : v
+        out[k] = vf
+        k_conj = conj(k)
+        if !isequal(k_conj, k) && !haskey(out, k_conj)
+            out[k_conj] = t -> conj(vf(t))
+        end
     end
     return out
 end
 
+_numeric_prefactor(x::Number) = x
+function _materialize_symbolic_number(x)
+    xu = SymbolicUtils.unwrap(x)
+    try
+        return Core.eval(@__MODULE__, SymbolicUtils.Code.toexpr(xu))
+    catch
+        return xu
+    end
+end
+_numeric_prefactor(x::BasicSymbolic) = _materialize_symbolic_number(x)
+_numeric_prefactor(x::Symbolics.Num) = _materialize_symbolic_number(x)
+_numeric_prefactor(x::Complex) = complex(_numeric_prefactor(real(x)), _numeric_prefactor(imag(x)))
+_numeric_prefactor(x) = x
+
+_unwrap_subs_dict(subs) = Dict(SymbolicUtils.unwrap(k) => v for (k, v) in subs)
+
+_eval_prefactor(x::Real, subs) = x
+_eval_prefactor(x::BasicSymbolic, subs) =
+    _numeric_prefactor(SymbolicUtils.substitute(SymbolicUtils.unwrap(x), subs))
+_eval_prefactor(x::Symbolics.Num, subs) =
+    _numeric_prefactor(SymbolicUtils.substitute(SymbolicUtils.unwrap(x), subs))
+_eval_prefactor(x::Complex, subs) =
+    _numeric_prefactor(
+        SymbolicUtils.substitute(
+            SymbolicUtils.unwrap(real(x)) + im * SymbolicUtils.unwrap(imag(x)),
+            subs,
+        ),
+    )
+_eval_prefactor(x, subs) = _numeric_prefactor(substitute(x, subs))
+
+_is_concrete_prefactor(x::Real) = !(x isa BasicSymbolic || x isa Symbolics.Num)
+_is_concrete_prefactor(x::Complex) =
+    _is_concrete_prefactor(real(x)) && _is_concrete_prefactor(imag(x))
+_is_concrete_prefactor(x) = x isa Number
+
 # use Tuple + map instead of generator splat to avoid per-call allocation
 function _translate_prefactor(arg_c, time_parameter)
-    keys_ = collect(keys(time_parameter))
-    values_tuple = Tuple(values(time_parameter))
-    pref_build = build_function(arg_c, keys_...; expression = Val(false))
-    pref_f = t -> pref_build(map(v -> v(t), values_tuple)...)
+    if _is_concrete_prefactor(arg_c)
+        return false, arg_c
+    end
+    pref_f = t -> begin
+        subs = _unwrap_subs_dict(Dict(k => v(t) for (k, v) in time_parameter))
+        _eval_prefactor(arg_c, subs)
+    end
     return true, pref_f
 end
-function _translate_prefactor(arg_c::Number, time_parameter)
-    return false, arg_c
+
+_to_numeric_qsym(arg::QSym, b, operators) =
+    isempty(operators) ? to_numeric(arg, b) : (haskey(operators, arg) ? operators[arg] : to_numeric(arg, b))
+
+function _translate_qadd_term(term_ops, arg_c, b, time_parameter, level_map, operators, op_type)
+    numeric_term = if isempty(term_ops)
+        _translate_one(b, operators, op_type)
+    else
+        op_type(prod(_to_numeric_qsym(arg, b, operators) for arg in term_ops))
+    end
+
+    is_func, pref = _translate_prefactor(arg_c, time_parameter)
+    if is_func
+        return t -> pref(t) * numeric_term
+    end
+    return pref * numeric_term
 end
 
 """
@@ -94,40 +151,6 @@ end
 # ── Internal dispatch: time_parameter already normalized ──
 
 function _translate_qo(
-    op::SQA.QMul,
-    b::QuantumOpticsBase.Basis;
-    parameter = Dict(),
-    time_parameter = Dict(),
-    level_map = nothing,
-    operators = Dict(),
-    op_type = sparse,
-)
-    if isempty(time_parameter)
-        return _translate_numeric(op, b; parameter, level_map, operators, op_type)
-    end
-
-    op_ = substitute(op, parameter)
-
-    if isa(op_, QSym)
-        output_op = _translate_numeric_raw(op_, b; level_map, operators, op_type)
-        return t -> output_op
-    elseif iszero(op_)
-        return op_type(0 * one(b))
-    else
-        arg_c = op_.arg_c
-        args_nc = op_.args_nc
-        prod_args_nc =
-            op_type(prod((to_numeric(arg, b, operators; level_map)) for arg in args_nc))
-        is_func, pref = _translate_prefactor(arg_c, time_parameter)
-        if is_func
-            return t -> pref(t) * prod_args_nc
-        end
-        prod_c_nc_num = pref * prod_args_nc
-        return t -> prod_c_nc_num
-    end
-end
-
-function _translate_qo(
     op::SQA.QAdd,
     b::QuantumOpticsBase.Basis;
     parameter = Dict(),
@@ -136,38 +159,40 @@ function _translate_qo(
     operators = Dict(),
     op_type = sparse,
 )
-    op = expand(op)
+    op = expand(substitute(op, parameter))
     if isempty(time_parameter)
-        return _translate_numeric(op, b; parameter, level_map, operators, op_type)
+        return _translate_numeric_raw(op, b; level_map, operators, op_type)
     end
 
-    args = arguments(substitute(op, parameter))
+    terms = collect(op.arguments)
+    isempty(terms) && return op_type(0 * one(b))
+
     # Translate first arg to determine concrete operator type
-    first_translated = _translate_qo(
-        args[1],
-        b;
-        parameter,
+    first_translated = _translate_qadd_term(
+        first(terms).first.ops,
+        first(terms).second,
+        b,
         time_parameter,
         level_map,
         operators,
-        op_type = sparse,
+        sparse,
     )
     OpType =
         typeof(first_translated isa Function ? first_translated(0.0) : first_translated)
     FW = FunctionWrapper{OpType,Tuple{Float64}}
 
-    args_wrapped = ntuple(length(args)) do k
+    args_wrapped = ntuple(length(terms)) do k
         a_k = if k == 1
             first_translated
         else
-            _translate_qo(
-                args[k],
-                b;
-                parameter,
+            _translate_qadd_term(
+                terms[k].first.ops,
+                terms[k].second,
+                b,
                 time_parameter,
                 level_map,
                 operators,
-                op_type = sparse,
+                sparse,
             )
         end
         FW(a_k isa Function ? a_k : (_ -> a_k))
@@ -194,8 +219,14 @@ function _translate_qo(
     if isempty(time_parameter)
         return _translate_numeric(op, b; parameter, level_map, operators, op_type)
     end
-    output_op = _translate_numeric_raw(op, b; level_map, operators, op_type)
-    return t -> output_op
+    return _translate_qo(
+        substitute(op, parameter),
+        b;
+        time_parameter,
+        level_map,
+        operators,
+        op_type,
+    )
 end
 
 function _translate_qo(

@@ -6,6 +6,7 @@
 # As usual, we start by loading the packages and defining the operators and parameters of the system.
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using QuantumOptics
 using Plots
 

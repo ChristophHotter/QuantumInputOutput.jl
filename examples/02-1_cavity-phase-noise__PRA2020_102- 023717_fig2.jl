@@ -5,6 +5,7 @@
 # We start by loading the packages and defining the symbolic operators and parameters. 
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
@@ -23,8 +24,8 @@ au = Destroy(h, :a_u, 1)
 c = Destroy(h, :c, 2)
 
 ## symbolic parameters
-@rnumbers γ Δ γ_p
-gu, gv = rnumbers("g_u g_v")
+@variables γ::Real Δ::Real γ_p::Real
+gu, gv = real_vars("g_u g_v")
 nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 

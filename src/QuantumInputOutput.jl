@@ -3,8 +3,8 @@ module QuantumInputOutput
 using SecondQuantizedAlgebra: SecondQuantizedAlgebra, QSym, to_numeric
 using QuantumOpticsBase: QuantumOpticsBase, expect, basis, dagger, sparse
 using QuantumOptics: QuantumOptics, timeevolution
-using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, arguments, simplify, expand
-using Symbolics: Symbolics, build_function
+using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, simplify, expand
+using Symbolics: Symbolics
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate
@@ -14,6 +14,20 @@ using StaticArrays: StaticArrays, SMatrix, SVector
 using FunctionWrappers: FunctionWrappers, FunctionWrapper
 
 const SQA = SecondQuantizedAlgebra
+
+# TODO: move to SQA
+complex_var(name::AbstractString) = Symbolics.variable(String(name))
+real_var(name::AbstractString) = Symbolics.variable(String(name); T = Real)
+
+function complex_vars(names::AbstractString)
+    parts = filter(!isempty, strip.(split(replace(names, ',' => ' '))))
+    return Tuple(complex_var(part) for part in parts)
+end
+
+function real_vars(names::AbstractString)
+    parts = filter(!isempty, strip.(split(replace(names, ',' => ' '))))
+    return Tuple(real_var(part) for part in parts)
+end
 
 export SLH,
     Gaussian,
@@ -43,7 +57,13 @@ export SLH,
     # Correlations
     correlation_matrix,
     # Operators
-    substitute_operators
+    substitute_operators,
+    dagger,
+    # Scalar symbol helpers
+    complex_var,
+    real_var,
+    complex_vars,
+    real_vars
 
 include("SLH.jl")
 include("translate.jl")

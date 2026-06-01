@@ -31,7 +31,7 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 # symbolic parameters
-@rnumbers gu1 gu2 gv1 gv2 t r
+@variables gu1::Real gu2::Real gv1::Real gv2::Real t::Real r::Real
 nothing # hide
 ````
 

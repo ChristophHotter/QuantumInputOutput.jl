@@ -1,8 +1,10 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
+using StaticArrays: SMatrix
 using Test
 
 @testset "interaction_picture" begin
@@ -28,7 +30,7 @@ using Test
     av_sym = Destroy(h, :a_v, 3)
     σ_sym = Transition(h, :σ, 1, 2, 2)
 
-    gu_sym, γ_sym, gv_sym = rnumbers("gu γ gv")
+    gu_sym, γ_sym, gv_sym = real_vars("gu γ gv")
 
     G_u = SLH(1, gu_sym' * au_sym, 0)
     G_s = SLH(1, sqrt(γ_sym) * σ_sym, 0)
@@ -41,7 +43,7 @@ using Test
     H_int_sym_ = simplify(H - H_uv)
 
     # Interaction-picture operator substitution
-    M(i, j) = cnumber("M_{$(i)$(j)}")
+    M(i, j) = complex_var("M_{$(i)$(j)}")
     a0_ls = [au_sym, av_sym]
     la = length(a0_ls)
     a_int_ls = [sum(M(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]

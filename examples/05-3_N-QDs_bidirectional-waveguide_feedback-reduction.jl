@@ -6,6 +6,7 @@
 # coherent input pulse. 
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
@@ -23,11 +24,11 @@ h = tensor([ha(i) for i = 1:N]...)
 σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
 
 ## symbolic parameters
-γR(i) = rnumber("γ^{($(i))}_R")
-γL(i) = rnumber("γ^{($(i))}_L")
-Δ(i) = rnumber("Δ_{$(i)}")
-ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}")
-Ein = rnumber("E_{in}")
+γR(i) = real_var("γ^{($(i))}_R")
+γL(i) = real_var("γ^{($(i))}_L")
+Δ(i) = real_var("Δ_{$(i)}")
+ϕ(i, j) = real_var("ϕ_{$(i)$(j)}")
+Ein = real_var("E_{in}")
 nothing # hide
 
 # Each quantum dot is treated as a two-port component: port 1 couples to the

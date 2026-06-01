@@ -1,4 +1,5 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using LinearAlgebra
@@ -14,8 +15,8 @@ using Test
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3)
 
-    gu, Δ, γ = rnumbers("g_u Δ γ")
-    gv = cnumber("g_v")
+    gu, Δ, γ = real_vars("g_u Δ γ")
+    gv = complex_var("g_v")
 
     G_u = SLH(1, gu' * au, 0)
     G_c = SLH(1, √(γ) * c, Δ * c' * c)

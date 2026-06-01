@@ -1,4 +1,5 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
@@ -9,7 +10,7 @@ using Test
 
 @testset "feedback reduction" begin
     hs = FockSpace(:s)
-    a = Destroy(hs, :a, 1)
+    a = Destroy(hs, :a)
 
     # # TODO: problem with simplify of conj(conj(x)), conj((0+1im)*x) and fractions
     # s11_r = rnumber("s11_r")
@@ -76,20 +77,20 @@ using Test
 
         @test scattering(G_loop) isa SMatrix{1,1}
         @test iszero(simplify(lindblad(G_loop)[1] - simplify(l * √(κ) * a)))
-        @test isequal(simplify(hamiltonian(G_loop) - hamiltonian(G_opo)), 0)
+        @test iszero(simplify(hamiltonian(G_loop) - hamiltonian(G_opo)))
     end
 
     @testset "bidirectional waveguide matches cascade model" begin
         N = 2
-        ha(i) = NLevelSpace("a$(i)", 2)
+        ha(i) = NLevelSpace(Symbol("a$(i)"), 2)
         h = tensor([ha(i) for i = 1:N]...)
-        σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
+        σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, α)
 
-        γR(i) = rnumber("γ^{($(i))}_R")
-        γL(i) = rnumber("γ^{($(i))}_L")
-        Δqd(i) = rnumber("Δqd_{$(i)}")
-        ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}")
-        Ein = rnumber("E_{in}")
+        γR(i) = real_var("γ^{($(i))}_R")
+        γL(i) = real_var("γ^{($(i))}_L")
+        Δqd(i) = real_var("Δqd_{$(i)}")
+        ϕ(i, j) = real_var("ϕ_{$(i)$(j)}")
+        Ein = real_var("E_{in}")
 
         G_d = SLH(1, Ein, 0)
         G_ϕ(i, j) = SLH(exp(1im * ϕ(i, j)), 0, 0)
@@ -109,7 +110,7 @@ using Test
 
         @test isequal(lindblad(G_feedback)[1], lindblad(G_manual)[2])
         @test isequal(lindblad(G_feedback)[2], lindblad(G_manual)[1])
-        @test isequal(simplify(hamiltonian(G_feedback) - hamiltonian(G_manual)), 0)
+        @test iszero(simplify(hamiltonian(G_feedback) - hamiltonian(G_manual)))
     end
 
     @testset "feedback preserves FunctionWrapper" begin

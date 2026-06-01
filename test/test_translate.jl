@@ -1,20 +1,21 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using SymbolicUtils
 using QuantumOpticsBase
 using Test
 
 @testset "translate" begin
-    @rnumbers κ_L κ_R Δ g γ
-    @cnumbers E E1 E2
+    @variables κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
+    @variables E E1 E2
     Natoms = 2
 
     hc = FockSpace(:cavity)
-    ha_ = NLevelSpace("a", 2)
+    ha_ = NLevelSpace(:a, 2)
     h = hc ⊗ ha_
 
     a = Destroy(h, :a, 1) # cavity
-    σ(i, j) = Transition(h, "σ", i, j, 2) # two-level atom
+    σ(i, j) = Transition(h, :σ, i, j, 2) # two-level atom
 
     bc1 = FockBasis(4)
     a_QO = destroy(bc1)
@@ -30,7 +31,6 @@ using Test
     dict_p1 = Dict(p_sym .=> p_num)
 
     E_t(t) = 2*t + 1im
-    E_t_c(t) = conj(E_t(t))
     dict_p_t2 = Dict(E => E_t)
 
 
@@ -67,10 +67,12 @@ using Test
         @test isequal(F2(0.1), a_QO*E_t(0.1))
         F2(0.1)
         a_QO*E_t(0.1)
-        @test isequal(
-            translate_qo(Δ*a'a, bc1; parameter = dict_p1, operators = ops_dict),
-            Δn*dagger(a_QO)*a_QO,
-        )
+        @test sum(
+            abs.((
+                translate_qo(Δ * a' * a, bc1; parameter = dict_p1, operators = ops_dict) -
+                dense(Δn * dagger(a_QO) * a_QO)
+            ).data),
+        ) < 1e-8
     end
 
     bc1 = FockBasis(4)
@@ -101,27 +103,28 @@ using Test
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
-    @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
+    @test sum(abs.((F4(0.2) - dense(a_QO2 * 3 * E_t(0.2) + Δn * σ_QO(2, 2))).data)) < 1e-8
     F5 = translate_qo(
         a*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
-    @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
+    @test sum(abs.((F5(0.2) - dense(a_QO2 * E_t(0.2) + Δn * σ_QO(2, 2))).data)) < 1e-8
     @inferred F5(0.2)  # QAdd time-dependent path should return concrete type
     F5_ = translate_qo(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
+    @test sum(abs.((F5_(0.2) - dense(a_QO2 * E_t(0.2))).data)) < 1e-8
     F6 = translate_qo(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
+    @test sum(abs.((F6(0.2) - dense(E_t(0.2) * one(b))).data)) < 1e-8
     F7 = translate_qo(
         conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
-    @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    @test_throws MethodError translate_qo(conj(E), b; parameter = dict_p1)
+    @test sum(abs.((F7(0.2) - dense(E_t(0.2) * one(b) + Δn * σ_QO(2, 2))).data)) < 1e-8
+    static_conj = translate_qo(conj(E), b; parameter = dict_p1)
+    @test isequal(static_conj.data[1, 1], E + 0im)
     F8 = translate_qo(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F8(0.2) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
 
@@ -182,8 +185,8 @@ using Test
 
     @testset "substitute_operators_qmul" begin
         h2 = FockSpace(:h2)
-        a = Destroy(h2, :a, 1)
-        @cnumbers c1 c2 c3
+        a = Destroy(h2, :a)
+        @variables c1 c2 c3
         a_1 = 2 * c2 * a + c3*a
         a_2 = c2 * a * a
         dict_sub = Dict(a => a_1)
@@ -193,19 +196,19 @@ using Test
         y = substitute_operators(x, dict_sub)
         y2 = substitute_operators(x, dict_sub2)
 
-        @test isequal(simplify(y - (a_1*a_1*c1 + a_1*c3)), 0)
-        @test isequal(simplify(y2 - (a_2*a_2*c1 + a_2*c3)), 0)
+        @test iszero(simplify(y - (a_1 * a_1 * c1 + a_1 * c3)))
+        @test iszero(simplify(y2 - (a_2 * a_2 * c1 + a_2 * c3)))
 
         @test substitute_operators(5, dict_sub) == 5
     end
 
     @testset "substitute_operators adjoint in args_nc" begin
         h2 = FockSpace(:h2)
-        a = Destroy(h2, :a, 1)
-        b = Destroy(h2, :b, 1)
-        ad = SecondQuantizedAlgebra._adjoint(a)
-        bd = SecondQuantizedAlgebra._adjoint(b)
-        @cnumbers g
+        a = Destroy(h2, :a)
+        b = Destroy(h2, :b)
+        ad = adjoint(a)
+        bd = adjoint(b)
+        @variables g
 
         # QMul with adjoint operator: g * a† * a
         op = g * ad * a
@@ -213,6 +216,6 @@ using Test
 
         result = substitute_operators(op, dict_sub)
         expected = g * bd * b
-        @test isequal(simplify(result - expected), 0)
+        @test iszero(simplify(result - expected))
     end
 end

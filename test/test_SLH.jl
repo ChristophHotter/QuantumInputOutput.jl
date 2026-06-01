@@ -1,4 +1,5 @@
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
@@ -16,8 +17,8 @@ using Test
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3);
 
-    gu, Δ, γ = rnumbers("g_u Δ, γ")
-    gv = cnumber("g_v");
+    gu, Δ, γ = real_vars("g_u Δ γ")
+    gv = complex_var("g_v");
 
     G_u = SLH(1, gu'*au, 0) # input cavity
     G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
@@ -83,7 +84,7 @@ using Test
         av1 = Destroy(h2, :a_v1, 3)
         av2 = Destroy(h2, :a_v2, 4)
 
-        gu1, gu2, gv1, gv2, t, r = rnumbers("g_u1 g_u2 g_v1 g_v2 t r")
+        gu1, gu2, gv1, gv2, t, r = real_vars("g_u1 g_u2 g_v1 g_v2 t r")
 
         G_bs = SLH([r t; t -r], [0, 0], 0)
         G_out = SLH(1, gv1' * av1, 0) ⊞ SLH(1, gv2' * av2, 0)

@@ -32,7 +32,7 @@ ad = Destroy(h, :a_d, 2)
 av = Destroy(h, :a_v, 3)
 
 # symbolic parameters
-gu, gin, gout, gv = cnumbers("g_u g_in g_out g_v")
+gu, gin, gout, gv = complex_vars("g_u g_in g_out g_v")
 nothing # hide
 ````
 
@@ -141,7 +141,7 @@ G_d_in = SLH(S2, [gin*ad, 0], 0)
 H_ud = hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = complex_var("M_{$(i)$(j)}")
 a0_ls = [au, ad]
 la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]

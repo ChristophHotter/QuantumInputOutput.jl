@@ -27,11 +27,11 @@ h = tensor([ha(i) for i = 1:N]...)
 σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
 
 # symbolic parameters
-γR(i) = rnumber("γ^{($(i))}_R") # right-moving decay rate
-γL(i) = rnumber("γ^{($(i))}_L") # left-moving decay rate
-Δ(i) = rnumber("Δ_{$(i)}") # detuning
-ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}") # phase between QD-i and QD-j
-Ein = rnumber("E_{in}") # coherent drive in the right-moving input
+γR(i) = real_var("γ^{($(i))}_R") # right-moving decay rate
+γL(i) = real_var("γ^{($(i))}_L") # left-moving decay rate
+Δ(i) = real_var("Δ_{$(i)}") # detuning
+ϕ(i, j) = real_var("ϕ_{$(i)$(j)}") # phase between QD-i and QD-j
+Ein = real_var("E_{in}") # coherent drive in the right-moving input
 nothing # hide
 ````
 

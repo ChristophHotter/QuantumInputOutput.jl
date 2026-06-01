@@ -19,13 +19,18 @@ end
 end
 
 if isempty(VERSION.prerelease)
-    @testset "Code linting" begin
-        using JET
+@testset "Code linting" begin
+    using JET
 
-        rep = report_package(QuantumInputOutput)
-        @show rep
-        @test length(JET.get_reports(rep)) < 74 # TODO
+    rep = report_package(QuantumInputOutput)
+    @show rep
+    srcdir = normpath(pkgdir(QuantumInputOutput), "src")
+    own_reports = filter(JET.get_reports(rep)) do report
+        text = sprint(show, MIME("text/plain"), report)
+        occursin(srcdir, text)
     end
+    @test length(own_reports) == 0
+end
 end
 
 @testset "Concretely typed" begin

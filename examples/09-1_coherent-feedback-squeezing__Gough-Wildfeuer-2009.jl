@@ -7,6 +7,7 @@
 # and the internal wires are eliminated with the SLH feedback reduction rule.
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using SymbolicUtils
 using Plots
@@ -17,12 +18,12 @@ using Plots
 hc = FockSpace(:c)
 
 ## symbolic operator
-a = Destroy(hc, :a, 1)
+a = Destroy(hc, :a)
 
 ## symbolic parameters
-κ = rnumber("κ")
-ϵ = rnumber("ϵ")
-η = rnumber("η")
+κ = real_var("κ")
+ϵ = real_var("ϵ")
+η = real_var("η")
 nothing # hide
 
 # The open-loop OPO has one port, while the beam splitter has two ports. We first

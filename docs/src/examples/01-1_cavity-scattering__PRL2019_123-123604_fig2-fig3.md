@@ -30,8 +30,8 @@ c = Destroy(h, :c, 2)
 av = Destroy(h, :a_v, 3)
 
 # symbolic parameters
-gu, Δ, γ = rnumbers("g_u Δ γ")
-gv = cnumber("g_v")
+gu, Δ, γ = real_vars("g_u Δ γ")
+gv = complex_var("g_v")
 nothing # hide
 ````
 

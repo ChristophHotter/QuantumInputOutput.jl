@@ -8,6 +8,7 @@
 # population at the evaluation time used in the paper and compare with a coherent-state drive of the same mean photon number.
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using SymbolicUtils
@@ -31,8 +32,8 @@ ad2 = Destroy(h, :ad_2, 3)
 σ(i, j) = Transition(h, :σ, i, j, 4)
 
 ## symbolic parameters
-@rnumbers γ Δ r t
-gu, gd1in, gd1out, gd2in, gd2out = cnumbers("gu gd1_{in} gd1_{out} gd2_{in} gd2_{out}")
+@variables γ::Real Δ::Real r::Real t::Real
+gu, gd1in, gd1out, gd2in, gd2out = complex_vars("gu gd1_{in} gd1_{out} gd2_{in} gd2_{out}")
 nothing # hide
 
 #
@@ -70,7 +71,7 @@ H_pulse = G_u_bs_d1_d2.hamiltonian
 H_int_ = simplify(H - H_pulse)
 
 ## symbolic coefficient matrix $M(t)$
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = complex_var("M_{$(i)$(j)}")
 a_ls = [au, ad1, ad2]
 la = length(a_ls)
 a_int_ls = [sum(M(i, j)*a_ls[j] for j = 1:la) for i = 1:la]

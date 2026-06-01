@@ -6,13 +6,14 @@
 # However, for the numerical simulation of the empty cavity we provide a dictionary of the actual QuantumOptics.jl operators we want to use. 
 
 using QuantumInputOutput
+using QuantumInputOutput: dagger
 using SecondQuantizedAlgebra
 using QuantumOptics
 using Plots
 
 #
 
-@rnumbers E κ_L κ_R Δ g γ
+@variables E::Real κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
 Natoms = 2
 
 hc = FockSpace(:cavity)
