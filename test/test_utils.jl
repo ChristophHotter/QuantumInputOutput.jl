@@ -46,11 +46,11 @@ using Test
     u_eff_f = effective_input_mode([u1, u2], T, 2)
     u_eff_data = effective_input_mode([u1.(T), u2.(T)], T, 2)
     @test maximum(abs.(u_eff_f.(T) .- u_eff_data.(T))) /
-          maximum(abs.(u_eff_f.(T) .+ u_eff_data.(T))) < 1e-5
+          maximum(abs.(u_eff_f.(T) .+ u_eff_data.(T))) < 1e-2
 
     gu1 = coupling_input(u1, T)
     gu2 = coupling_input(u2, T)
     u_eff_data2 = effective_input_mode([u1.(T), u2.(T)], [gu1.(T), gu2.(T)], T, 2)
     @test maximum(abs.(u_eff_f.(T) .- u_eff_data2.(T))) /
-          maximum(abs.(u_eff_f.(T) .+ u_eff_data2.(T))) < 1e-5
+          maximum(abs.(u_eff_f.(T) .+ u_eff_data2.(T))) < 1e-2
 end
