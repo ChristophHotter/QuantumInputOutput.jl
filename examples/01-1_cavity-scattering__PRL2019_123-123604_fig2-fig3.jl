@@ -6,7 +6,6 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
-using Symbolics: Symbolics
 using QuantumOptics
 using QuantumOpticsBase: dagger
 using Plots
@@ -27,17 +26,14 @@ c = Destroy(h, :c, 2)
 av = Destroy(h, :a_v, 3)
 
 ## symbolic parameters
-gu = Symbolics.variable(Symbol("g_u"); T = Complex{Real})
-Δ = Symbolics.variable(Symbol("Δ"); T = Real)
-γ = Symbolics.variable(Symbol("γ"); T = Real)
-gv = Symbolics.variable(Symbol("g_v"); T = Complex{Real})
+@variables g_u::Complex Δ::Real γ::Real g_v::Complex
 nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
-G_u = SLH(1, gu'*au, 0) # input cavity 
+G_u = SLH(1, g_u'*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
-G_v = SLH(1, gv'*av, 0) # output cavity
+G_v = SLH(1, g_v'*av, 0) # output cavity
 
 G_cas = ▷(G_u, G_c, G_v)
 nothing # hide
@@ -56,8 +52,8 @@ L = lindblad(G_cas)[1] # only one Lindblad term in this example
 γ_ = 1.0
 Δ_ = 0.0
 
-p_sym = [γ, Δ, gv]
-p_num = [γ_, Δ_, 0] # gv=0
+p_sym = [γ, Δ, g_v]
+p_num = [γ_, Δ_, 0] # g_v=0
 dict_p = Dict(p_sym .=> p_num)
 
 ## Gaussian input mode
@@ -69,7 +65,7 @@ T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
 gu_t = coupling_input(u1, T)
-dict_p_t = Dict(gu => gu_t)
+dict_p_t = Dict(g_u => gu_t)
 
 ## numeric bases 
 bu1 = FockBasis(1)
@@ -149,7 +145,7 @@ dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 ## time-dependent coupling for the output mode $v(t)$
 gv_t = coupling_output(v_mode, T)
 
-dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
+dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 
 H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 L_QO_2 = translate_qo(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)

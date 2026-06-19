@@ -57,9 +57,7 @@ function benchmark_interaction_picture!(SUITE)
     av_sym = Destroy(h, :a_v, 3)
     σ_sym = Transition(h, :σ, 1, 2, 2)
 
-    gu_sym = Symbolics.variable(Symbol("gu"); T = Real)
-    γ_sym = Symbolics.variable(Symbol("γ"); T = Real)
-    gv_sym = Symbolics.variable(Symbol("gv"); T = Real)
+    @variables gu_sym::Real γ_sym::Real gv_sym::Real
 
     G_u = SLH(1, gu_sym' * au_sym, 0)
     G_s = SLH(1, sqrt(γ_sym) * σ_sym, 0)

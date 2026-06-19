@@ -8,7 +8,6 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
-using Symbolics: Symbolics
 using SymbolicUtils
 using Plots
 
@@ -21,9 +20,7 @@ hc = FockSpace(:c)
 a = Destroy(hc, :a)
 
 ## symbolic parameters
-κ = Symbolics.variable(Symbol("κ"); T = Real)
-ϵ = Symbolics.variable(Symbol("ϵ"); T = Real)
-η = Symbolics.variable(Symbol("η"); T = Real)
+@variables κ::Real ϵ::Real η::Real
 nothing # hide
 
 # The open-loop OPO has one port, while the beam splitter has two ports. We first

@@ -16,7 +16,7 @@ au = Destroy(h, :a_u, 1)
 σ = Transition(h, :σ, 1, 2, 2)
 av = Destroy(h, :a_v, 3)
 
-@variables γ::Real gu::Complex gv::Complex
+@variables γ::Real g_u::Complex g_v::Complex
 ```
 
 An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.
@@ -50,9 +50,9 @@ bs = NLevelBasis(2)
 bv = FockBasis(2)
 b = bu ⊗ bs ⊗ bv
 
-dict_p = Dict(γ => 1.0, gv => 0.0)
+dict_p = Dict(γ => 1.0, g_v => 0.0)
 gu_t = coupling_input(t -> exp(-t^2), 0:0.01:5)
-dict_p_t = Dict(gu => gu_t)
+dict_p_t = Dict(g_u => gu_t)
 
 H_QO = translate_qo(H, b; parameter=dict_p, time_parameter=dict_p_t)
 L_QO = translate_qo(L, b; parameter=dict_p, time_parameter=dict_p_t)
