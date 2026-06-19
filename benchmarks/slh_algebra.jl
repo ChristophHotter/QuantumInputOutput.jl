@@ -37,7 +37,7 @@ function benchmark_slh_algebra!(SUITE)
 
     # Feedback: coherent-feedback OPO loop
     hs = FockSpace(:s)
-    a_fb = Destroy(hs, :a, 1)
+    a_fb = Destroy(hs, :a)
     κ_fb = 0.7
     ϵ_fb = 0.45
     η_fb = 0.65
