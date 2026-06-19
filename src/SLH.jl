@@ -8,7 +8,7 @@ const _Callable = Union{Function,FunctionWrapper}
 # Dispatch helpers: symbolic vs numeric
 # ──────────────────────────────────────────────
 
-_adj(x::SQA.QNumber) = SQA._adjoint(x)
+_adj(x::SQA.QField) = adjoint(x)
 _adj(f::_Callable) = t -> adjoint(f(t))
 _adj(x) = adjoint(x)
 

@@ -13,19 +13,20 @@ However, for the numerical simulation of the empty cavity we provide a dictionar
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 ````
 
 ````@example 04-1_two-sided-cavity_with-atom_coh-drive
-@rnumbers E κ_L κ_R Δ g γ
+@variables E::Real κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
 Natoms = 2
 
 hc = FockSpace(:cavity)
-ha(i) = NLevelSpace("a_$i", 2)
+ha(i) = NLevelSpace(Symbol("a_$i"), 2)
 h = hc ⊗ tensor([ha(i) for i = 1:Natoms]...);
 
 a = Destroy(h, :a, 1) # cavity
-σ(α, i, j) = Transition(h, "σ_$(α)", i, j, 1+α) # two-level atom α
+σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, 1+α) # two-level atom α
 ∑σ(i, j) = sum(σ(α, i, j) for α = 1:Natoms) # collective atomic operator
 nothing # hide
 ````

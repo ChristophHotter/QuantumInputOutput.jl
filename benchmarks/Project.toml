@@ -7,3 +7,9 @@ QuantumOptics = "6e0679c1-51ea-5a7c-ac74-d61b76210b0c"
 QuantumOpticsBase = "4f57444f-1401-5e15-980d-4471b28d5678"
 SecondQuantizedAlgebra = "f7aa4685-e143-4cb6-a7f3-073579757907"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+
+[compat]
+SecondQuantizedAlgebra = "0.6"
+SymbolicUtils = "4"
+Symbolics = "7"

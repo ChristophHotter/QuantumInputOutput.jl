@@ -13,6 +13,7 @@ and the internal wires are eliminated with the SLH feedback reduction rule.
 ````@example 09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using SymbolicUtils
 using Plots
 ````
@@ -22,12 +23,12 @@ using Plots
 hc = FockSpace(:c)
 
 # symbolic operator
-a = Destroy(hc, :a, 1)
+a = Destroy(hc, :a)
 
 # symbolic parameters
-κ = rnumber("κ")
-ϵ = rnumber("ϵ")
-η = rnumber("η")
+κ = Symbolics.variable(Symbol("κ"); T = Real)
+ϵ = Symbolics.variable(Symbol("ϵ"); T = Real)
+η = Symbolics.variable(Symbol("η"); T = Real)
 nothing # hide
 ````
 

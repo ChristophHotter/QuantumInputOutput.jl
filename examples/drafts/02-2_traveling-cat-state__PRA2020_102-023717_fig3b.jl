@@ -12,6 +12,7 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
 using Plots
 using LinearAlgebra
@@ -26,8 +27,8 @@ hc = FockSpace(:c)
 a = Destroy(hc, :a, 1)
 
 ## symbolic parameters
-@rnumbers γ K Δ
-p = cnumber("p")
+@variables γ::Real K::Real Δ::Real
+p = Symbolics.variable(Symbol("p"); T = Complex{Real})
 nothing # hide
 
 # The KPO Hamiltonian is
@@ -119,7 +120,7 @@ h = hc ⊗ hv
 
 a2 = Destroy(h, :a, 1)
 av = Destroy(h, :a_v, 2)
-gv = cnumber("g_v")
+gv = Symbolics.variable(Symbol("g_v"); T = Complex{Real})
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)

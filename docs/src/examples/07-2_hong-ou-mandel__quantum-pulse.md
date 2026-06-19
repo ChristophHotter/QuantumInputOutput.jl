@@ -11,6 +11,7 @@ We perform Monte-Carlo wave function trajectories which show this behavior.
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -31,7 +32,7 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 # symbolic parameters
-@rnumbers gu1 gu2 gv1 gv2 t r
+@variables gu1::Complex gu2::Complex gv1::Complex gv2::Complex t::Real r::Real
 nothing # hide
 ````
 

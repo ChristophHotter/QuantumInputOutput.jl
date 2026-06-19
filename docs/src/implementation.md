@@ -16,7 +16,7 @@ au = Destroy(h, :a_u, 1)
 σ = Transition(h, :σ, 1, 2, 2)
 av = Destroy(h, :a_v, 3)
 
-γ, gu, gv = rnumbers("γ g_u g_v")
+@variables γ::Real gu::Complex gv::Complex
 ```
 
 An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.

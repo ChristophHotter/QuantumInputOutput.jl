@@ -1,6 +1,7 @@
 using BenchmarkTools
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
 using QuantumOpticsBase
 using SymbolicUtils

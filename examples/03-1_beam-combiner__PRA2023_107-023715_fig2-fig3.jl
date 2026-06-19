@@ -8,7 +8,9 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -30,8 +32,10 @@ au1 = Destroy(h, :au_1, 2)
 av1 = Destroy(h, :av_2, 4)
 
 ## symbolic parameters
-@rnumbers γ Δ
-gu1, gu2, gv1 = cnumbers("gu_1 gu_2 gv_1");
+@variables γ::Real Δ::Real
+gu1 = Symbolics.variable(Symbol("gu_1"); T = Complex{Real})
+gu2 = Symbolics.variable(Symbol("gu_2"); T = Complex{Real})
+gv1 = Symbolics.variable(Symbol("gv_1"); T = Complex{Real});
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 

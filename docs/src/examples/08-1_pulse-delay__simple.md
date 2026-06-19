@@ -12,7 +12,9 @@ simultaneously emits a delayed pulse `u(t-τ)` using the pulse-shaping couplings
 ````@example 08-1_pulse-delay__simple
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using SymbolicUtils
 using LinearAlgebra
 using Plots
@@ -32,7 +34,10 @@ ad = Destroy(h, :a_d, 2)
 av = Destroy(h, :a_v, 3)
 
 # symbolic parameters
-gu, gin, gout, gv = cnumbers("g_u g_in g_out g_v")
+gu = Symbolics.variable(Symbol("g_u"); T = Complex{Real})
+gin = Symbolics.variable(Symbol("g_in"); T = Complex{Real})
+gout = Symbolics.variable(Symbol("g_out"); T = Complex{Real})
+gv = Symbolics.variable(Symbol("g_v"); T = Complex{Real})
 nothing # hide
 ````
 
@@ -141,7 +146,7 @@ G_d_in = SLH(S2, [gin*ad, 0], 0)
 H_ud = hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = Symbolics.variable(Symbol("M_{$(i)$(j)}"); T = Complex{Real})
 a0_ls = [au, ad]
 la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]

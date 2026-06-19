@@ -11,7 +11,9 @@ We start by loading the packages and defining the symbolic operators and paramet
 ````@example 02-1_cavity-phase-noise__PRA2020_102-_023717_fig2
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -28,8 +30,9 @@ au = Destroy(h, :a_u, 1)
 c = Destroy(h, :c, 2)
 
 # symbolic parameters
-@rnumbers γ Δ γ_p
-gu, gv = rnumbers("g_u g_v")
+@variables γ::Real Δ::Real γ_p::Real
+gu = Symbolics.variable(Symbol("g_u"); T = Complex{Real})
+gv = Symbolics.variable(Symbol("g_v"); T = Complex{Real})
 nothing # hide
 ````
 

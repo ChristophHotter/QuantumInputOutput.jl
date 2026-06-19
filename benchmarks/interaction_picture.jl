@@ -57,7 +57,9 @@ function benchmark_interaction_picture!(SUITE)
     av_sym = Destroy(h, :a_v, 3)
     σ_sym = Transition(h, :σ, 1, 2, 2)
 
-    gu_sym, γ_sym, gv_sym = rnumbers("gu γ gv")
+    gu_sym = Symbolics.variable(Symbol("gu"); T = Real)
+    γ_sym = Symbolics.variable(Symbol("γ"); T = Real)
+    gv_sym = Symbolics.variable(Symbol("gv"); T = Real)
 
     G_u = SLH(1, gu_sym' * au_sym, 0)
     G_s = SLH(1, sqrt(γ_sym) * σ_sym, 0)
@@ -69,7 +71,7 @@ function benchmark_interaction_picture!(SUITE)
     H_uv = hamiltonian(▷(G_u, G_v))
     H_int_ = simplify(H - H_uv)
 
-    M_sym(i, j) = cnumber("M_{$(i)$(j)}")
+    M_sym(i, j) = Symbolics.variable(Symbol("M_{$(i)$(j)}"); T = Complex{Real})
     a0_ls = [au_sym, av_sym]
     la = length(a0_ls)
     a_int_ls = [sum(M_sym(i, j) * a0_ls[j] for j = 1:la) for i = 1:la]

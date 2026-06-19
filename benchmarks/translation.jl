@@ -5,18 +5,20 @@ function benchmark_translation!(SUITE)
     SUITE["Translation"] = BenchmarkGroup()
 
     ## Symbolic setup: atom-cavity system
-    @rnumbers κ_R κ_L Δ_sym
-    @cnumbers E
+    @variables κ_R::Real κ_L::Real Δ_sym::Real
+    @variables E::Complex
 
     hc = FockSpace(:cavity)
-    ha_ = NLevelSpace("a", 2)
+    ha_ = NLevelSpace(Symbol("a"), 2)
     h = hc ⊗ ha_
 
     a = Destroy(h, :a, 1)
-    σ(i, j) = Transition(h, "σ", i, j, 2)
+    σ(i, j) = Transition(h, Symbol("σ"), i, j, 2)
 
     ## Derive H and L from cascade
-    gu_sym, γ_sym, gv_sym = rnumbers("gu γ gv")
+    gu_sym = Symbolics.variable(Symbol("gu"); T = Real)
+    γ_sym = Symbolics.variable(Symbol("γ"); T = Real)
+    gv_sym = Symbolics.variable(Symbol("gv"); T = Real)
     hu_ = FockSpace(:u)
     hc_ = FockSpace(:c)
     hv_ = FockSpace(:v)

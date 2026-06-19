@@ -1,5 +1,6 @@
 using QuantumInputOutput
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using LinearAlgebra
 using Test
 

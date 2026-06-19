@@ -15,8 +15,10 @@ function benchmark_correlations!(SUITE)
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3)
 
-    gu, Δ, γ = rnumbers("g_u Δ γ")
-    gv = cnumber("g_v")
+    gu = Symbolics.variable(Symbol("g_u"); T = Real)
+    Δ = Symbolics.variable(Symbol("Δ"); T = Real)
+    γ = Symbolics.variable(Symbol("γ"); T = Real)
+    gv = Symbolics.variable(Symbol("g_v"); T = Complex{Real})
 
     G_u = SLH(1, gu * au, 0)
     G_c = SLH(1, √(γ) * c, Δ * c'c)

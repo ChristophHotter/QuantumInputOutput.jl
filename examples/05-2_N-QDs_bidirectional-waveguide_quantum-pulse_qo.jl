@@ -7,6 +7,7 @@
 
 using QuantumInputOutput
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 
 # 
