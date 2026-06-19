@@ -56,7 +56,6 @@ SQA already translates to QuantumOptics (`to_numeric` in `SQA/src/numeric.jl`, a
 
 ### QIO maintainability wins
 - [ ] Examples in CI as smoke tests (highest leverage). Examples were untested and rotted: stale API, several did not run. Real bugs (04-2 MTK flow, `get_solution` new signature, complex-coupling crash, `QAdd + BasicSymbolic` scalar drive) were only caught by running them by hand. A CI job running each example's symbolic setup plus a tiny ODE (skip plots/long solves) would catch API drift.
-- [ ] Depend on `ModelingToolkitBase`, not full `ModelingToolkit`. Full MTK v11 tearing has an `im` bug; QC uses ModelingToolkitBase; aligning fixed the cumulants example. Track QC's MTK choice. (Done for docs/examples this session.)
 - [ ] Document the `::Real` vs `::Complex` contract for couplings. The `conj` in `g'` is load-bearing: a coupling that is physically complex must be `::Complex` or the physics is silently wrong. Old `rnumbers` made couplings real; that was a latent modeling bug. Consider a runtime check ("real parameter received a complex value").
 - [ ] Harden SLH `_add` / `_mul` for scalar couplings: `QAdd + BasicSymbolic` (a classical scalar drive like `Et(t)`) was not handled.
 - [ ] Rendering: `Complex{Num}` decomposes into `real(...)` / `imag(...)` inside products, so complex-coupling Hamiltonians print messy. This is an SQA display representation concern, not fixable in QIO; raise with SQA if it matters for the docs.
