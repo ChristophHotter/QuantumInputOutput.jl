@@ -12,6 +12,7 @@ As usual, we start by loading the packages and defining the operators and parame
 ````@example 05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo
 using QuantumInputOutput
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 ````
 

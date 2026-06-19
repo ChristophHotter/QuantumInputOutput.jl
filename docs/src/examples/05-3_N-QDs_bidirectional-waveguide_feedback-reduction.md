@@ -12,7 +12,9 @@ coherent input pulse.
 ````@example 05-3_N-QDs_bidirectional-waveguide_feedback-reduction
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LinearAlgebra
 ````
@@ -21,18 +23,18 @@ using LinearAlgebra
 N = 2
 
 # symbolic Hilbert space
-ha(i) = NLevelSpace("a$(i)", 2)
+ha(i) = NLevelSpace(Symbol("a$(i)"), 2)
 h = tensor([ha(i) for i = 1:N]...)
 
 # symbolic operators
-σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
+σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, α)
 
 # symbolic parameters
-γR(i) = rnumber("γ^{($(i))}_R")
-γL(i) = rnumber("γ^{($(i))}_L")
-Δ(i) = rnumber("Δ_{$(i)}")
-ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}")
-Ein = rnumber("E_{in}")
+γR(i) = Symbolics.variable(Symbol("γ^{($(i))}_R"); T = Real)
+γL(i) = Symbolics.variable(Symbol("γ^{($(i))}_L"); T = Real)
+Δ(i) = Symbolics.variable(Symbol("Δ_{$(i)}"); T = Real)
+ϕ(i, j) = Symbolics.variable(Symbol("ϕ_{$(i)$(j)}"); T = Real)
+Ein = Symbolics.variable(Symbol("E_{in}"); T = Real)
 nothing # hide
 ````
 

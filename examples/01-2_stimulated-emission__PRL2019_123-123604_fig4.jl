@@ -6,7 +6,9 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 
@@ -24,8 +26,8 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 3)
 
 ## symbolic parameters
-@rnumbers γ Δ Γ
-gv = rnumber("g_v")
+@variables γ::Real Δ::Real Γ::Real
+gv = Symbolics.variable(Symbol("g_v"); T = Real)
 nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 

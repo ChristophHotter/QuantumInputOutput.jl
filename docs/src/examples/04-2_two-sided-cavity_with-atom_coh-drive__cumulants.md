@@ -10,22 +10,23 @@ Here we show how to solve the dynamics of the example `Two-sided Cavity with Ato
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumCumulants
-using ModelingToolkit
+using ModelingToolkitBase
 using OrdinaryDiffEq
 using QuantumOpticsBase
+using QuantumOpticsBase: dagger
 using Plots
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-@rnumbers E κ_L κ_R Δ g γ
+@variables E::Real κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
 Natoms = 2
 
 hc = FockSpace(:cavity)
-ha(i) = NLevelSpace("a_$i", 2)
+ha(i) = NLevelSpace(Symbol("a_$i"), 2)
 h = hc ⊗ tensor([ha(i) for i = 1:Natoms]...);
 
 a = Destroy(h, :a, 1) # cavity
-σ(α, i, j) = Transition(h, "σ_$(α)", i, j, 1+α) # two-level atom α
+σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, 1+α) # two-level atom α
 ∑σ(i, j) = sum(σ(α, i, j) for α = 1:Natoms) # collective atomic operator
 nothing # hide
 ````
@@ -65,6 +66,7 @@ We use the function `meanfield` to obtain the equation for the intra-cavity fiel
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 eqs_a = meanfield([a], H1, [L1_L, L1_R])
+complete!(eqs_a)
 nothing # hide
 ````
 
@@ -95,8 +97,8 @@ nothing # hide
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
 # numerical system
 T = [0:0.01:1;]*20
-@named sys_a = System(eqs_a)
-dict = merge(Dict(p_sym .=> p_num), Dict(unknowns(sys_a) .=> u0))
+sys_a = mtkcompile(System(eqs_a; name = :sys_a))
+dict = merge(Dict(p_sym .=> p_num), initial_values(eqs_a, u0))
 prob_a = ODEProblem(sys_a, dict, (0.0, T[end]))
 nothing # hide
 ````
@@ -107,9 +109,9 @@ nothing # hide
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-n_cavity = abs2.(get_solution(sol_a, a))
-n_ref = abs2.(get_solution(sol_a, √(κ_Ln)*a) .+ En)
-n_trans = abs2.(get_solution(sol_a, √(κ_Rn)*a))
+n_cavity = abs2.(get_solution(sol_a, a, eqs_a).(T))
+n_ref = abs2.(√(κ_Ln) .* get_solution(sol_a, a, eqs_a).(T) .+ En)
+n_trans = abs2.(√(κ_Rn) .* get_solution(sol_a, a, eqs_a).(T))
 nothing # hide
 ````
 
@@ -124,7 +126,7 @@ plot(p1, p2; layout = (2, 1), size = (600, 500))
 Now we scan the laser-cavity detuning $\Delta$ to plot the transmission and reflection spectrum.
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-dict_p_Δ(Δn) = merge(Dict(p_sym .=> [En, κ_Rn, κ_Ln, Δn]), Dict(unknowns(sys_a) .=> u0))
+dict_p_Δ(Δn) = merge(Dict(p_sym .=> [En, κ_Rn, κ_Ln, Δn]), initial_values(eqs_a, u0))
 n_ref_Δ = zeros(lΔ)
 n_trans_Δ = zeros(lΔ)
 
@@ -133,8 +135,8 @@ for it = 1:lΔ
     prob_ = ODEProblem(sys_a, dict_p_Δ(Δn_), (0.0, T[end]))
     sol_ = solve(prob_, Tsit5(); saveat = T)
 
-    n_ref_Δ[it] = abs2.(get_solution(sol_, √(κ_Ln)*a) .+ En)[end]
-    n_trans_Δ[it] = abs2.(get_solution(sol_, √(κ_Ln)*a))[end]
+    n_ref_Δ[it] = abs2(√(κ_Ln) * get_solution(sol_, a, eqs_a)(T[end]) + En)
+    n_trans_Δ[it] = abs2(√(κ_Ln) * get_solution(sol_, a, eqs_a)(T[end]))
 end
 nothing # hide
 ````
@@ -150,9 +152,12 @@ p
 
 In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
 
+Obtain the ModelingToolkit independent variable from a seed mean-field problem and
+register the classical drive as a function of it (QuantumCumulants v0.5 convention).
+
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-@syms t::Real
-@register_symbolic Et(t)
+t = meanfield([a], -Δ*a'a, [a]).iv
+@register_symbolic Et(tt)
 
 G_d_t = SLH(1, Et(t), 0)
 H_ac = -Δ*(a'a + ∑σ(2, 2)) + g*(a'∑σ(1, 2) + a*∑σ(2, 1))
@@ -225,13 +230,13 @@ bc1 = FockBasis(4)
 ba = NLevelBasis(2)
 b = bc1 ⊗ tensor([ba for i = 1:Natoms]...)
 ψ0 = LazyKet(b, (fockstate(bc1, 0), [nlevelstate(ba, 1) for i = 1:Natoms]...))
-u0_2 = initial_values(eqs2_c, ψ0) # initial state
+u0_2 = initial_values(eqs2_c, initial_values(eqs2_c, ψ0)) # state -> vector -> u0 dict
 nothing # hide
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-@named sys2 = System(eqs2_c) # initial state
-dict2 = merge(Dict(p_sym2 .=> p_num2), Dict(unknowns(sys2) .=> u0_2))
+sys2 = mtkcompile(System(eqs2_c; name = :sys2)) # initial state
+dict2 = merge(Dict(p_sym2 .=> p_num2), u0_2)
 prob2 = ODEProblem(sys2, dict2, (0.0, T2[end]))
 nothing # hide
 ````
@@ -242,8 +247,8 @@ nothing # hide
 ````
 
 ````@example 04-2_two-sided-cavity_with-atom_coh-drive__cumulants
-n_ref2 = abs2.(get_solution(sol2, √(κ_Ln2)*a) + Et.(T2))
-n_trans2 = abs2.(get_solution(sol2, √(κ_Rn2)*a))
+n_ref2 = abs2.(√(κ_Ln2) .* get_solution(sol2, a, eqs2_c).(T2) .+ Et.(T2))
+n_trans2 = abs2.(√(κ_Rn2) .* get_solution(sol2, a, eqs2_c).(T2))
 nothing # hide
 
 p = plot(
@@ -278,7 +283,7 @@ Pkg.status(
         "QuantumInputOutput",
         "SecondQuantizedAlgebra",
         "QuantumCumulants",
-        "ModelingToolkit",
+        "ModelingToolkitBase",
         "OrdinaryDiffEq",
         "QuantumOpticsBase",
         "Plots",

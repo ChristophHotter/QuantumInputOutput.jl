@@ -13,7 +13,9 @@ As usual, we start by loading the packages and defining the symbolic operators a
 ````@example 03-1_beam-combiner__PRA2023_107-023715_fig2-fig3
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -35,8 +37,10 @@ au1 = Destroy(h, :au_1, 2)
 av1 = Destroy(h, :av_2, 4)
 
 # symbolic parameters
-@rnumbers γ Δ
-gu1, gu2, gv1 = cnumbers("gu_1 gu_2 gv_1");
+@variables γ::Real Δ::Real
+gu1 = Symbolics.variable(Symbol("gu_1"); T = Complex{Real})
+gu2 = Symbolics.variable(Symbol("gu_2"); T = Complex{Real})
+gv1 = Symbolics.variable(Symbol("gv_1"); T = Complex{Real});
 nothing #hide
 ````
 

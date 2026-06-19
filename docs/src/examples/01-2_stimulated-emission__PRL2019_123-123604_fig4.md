@@ -11,7 +11,9 @@ We start by loading the packages and defining the symbolic operators and paramet
 ````@example 01-2_stimulated-emission__PRL2019_123-123604_fig4
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 ````
@@ -29,8 +31,8 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 3)
 
 # symbolic parameters
-@rnumbers γ Δ Γ
-gv = rnumber("g_v")
+@variables γ::Real Δ::Real Γ::Real
+gv = Symbolics.variable(Symbol("g_v"); T = Real)
 nothing # hide
 ````
 

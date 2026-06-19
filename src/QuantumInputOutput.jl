@@ -3,8 +3,8 @@ module QuantumInputOutput
 using SecondQuantizedAlgebra: SecondQuantizedAlgebra, QSym, to_numeric
 using QuantumOpticsBase: QuantumOpticsBase, expect, basis, dagger, sparse
 using QuantumOptics: QuantumOptics, timeevolution
-using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, arguments, simplify, expand
-using Symbolics: Symbolics, build_function
+using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, simplify
+using Symbolics: Symbolics, build_function, Num
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate

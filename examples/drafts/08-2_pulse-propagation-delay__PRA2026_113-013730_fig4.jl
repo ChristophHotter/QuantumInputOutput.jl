@@ -9,6 +9,7 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
 using SymbolicUtils
 using LinearAlgebra
@@ -31,8 +32,12 @@ ad2 = Destroy(h, :ad_2, 3)
 σ(i, j) = Transition(h, :σ, i, j, 4)
 
 ## symbolic parameters
-@rnumbers γ Δ r t
-gu, gd1in, gd1out, gd2in, gd2out = cnumbers("gu gd1_{in} gd1_{out} gd2_{in} gd2_{out}")
+@variables γ::Real Δ::Real r::Real t::Real
+gu = Symbolics.variable(Symbol("gu"); T = Complex{Real})
+gd1in = Symbolics.variable(Symbol("gd1_{in}"); T = Complex{Real})
+gd1out = Symbolics.variable(Symbol("gd1_{out}"); T = Complex{Real})
+gd2in = Symbolics.variable(Symbol("gd2_{in}"); T = Complex{Real})
+gd2out = Symbolics.variable(Symbol("gd2_{out}"); T = Complex{Real})
 nothing # hide
 
 #
@@ -70,7 +75,7 @@ H_pulse = G_u_bs_d1_d2.hamiltonian
 H_int_ = simplify(H - H_pulse)
 
 ## symbolic coefficient matrix $M(t)$
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = Symbolics.variable(Symbol("M_{$(i)$(j)}"); T = Complex{Real})
 a_ls = [au, ad1, ad2]
 la = length(a_ls)
 a_int_ls = [sum(M(i, j)*a_ls[j] for j = 1:la) for i = 1:la]

@@ -16,6 +16,7 @@ We start by defining the symbolic Hilbert space, operators, and parameters. The 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using LinearAlgebra
 using Plots
 using LaTeXStrings
@@ -31,8 +32,7 @@ au = Destroy(h, :a_u, 1)
 c = Destroy(h, :c, 2)
 av = Destroy(h, :a_v, 3)
 
-gu, Δ, γ = rnumbers("g_u Δ γ")
-gv = cnumber("g_v")
+@variables gu::Complex Δ::Real γ::Real gv::Complex
 nothing # hide
 ```
 

@@ -14,7 +14,9 @@ This example, reproduces Fig. 4 of
 ````@example 02-3_mode-entanglement__PRA2020_102-023717_fig4
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -36,8 +38,9 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 # symbolic parameters
-@rnumbers γ g ω12
-gv1, gv2 = cnumbers("g_v1 g_v2")
+@variables γ::Real g::Real ω12::Real
+gv1 = Symbolics.variable(Symbol("g_v1"); T = Complex{Real})
+gv2 = Symbolics.variable(Symbol("g_v2"); T = Complex{Real})
 nothing # hide
 ````
 
