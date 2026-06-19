@@ -45,7 +45,7 @@ function benchmark_correlations!(SUITE)
     function input_output(t, ρ)
         Ht = H_QO(t)
         J = [L_QO(t)]
-        return Ht, J, dagger.(J)
+        return Ht, J, QuantumOpticsBase.dagger.(J)
     end
 
     ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
