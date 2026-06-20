@@ -26,16 +26,15 @@ All couplings may be time-dependent or constant.
 function coupling_matrix(gs::NTuple{N}) where {N}
     gfs = map(_as_time_function, gs)
     function A(t)
+        gvals = ntuple(i -> gfs[i](t), Val(N))
         SMatrix{N,N,ComplexF64}(ntuple(Val(N * N)) do k
             i, j = divrem(k - 1, N) .+ (1, 1)
             if i == j
                 zero(ComplexF64)
             elseif j < i
-                val = 0.5 * gfs[j](t) * conj(gfs[i](t))
-                val
+                0.5 * gvals[j] * conj(gvals[i])
             else  # j > i
-                val = 0.5 * gfs[i](t) * conj(gfs[j](t))
-                -conj(val)
+                -conj(0.5 * gvals[i] * conj(gvals[j]))
             end
         end)
     end
