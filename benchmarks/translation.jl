@@ -6,7 +6,7 @@ function benchmark_translation!(SUITE)
 
     ## Symbolic setup: atom-cavity system
     @variables κ_R::Real κ_L::Real Δ_sym::Real
-    @variables E::Complex
+    @variables E::Number
 
     hc = FockSpace(:cavity)
     ha_ = NLevelSpace(Symbol("a"), 2)

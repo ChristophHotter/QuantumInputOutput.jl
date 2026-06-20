@@ -15,7 +15,7 @@ function benchmark_correlations!(SUITE)
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3)
 
-    @variables g_u::Real Δ::Real γ::Real g_v::Complex
+    @variables g_u::Real Δ::Real γ::Real g_v::Number
 
     G_u = SLH(1, g_u * au, 0)
     G_c = SLH(1, √(γ) * c, Δ * c'c)
