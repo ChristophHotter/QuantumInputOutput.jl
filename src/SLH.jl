@@ -22,15 +22,18 @@ _post(x) = x
 _is_time_dep(x) = x isa _Callable
 _to_func(x) = _is_time_dep(x) ? x : (t -> x)
 
+_isunit(x::Number) = isone(x)
+_isunit(::Any) = false
+
 _add(f::_Callable, g::_Callable) = t -> f(t) + g(t)
 _add(f::_Callable, x) = iszero(x) ? f : (t -> f(t) + x)
 _add(x, f::_Callable) = iszero(x) ? f : (t -> x + f(t))
-_add(x, y) = x + y
+_add(x, y) = iszero(x) ? y : iszero(y) ? x : x + y
 
 _mul(f::_Callable, g::_Callable) = t -> f(t) * g(t)
 _mul(s, f::_Callable) = isone(s) ? f : (t -> s * f(t))
 _mul(f::_Callable, s) = isone(s) ? f : (t -> f(t) * s)
-_mul(x, y) = x * y
+_mul(x, y) = _isunit(x) ? y : _isunit(y) ? x : x * y
 
 # ──────────────────────────────────────────────
 # FunctionWrapper with concrete return type
@@ -258,19 +261,11 @@ function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
     S2L1 = _slh_matvec(S2, L1)
     L_t = SVector{N}(ntuple(i -> _post(_add(L2[i], S2L1[i])), Val(N)))
 
-    # Cross terms for Hamiltonian
-    S2_adj = SMatrix{N,N}(ntuple(Val(N * N)) do k
-        i, j = divrem(k - 1, N) .+ (1, 1)
-        _adj(S2[i, j])
-    end)
-    L1_adj = SVector{N}(ntuple(i -> _adj(L1[i]), Val(N)))
     L2_adj = SVector{N}(ntuple(i -> _adj(L2[i]), Val(N)))
-
     cross1 = _slh_dot(L2_adj, S2L1)
-    S2adj_L2 = _slh_matvec(S2_adj, L2)
-    cross2 = _slh_dot(L1_adj, S2adj_L2)
+    X = _mul(-1im / 2, cross1)
 
-    H_t = _post(_add(_add(H1, H2), _mul(-1im / 2, _add(cross1, _mul(-1, cross2)))))
+    H_t = _post(_add(_add(H1, H2), _add(X, _adj(X))))
 
     op_hint = _op_type(G1)
     op_hint === nothing && (op_hint = _op_type(G2))
