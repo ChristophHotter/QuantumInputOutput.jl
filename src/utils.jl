@@ -25,7 +25,7 @@ end
 function substitute_operators(op::SQA.QAdd, dict::Dict; replace_adjoint = true)
     dict_ = replace_adjoint ? _extend_with_adjoint(dict) : dict
     iszero(op) && return op
-    return sum(c * _replace_ops(term.ops, dict_) for (term, c) in op)
+    return sum(_coeff_num(c) * _replace_ops(term.ops, dict_) for (term, c) in op)
 end
 
 # Single-level operator replacement: each leaf is replaced by a direct dictionary

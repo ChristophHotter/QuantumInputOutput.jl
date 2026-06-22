@@ -27,7 +27,8 @@ function _translate_numeric(
     op_ = substitute(op, parameter)
     iszero(op_) && return op_type(0 * _one_op(b, operators))
     result = nothing
-    for (term, c) in op_.arguments
+    for (term, c_) in op_.arguments
+        c = _coeff_num(c_)
         _coeff_is_const(c) || throw(
             ArgumentError(
                 "cannot translate `$op` to a static operator: coefficient `$c` still " *
@@ -135,6 +136,12 @@ function _time_basis(time_parameter)
     end
     return basevars, Tuple(valuefuncs)
 end
+
+# SQA v0.7 stores each `QTerm` prefactor as a `Coeff` (native/poly/symbolic forms);
+# lower it to a `Complex{Num}` at the symbolic boundary so the helpers below operate
+# on plain Symbolics expressions. A `Complex{Num}` passes through unchanged.
+_coeff_num(c) = SQA.to_num(c)
+_coeff_num(c::Complex{Num}) = c
 
 # A coefficient with no free variables is concrete.
 _coeff_is_const(c::Complex{Num}) =
@@ -246,14 +253,21 @@ function _translate_qo(
     pairs = collect(op_.arguments)
     if length(pairs) == 1
         (term, c) = pairs[1]
-        return _translate_term(term.ops, c, b, time_parameter, operators, op_type)
+        return _translate_term(
+            term.ops,
+            _coeff_num(c),
+            b,
+            time_parameter,
+            operators,
+            op_type,
+        )
     end
 
     # Multi-term: combine via FunctionWrappers with a common concrete type so the
     # returned closure is type-stable. Inner products use `sparse` for a uniform type.
     first_res = _translate_term(
         pairs[1].first.ops,
-        pairs[1].second,
+        _coeff_num(pairs[1].second),
         b,
         time_parameter,
         operators,
@@ -267,7 +281,7 @@ function _translate_qo(
             k == 1 ? first_res :
             _translate_term(
                 pairs[k].first.ops,
-                pairs[k].second,
+                _coeff_num(pairs[k].second),
                 b,
                 time_parameter,
                 operators,
