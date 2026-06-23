@@ -61,6 +61,8 @@ jobs:
           alert-threshold: "130%"
           fail-threshold: "170%"
           comment-on-alert: true
+          comment-always: true
+          summary-always: true
           fail-on-alert: true
           benchmark-data-dir-path: benchmarks
           max-items-in-chart: 100
