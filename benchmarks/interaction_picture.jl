@@ -40,8 +40,10 @@ function benchmark_interaction_picture!(SUITE)
 
     SUITE["Interaction Picture"]["coefficient matrix M"] = BenchmarkGroup()
 
+    # Allocation-heavy ODE solve: GC before each sample to stabilize the timing
+    # (see the note in runbenchmarks.jl).
     SUITE["Interaction Picture"]["coefficient matrix M"]["numerical (ODE)"] =
-        @benchmarkable solve_mode_evolution($A_uv, $T)
+        @benchmarkable solve_mode_evolution($A_uv, $T) gcsample = true
 
     SUITE["Interaction Picture"]["coefficient matrix M"]["analytical (2 equal modes)"] =
         @benchmarkable solve_mode_evolution_symmetric($u, $T)
