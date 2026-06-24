@@ -182,6 +182,21 @@ function _compile_coeff(c::Complex{Num}, vars...)
     return (vals...) -> g_re(vals...) + im * g_im(vals...)
 end
 
+# Fold `conj` applied to a numeric literal. After substituting a parameter to a
+# number, a coefficient can carry `conj(0.0)` (a real coupling set to zero) or
+# `conj(conj(0.0))` (from a cascade Hamiltonian's adjoint cross-term). Symbolics
+# does not fold these, so the term still looks nonzero and the time-dependent
+# closure re-evaluates it on every ODE step. Folding `conj`-of-a-number lets such
+# coefficients collapse to 0 so the term can be dropped. `conj` of a *symbolic*
+# (time) variable is left untouched.
+const _FOLD_NUM_CONJ = SymbolicUtils.Postwalk(
+    SymbolicUtils.PassThrough(SymbolicUtils.@rule conj(~x::(y -> y isa Number)) => conj(~x)),
+)
+_fold_num_conj(c::Complex{Num}) = Complex{Num}(
+    Num(_FOLD_NUM_CONJ(SymbolicUtils.unwrap(real(c)))),
+    Num(_FOLD_NUM_CONJ(SymbolicUtils.unwrap(imag(c)))),
+)
+
 # ── Per-term translation ──
 # Translate a single `(ops, coefficient)` term into a time-dependent function
 # `t -> op`. A concrete coefficient yields a constant function; a symbolic
@@ -250,29 +265,27 @@ function _translate_qo(
     op_ = substitute(op, parameter)
     iszero(op_) && return t -> op_type(0 * one(b))
 
-    pairs = collect(op_.arguments)
+    # Convert each coefficient to a foldable numeric form and drop terms that are
+    # identically zero after substitution. Without this, a coupling set to zero
+    # leaves an unfolded conj(0)/conj(conj(0)) factor, so the term survives and is
+    # needlessly rebuilt every ODE step (see `_fold_num_conj`).
+    pairs = Tuple{Any,Complex{Num}}[]
+    for (term, c_) in op_.arguments
+        c = _fold_num_conj(_coeff_num(c_))
+        iszero(c) && continue
+        push!(pairs, (term, c))
+    end
+    isempty(pairs) && return t -> op_type(0 * one(b))
+
     if length(pairs) == 1
         (term, c) = pairs[1]
-        return _translate_term(
-            term.ops,
-            _coeff_num(c),
-            b,
-            time_parameter,
-            operators,
-            op_type,
-        )
+        return _translate_term(term.ops, c, b, time_parameter, operators, op_type)
     end
 
     # Multi-term: combine via FunctionWrappers with a common concrete type so the
     # returned closure is type-stable. Inner products use `sparse` for a uniform type.
-    first_res = _translate_term(
-        pairs[1].first.ops,
-        _coeff_num(pairs[1].second),
-        b,
-        time_parameter,
-        operators,
-        sparse,
-    )
+    first_res =
+        _translate_term(pairs[1][1].ops, pairs[1][2], b, time_parameter, operators, sparse)
     OpType = typeof(first_res(0.0))
     FW = FunctionWrapper{OpType,Tuple{Float64}}
 
@@ -280,8 +293,8 @@ function _translate_qo(
         res =
             k == 1 ? first_res :
             _translate_term(
-                pairs[k].first.ops,
-                _coeff_num(pairs[k].second),
+                pairs[k][1].ops,
+                pairs[k][2],
                 b,
                 time_parameter,
                 operators,
