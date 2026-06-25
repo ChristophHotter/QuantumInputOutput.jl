@@ -42,6 +42,12 @@ export SLH,
     solve_mode_evolution_symmetric,
     # Correlations
     correlation_matrix,
+    # Response: S-parameters, susceptibility, spectra
+    output_field,
+    liouvillian_resolvent,
+    susceptibility,
+    scattering_parameter,
+    power_spectrum,
     # Operators
     substitute_operators
 
@@ -51,5 +57,6 @@ include("utils.jl")
 include("pulses.jl")
 include("correlations.jl")
 include("interaction_picture.jl")
+include("response.jl")
 
 end

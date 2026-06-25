@@ -94,6 +94,28 @@ solve_mode_evolution_symmetric
 correlation_matrix
 ```
 
+## [Response: S-parameters, susceptibility, spectra](@id API: Response)
+
+```@docs
+output_field
+```
+
+```@docs
+scattering_parameter
+```
+
+```@docs
+susceptibility
+```
+
+```@docs
+power_spectrum
+```
+
+```@docs
+liouvillian_resolvent
+```
+
 ## [Utilities](@id API: Utilities)
 
 ```@docs

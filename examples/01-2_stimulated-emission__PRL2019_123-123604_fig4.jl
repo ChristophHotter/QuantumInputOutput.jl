@@ -113,7 +113,7 @@ p = plot(t_, popu_u_n1; color = :red, label = L"| 1 \rangle_u")
 plot!(p, t_, popu_e; color = :pink, ls = :dash, label = L"| e \rangle")
 plot!(p, t_, popu_v_n1; color = :blue, ls = :dash, label = L"| 1 \rangle_v")
 plot!(p, t_, popu_v_n2; color = :green, label = L"| 2 \rangle_v")
-plot!(p, t_, I_out_int; color = :black, ls = :dot, label = L"\\int I_{out} dt")
+plot!(p, t_, I_out_int; color = :black, ls = :dot, label = L"\int I_{out} dt")
 plot!(
     p;
     xlims = (0, 4),
