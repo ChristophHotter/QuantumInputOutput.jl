@@ -17,6 +17,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
+  actions: write  # needed to allow julia-actions/cache to proactively delete old caches that it has created
   contents: write
   pages: write
   id-token: write
