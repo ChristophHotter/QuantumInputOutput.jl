@@ -15,12 +15,11 @@ function benchmark_correlations!(SUITE)
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3)
 
-    gu, Δ, γ = rnumbers("g_u Δ γ")
-    gv = cnumber("g_v")
+    @variables g_u::Real Δ::Real γ::Real g_v::Number
 
-    G_u = SLH(1, gu * au, 0)
+    G_u = SLH(1, g_u * au, 0)
     G_c = SLH(1, √(γ) * c, Δ * c'c)
-    G_v = SLH(1, gv * av, 0)
+    G_v = SLH(1, g_v * av, 0)
     G_cas = ▷(G_u, G_c, G_v)
 
     H_sym = hamiltonian(G_cas)
@@ -37,8 +36,8 @@ function benchmark_correlations!(SUITE)
     bv1 = FockBasis(1)
     b = bu1 ⊗ bc1 ⊗ bv1
 
-    dict_p = Dict([γ, Δ, gv] .=> [γ_, 0.0, 0])
-    dict_p_t = Dict(gu => gu_t)
+    dict_p = Dict([γ, Δ, g_v] .=> [γ_, 0.0, 0])
+    dict_p_t = Dict(g_u => gu_t)
 
     H_QO = translate_qo(H_sym, b; parameter = dict_p, time_parameter = dict_p_t)
     L_QO = translate_qo(L_sym, b; parameter = dict_p, time_parameter = dict_p_t)
@@ -46,7 +45,7 @@ function benchmark_correlations!(SUITE)
     function input_output(t, ρ)
         Ht = H_QO(t)
         J = [L_QO(t)]
-        return Ht, J, dagger.(J)
+        return Ht, J, QuantumOpticsBase.dagger.(J)
     end
 
     ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
@@ -62,6 +61,5 @@ function benchmark_correlations!(SUITE)
 
     SUITE["Correlations"]["two-time"]["single photon cavity"] =
         @benchmarkable correlation_matrix($T, $ρt, $input_output, $Ls)
-
     return nothing
 end

@@ -6,7 +6,9 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 
@@ -15,18 +17,18 @@ using LaTeXStrings
 N = 2 # number of quantum dots
 
 ## symbolic Hilbert space
-ha(i) = NLevelSpace("a$(i)", 2)
+ha(i) = NLevelSpace(Symbol("a$(i)"), 2)
 h = tensor([ha(i) for i = 1:N]...)
 
 ## symbolic operators
-σ(α, i, j) = Transition(h, "σ_$(α)", i, j, α)
+σ(α, i, j) = Transition(h, Symbol("σ_$(α)"), i, j, α)
 
 ## symbolic parameters
-γR(i) = rnumber("γ^{($(i))}_R") # right-moving decay rate
-γL(i) = rnumber("γ^{($(i))}_L") # left-moving decay rate
-Δ(i) = rnumber("Δ_{$(i)}") # detuning
-ϕ(i, j) = rnumber("ϕ_{$(i)$(j)}") # phase between QD-i and QD-j
-Ein = rnumber("E_{in}") # coherent drive in the right-moving input
+γR(i) = Symbolics.variable(Symbol("γ^{($(i))}_R"); T = Real) # right-moving decay rate
+γL(i) = Symbolics.variable(Symbol("γ^{($(i))}_L"); T = Real) # left-moving decay rate
+Δ(i) = Symbolics.variable(Symbol("Δ_{$(i)}"); T = Real) # detuning
+ϕ(i, j) = Symbolics.variable(Symbol("ϕ_{$(i)$(j)}"); T = Real) # phase between QD-i and QD-j
+Ein = Symbolics.variable(Symbol("E_{in}"); T = Real) # coherent drive in the right-moving input
 nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples, cascade the left and right moving channels, and concatenate them to obtain the Hamiltonian and Lindblad for the system. 

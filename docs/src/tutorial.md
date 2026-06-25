@@ -16,6 +16,7 @@ We start by defining the symbolic Hilbert space, operators, and parameters. The 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using LinearAlgebra
 using Plots
 using LaTeXStrings
@@ -31,17 +32,16 @@ au = Destroy(h, :a_u, 1)
 c = Destroy(h, :c, 2)
 av = Destroy(h, :a_v, 3)
 
-gu, Δ, γ = rnumbers("g_u Δ γ")
-gv = cnumber("g_v")
+@variables g_u::Complex Δ::Real γ::Real g_v::Complex
 nothing # hide
 ```
 
 The SLH triples for the input mode, system cavity, and output mode are then cascaded to obtain the effective Hamiltonian and Lindblad operator.
 
 ```@example tutorial
-G_u = SLH(1, gu * au, 0)
+G_u = SLH(1, g_u * au, 0)
 G_c = SLH(1, √(γ) * c, Δ * c' * c)
-G_v = SLH(1, gv * av, 0)
+G_v = SLH(1, g_v * av, 0)
 
 G_cas = ▷(G_u, G_c, G_v)
 nothing # hide
@@ -63,8 +63,8 @@ We choose numerical parameters and define a Gaussian input pulse `u(t)` and calc
 γ_ = 1.0
 Δ_ = 0.0
 
-p_sym = [γ, Δ, gv]
-p_num = [γ_, Δ_, 0.0] # gv = 0
+p_sym = [γ, Δ, g_v]
+p_num = [γ_, Δ_, 0.0] # g_v = 0
 dict_p = Dict(p_sym .=> p_num)
 
 # Gaussian input mode
@@ -75,7 +75,7 @@ T = [0:0.002:1;]*T_end
 ΔT = T[2] - T[1]
 
 gu_t = coupling_input(u1, T)
-dict_p_t = Dict(gu => gu_t)
+dict_p_t = Dict(g_u => gu_t)
 nothing # hide
 ```
 
@@ -157,7 +157,7 @@ Finally, we treat the dominant output mode explicitly by providing `g_v(t)` as a
 ```@example tutorial
 gv_t = coupling_output(v_mode, T)
 
-dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
+dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])
 
 H_QO_2 = translate_qo(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)

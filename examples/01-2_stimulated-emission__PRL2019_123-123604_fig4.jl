@@ -7,6 +7,7 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 
@@ -24,15 +25,14 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 3)
 
 ## symbolic parameters
-@rnumbers γ Δ Γ
-gv = rnumber("g_v")
+@variables γ::Real Δ::Real Γ::Real g_v::Real
 nothing # hide
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
 G_u = SLH(1, √(Γ)*au, 0) # input cavity 
 G_c = SLH(1, √(γ)*σ(1, 2), Δ*σ(2, 2)) # two-level atom
-G_v = SLH(1, gv'*av, 0) # output cavity
+G_v = SLH(1, g_v'*av, 0) # output cavity
 
 G_cas = G_u ▷ G_c ▷ G_v
 nothing # hide
@@ -56,7 +56,7 @@ p_num = [γ_, Δ_, Γ_]
 dict_p = Dict(p_sym .=> p_num)
 
 gv_(t) = √(Γ_/(exp(Γ_*t) - 1))
-dict_p_t = Dict(gv => gv_)
+dict_p_t = Dict(g_v => gv_)
 
 T = [0.001:0.001:1;]*4.0
 ΔT = T[2] - T[1]

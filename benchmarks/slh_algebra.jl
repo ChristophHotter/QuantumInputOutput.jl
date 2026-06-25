@@ -17,12 +17,11 @@ function benchmark_slh_algebra!(SUITE)
     c = Destroy(h, :c, 2)
     av = Destroy(h, :a_v, 3)
 
-    gu, Δ, γ = rnumbers("g_u Δ γ")
-    gv = cnumber("g_v")
+    @variables g_u::Real Δ::Real γ::Real g_v::Number
 
-    G_u = SLH(1, gu * au, 0)
+    G_u = SLH(1, g_u * au, 0)
     G_c = SLH(1, √(γ) * c, Δ * c'c)
-    G_v = SLH(1, gv * av, 0)
+    G_v = SLH(1, g_v * av, 0)
 
     SUITE["SLH Algebra"]["symbolic"]["3-cavity cascade"] = @benchmarkable begin
         G_cas = ▷($G_u, $G_c, $G_v)
@@ -38,7 +37,7 @@ function benchmark_slh_algebra!(SUITE)
 
     # Feedback: coherent-feedback OPO loop
     hs = FockSpace(:s)
-    a_fb = Destroy(hs, :a, 1)
+    a_fb = Destroy(hs, :a)
     κ_fb = 0.7
     ϵ_fb = 0.45
     η_fb = 0.65

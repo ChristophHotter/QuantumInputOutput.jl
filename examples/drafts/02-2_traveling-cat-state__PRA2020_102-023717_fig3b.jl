@@ -26,8 +26,7 @@ hc = FockSpace(:c)
 a = Destroy(hc, :a, 1)
 
 ## symbolic parameters
-@rnumbers γ K Δ
-p = cnumber("p")
+@variables γ::Real K::Real Δ::Real p::Number
 nothing # hide
 
 # The KPO Hamiltonian is
@@ -119,18 +118,18 @@ h = hc ⊗ hv
 
 a2 = Destroy(h, :a, 1)
 av = Destroy(h, :a_v, 2)
-gv = cnumber("g_v")
+@variables g_v::Number
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)
-G_v = SLH(1, gv * av, 0)
+G_v = SLH(1, g_v * av, 0)
 G = G_s2 ▷ G_v
 
 H_2 = hamiltonian(G)
 L_2 = lindblad(G)[1]
 
 gv_t = coupling_output(v_mode, T)
-dict_p_t_2 = Dict(p => p_t, gv => gv_t)
+dict_p_t_2 = Dict(p => p_t, g_v => gv_t)
 
 bv = FockBasis(n_cut)
 b2 = bc ⊗ bv

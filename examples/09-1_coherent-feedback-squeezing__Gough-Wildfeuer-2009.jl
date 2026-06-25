@@ -17,12 +17,10 @@ using Plots
 hc = FockSpace(:c)
 
 ## symbolic operator
-a = Destroy(hc, :a, 1)
+a = Destroy(hc, :a)
 
 ## symbolic parameters
-κ = rnumber("κ")
-ϵ = rnumber("ϵ")
-η = rnumber("η")
+@variables κ::Real ϵ::Real η::Real
 nothing # hide
 
 # The open-loop OPO has one port, while the beam splitter has two ports. We first

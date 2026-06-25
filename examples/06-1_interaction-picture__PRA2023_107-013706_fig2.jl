@@ -6,7 +6,9 @@
 
 using QuantumInputOutput
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using SymbolicUtils
 using Plots
 using LaTeXStrings
@@ -25,7 +27,7 @@ av_sym = Destroy(h, :a_v, 3)
 σ12_sym = Transition(h, :σ, 1, 2, 2)
 
 ## symbolic parameters
-gu, γ, gv = rnumbers("gu γ gv")
+@variables gu::Number γ::Real gv::Number
 
 ## cascade the SLH elements
 G_u = SLH(1, gu' * au_sym, 0)
@@ -51,7 +53,7 @@ H_uv = hamiltonian(▷(G_u, G_v))
 H_int_sym_ = simplify(H - H_uv)
 
 ## symbolic coefficient matrix $M(t)$ 
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = Symbolics.variable(Symbol("M_{$(i)$(j)}"); T = Complex{Real})
 a0_ls = [au_sym, av_sym]
 la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]

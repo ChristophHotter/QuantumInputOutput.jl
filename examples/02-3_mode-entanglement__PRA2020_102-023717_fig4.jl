@@ -11,6 +11,7 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LaTeXStrings
 using LinearAlgebra
@@ -32,8 +33,7 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 ## symbolic parameters
-@rnumbers γ g ω12
-gv1, gv2 = cnumbers("g_v1 g_v2")
+@variables γ::Real g::Real ω12::Real g_v1::Number g_v2::Number
 nothing # hide
 
 # The localized system consists of a cavity mode coupled to a three-level
@@ -43,8 +43,8 @@ nothing # hide
 H_s = g * (a' * σ(1, 3) + a * σ(3, 1) + a' * σ(2, 3) + a * σ(3, 2)) + ω12 * σ(2, 2)
 G_s = SLH(1, √(γ) * a, H_s)
 
-G_v1 = SLH(1, gv1' * av1, 0)
-G_v2 = SLH(1, gv2' * av2, 0)
+G_v1 = SLH(1, g_v1' * av1, 0)
+G_v2 = SLH(1, g_v2' * av2, 0)
 G = cascade(G_s, G_v1, G_v2)
 
 H = hamiltonian(G)
@@ -60,7 +60,7 @@ g_ = 0.1γ_
 T = [0:0.005:1;]*100/γ_
 ΔT = T[2] - T[1]
 
-dict_p_1 = Dict([γ, g, ω12, gv1, gv2] .=> [γ_, g_, ω12_, 0.0, 0.0])
+dict_p_1 = Dict([γ, g, ω12, g_v1, g_v2] .=> [γ_, g_, ω12_, 0.0, 0.0])
 nothing # hide
 
 ## numeric bases and operators
@@ -113,7 +113,7 @@ v2_eff = effective_output_mode([v1_mode, v2_mode], T, 2)
 gv2_t = coupling_output(v2_eff, T)
 
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
-dict_p_t_2 = Dict(gv1 => gv1_t, gv2 => gv2_t)
+dict_p_t_2 = Dict(g_v1 => gv1_t, g_v2 => gv2_t)
 
 H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 L_QO_2 = translate_qo(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)

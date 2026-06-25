@@ -18,13 +18,17 @@ end
     @test check_no_self_qualified_accesses(QuantumInputOutput) == nothing
 end
 
-if isempty(VERSION.prerelease)
+@static if isempty(VERSION.prerelease)
     @testset "Code linting" begin
         using JET
 
-        rep = report_package(QuantumInputOutput)
+        rep = report_package(
+            QuantumInputOutput;
+            target_modules = (QuantumInputOutput,),
+            ignore_missing_comparison = true,
+        )
         @show rep
-        @test length(JET.get_reports(rep)) < 74 # TODO
+        @test isempty(JET.get_reports(rep))
     end
 end
 

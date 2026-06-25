@@ -7,7 +7,9 @@
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
+using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using SymbolicUtils
 using LinearAlgebra
 using Plots
@@ -27,7 +29,7 @@ ad = Destroy(h, :a_d, 2)
 av = Destroy(h, :a_v, 3)
 
 ## symbolic parameters
-gu, gin, gout, gv = cnumbers("g_u g_in g_out g_v")
+@variables g_u::Number g_in::Number g_out::Number g_v::Number
 nothing # hide
 
 #
@@ -36,13 +38,13 @@ nothing # hide
 # the photons via the output port ($g_{out}(t)*a_d$) into the the output cavity ($g_v(t)'*a_v$). 
 # This leads to the following cascade of SLH elements. 
 
-G_u = SLH(1, gu'*au, 0)
+G_u = SLH(1, g_u'*au, 0)
 G_u2 = concatenate(G_u, SLH(1, 0, 0))
 
 S2 = Matrix(I, 2, 2)
-G_d = SLH(S2, [gin*ad, gout*ad], 0)
+G_d = SLH(S2, [g_in*ad, g_out*ad], 0)
 
-G_v = SLH(1, gv'*av, 0)
+G_v = SLH(1, g_v'*av, 0)
 G_v2 = concatenate(SLH(1, 0, 0), G_v)
 
 G_cas = cascade(G_u2, G_d, G_v2)
@@ -68,7 +70,7 @@ gout_ = coupling_delay_out(u_del, u, T)
 gin_ = coupling_delay_in(u_del, u, T)
 gv_ = coupling_output(u_del, T)
 
-dict_p_t = Dict([gu, gout, gin, gv] .=> [gu_, gout_, gin_, gv_])
+dict_p_t = Dict([g_u, g_out, g_in, g_v] .=> [gu_, gout_, gin_, gv_])
 nothing # hide
 
 #
@@ -130,11 +132,11 @@ p
 # This is, however, only possible if the delay is larger than the pulse, because only then we have $g_{in}(t) \approx g_{v=u}(t)$. Nevertheless, since in most cases only the relative 
 # delay between different modes is crucial, e.g. for two arms of an interferometer, we can simply add a constant delay $T_c \gg \sigma$ to all modes. 
 
-G_d_in = SLH(S2, [gin*ad, 0], 0)
+G_d_in = SLH(S2, [g_in*ad, 0], 0)
 H_ud = hamiltonian(cascade(G_u2, G_d_in))
 H_int_sym_ = simplify(H - H_ud)
 
-M(i, j) = cnumber("M_{$(i)$(j)}")
+M(i, j) = Symbolics.variable(Symbol("M_{$(i)$(j)}"); T = Complex{Real})
 a0_ls = [au, ad]
 la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
@@ -184,7 +186,7 @@ M_ls = [M(i, j) for i = 1:la for j = 1:la]
 M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 nothing # hide
 
-p_t_sym = [gu, gin, gout, gv, M_ls...]
+p_t_sym = [g_u, g_in, g_out, g_v, M_ls...]
 p_t_num = [gu_, gin_, gout_, gv_, M_t_ls...]
 dict_p_t_int = Dict(p_t_sym .=> p_t_num)
 
