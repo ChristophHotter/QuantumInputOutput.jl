@@ -27,7 +27,7 @@ av_sym = Destroy(h, :a_v, 3)
 σ12_sym = Transition(h, :σ, 1, 2, 2)
 
 ## symbolic parameters
-@variables gu::Complex γ::Real gv::Complex
+@variables gu::Number γ::Real gv::Number
 
 ## cascade the SLH elements
 G_u = SLH(1, gu' * au_sym, 0)

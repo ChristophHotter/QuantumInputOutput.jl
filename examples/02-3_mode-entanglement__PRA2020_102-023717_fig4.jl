@@ -33,7 +33,7 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 ## symbolic parameters
-@variables γ::Real g::Real ω12::Real g_v1::Complex g_v2::Complex
+@variables γ::Real g::Real ω12::Real g_v1::Number g_v2::Number
 nothing # hide
 
 # The localized system consists of a cavity mode coupled to a three-level

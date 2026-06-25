@@ -22,7 +22,7 @@ au = Destroy(h, :a_u, 1)
 av = Destroy(h, :a_v, 2)
 
 ## symbolic parameters
-@variables gu::Complex gv::Complex r::Real t::Real
+@variables gu::Number gv::Number r::Real t::Real
 nothing # hide
 
 # In our example, we only have one input mode and one output mode, however, the beam splitter has two input and two output ports. 

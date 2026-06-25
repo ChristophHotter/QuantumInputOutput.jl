@@ -32,7 +32,7 @@ ad2 = Destroy(h, :ad_2, 3)
 σ(i, j) = Transition(h, :σ, i, j, 4)
 
 ## symbolic parameters
-@variables γ::Real Δ::Real r::Real t::Real gu::Complex
+@variables γ::Real Δ::Real r::Real t::Real gu::Number
 gd1in = Symbolics.variable(Symbol("gd1_{in}"); T = Complex{Real})
 gd1out = Symbolics.variable(Symbol("gd1_{out}"); T = Complex{Real})
 gd2in = Symbolics.variable(Symbol("gd2_{in}"); T = Complex{Real})

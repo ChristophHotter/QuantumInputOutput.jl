@@ -26,7 +26,7 @@ hc = FockSpace(:c)
 a = Destroy(hc, :a, 1)
 
 ## symbolic parameters
-@variables γ::Real K::Real Δ::Real p::Complex
+@variables γ::Real K::Real Δ::Real p::Number
 nothing # hide
 
 # The KPO Hamiltonian is
@@ -118,7 +118,7 @@ h = hc ⊗ hv
 
 a2 = Destroy(h, :a, 1)
 av = Destroy(h, :a_v, 2)
-@variables g_v::Complex
+@variables g_v::Number
 
 H_s2 = p / 2 * (a2'^2 + a2^2) - K / 2 * (a2'^2) * (a2^2) + Δ * a2' * a2
 G_s2 = SLH(1, √(γ) * a2, H_s2)

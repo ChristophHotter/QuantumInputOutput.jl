@@ -29,7 +29,7 @@ ad = Destroy(h, :a_d, 2)
 av = Destroy(h, :a_v, 3)
 
 ## symbolic parameters
-@variables g_u::Complex g_in::Complex g_out::Complex g_v::Complex
+@variables g_u::Number g_in::Number g_out::Number g_v::Number
 nothing # hide
 
 #

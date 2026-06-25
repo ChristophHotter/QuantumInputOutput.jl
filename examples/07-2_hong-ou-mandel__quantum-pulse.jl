@@ -27,7 +27,7 @@ av1 = Destroy(h, :a_v1, 3)
 av2 = Destroy(h, :a_v2, 4)
 
 ## symbolic parameters
-@variables gu1::Complex gu2::Complex gv1::Complex gv2::Complex t::Real r::Real
+@variables gu1::Number gu2::Number gv1::Number gv2::Number t::Real r::Real
 nothing # hide
 
 #

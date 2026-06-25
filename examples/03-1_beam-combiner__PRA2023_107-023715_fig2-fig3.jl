@@ -31,7 +31,7 @@ au1 = Destroy(h, :au_1, 2)
 av1 = Destroy(h, :av_2, 4)
 
 ## symbolic parameters
-@variables γ::Real Δ::Real gu_1::Complex gu_2::Complex gv_1::Complex
+@variables γ::Real Δ::Real gu_1::Number gu_2::Number gv_1::Number
 
 # We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
 
