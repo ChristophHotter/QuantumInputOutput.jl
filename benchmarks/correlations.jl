@@ -59,12 +59,7 @@ function benchmark_correlations!(SUITE)
 
     SUITE["Correlations"]["two-time"] = BenchmarkGroup()
 
-    # Allocation-heavy: a full master-equation solve that rebuilds operators every
-    # ODE step (~0.5 GB / call). `gcsample=true` runs a GC before each sample so the
-    # timing isn't dominated by non-deterministic GC pauses carried over between
-    # samples, which otherwise gives this benchmark a ~4x run-to-run spread.
     SUITE["Correlations"]["two-time"]["single photon cavity"] =
-        @benchmarkable correlation_matrix($T, $ρt, $input_output, $Ls) gcsample = true
-
+        @benchmarkable correlation_matrix($T, $ρt, $input_output, $Ls)
     return nothing
 end
