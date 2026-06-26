@@ -94,6 +94,28 @@ solve_mode_evolution_symmetric
 correlation_matrix
 ```
 
+## [Information](@id API: Information)
+
+```@docs
+quantum_fisher_information
+```
+
+```@docs
+classical_fisher_information
+```
+
+```@docs
+povm_probabilities
+```
+
+```@docs
+projective_measurement
+```
+
+```@docs
+parameter_derivative
+```
+
 ## [Utilities](@id API: Utilities)
 
 ```@docs

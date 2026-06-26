@@ -12,6 +12,7 @@ using LinearAlgebra: LinearAlgebra, I, mul!
 using OrdinaryDiffEq: OrdinaryDiffEq, ODEProblem, Tsit5, solve
 using StaticArrays: StaticArrays, SMatrix, SVector
 using FunctionWrappers: FunctionWrappers, FunctionWrapper
+using ForwardDiff: ForwardDiff
 
 const SQA = SecondQuantizedAlgebra
 
@@ -42,6 +43,12 @@ export SLH,
     solve_mode_evolution_symmetric,
     # Correlations
     correlation_matrix,
+    # Information
+    quantum_fisher_information,
+    classical_fisher_information,
+    povm_probabilities,
+    projective_measurement,
+    parameter_derivative,
     # Operators
     substitute_operators
 
@@ -51,5 +58,6 @@ include("utils.jl")
 include("pulses.jl")
 include("correlations.jl")
 include("interaction_picture.jl")
+include("information.jl")
 
 end

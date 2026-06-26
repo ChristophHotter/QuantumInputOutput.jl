@@ -24,21 +24,14 @@ function _translate_numeric(
     operators = Dict{QSym,Any}(),
     op_type = sparse,
 )
-    op_ = substitute(op, parameter)
-    iszero(op_) && return op_type(0 * _one_op(b, operators))
     result = nothing
-    for (term, c_) in op_.arguments
-        c = _coeff_num(c_)
-        _coeff_is_const(c) || throw(
-            ArgumentError(
-                "cannot translate `$op` to a static operator: coefficient `$c` still " *
-                "depends on a free variable; supply it via `parameter` or `time_parameter`.",
-            ),
-        )
-        contrib = _const_coeff(c) * _numeric_product(term.ops, b, operators, op_type)
+    for (term, c_) in op.arguments
+        coeff = _coeff_value(_coeff_num(c_), parameter)
+        iszero(coeff) && continue
+        contrib = coeff * _numeric_product(term.ops, b, operators, op_type)
         result = result === nothing ? contrib : result + contrib
     end
-    return op_type(result)
+    return result === nothing ? op_type(0 * _one_op(b, operators)) : op_type(result)
 end
 
 _translate_numeric_raw(op, b; operators = Dict{QSym,Any}(), op_type = sparse) =
@@ -147,6 +140,32 @@ _coeff_num(c::Complex{Num}) = c
 _coeff_is_const(c::Complex{Num}) =
     isempty(Symbolics.get_variables(real(c))) && isempty(Symbolics.get_variables(imag(c)))
 
+function _coeff_variables(c::Complex{Num})
+    vars = Any[]
+    for v in Symbolics.get_variables(real(c))
+        push!(vars, Symbolics.wrap(v))
+    end
+    for v in Symbolics.get_variables(imag(c))
+        push!(vars, Symbolics.wrap(v))
+    end
+    return unique(vars)
+end
+
+function _parameter_value(parameter, var)
+    haskey(parameter, var) && return parameter[var]
+    uvar = SymbolicUtils.unwrap(var)
+    for (k, v) in parameter
+        isequal(SymbolicUtils.unwrap(k), uvar) && return v
+    end
+    throw(
+        ArgumentError(
+            "cannot translate coefficient depending on `$var`: supply it via `parameter`.",
+        ),
+    )
+end
+
+_same_symbol(a, b) = isequal(SymbolicUtils.unwrap(a), SymbolicUtils.unwrap(b))
+
 # Reduce a concrete `Complex{Num}` to a plain Julia number. Coefficients that are
 # already numeric take a fast path; constant symbolic expressions (e.g. `exp(0.5im)`
 # produced by substituting a numeric value into `exp(im*ϕ)`) are compiled and evaluated.
@@ -182,19 +201,38 @@ function _compile_coeff(c::Complex{Num}, vars...)
     return (vals...) -> g_re(vals...) + im * g_im(vals...)
 end
 
+function _coeff_value(c::Complex{Num}, parameter)
+    vars = _coeff_variables(c)
+    if isempty(vars)
+        return _const_coeff(c)
+    end
+    values = map(var -> _parameter_value(parameter, var), vars)
+    pref = _compile_coeff(c, vars...)
+    return pref(values...)
+end
+
+function _time_coeff_function(c::Complex{Num}, time_parameter, parameter)
+    basevars, valuefuncs = _time_basis(time_parameter)
+    staticvars = filter(_coeff_variables(c)) do var
+        !any(base -> _same_symbol(var, base), basevars)
+    end
+    staticvals = map(var -> _parameter_value(parameter, var), staticvars)
+    pref = _compile_coeff(c, basevars..., staticvars...)
+    return t -> pref(map(g -> g(t), valuefuncs)..., staticvals...)
+end
+
 # ── Per-term translation ──
 # Translate a single `(ops, coefficient)` term into a time-dependent function
 # `t -> op`. A concrete coefficient yields a constant function; a symbolic
 # coefficient is compiled against the time-parameter base variables.
-function _translate_term(ops, c::Complex{Num}, b, time_parameter, operators, op_type)
+function _translate_term(ops, c::Complex{Num}, b, time_parameter, parameter, operators, op_type)
     prodop = _numeric_product(ops, b, operators, op_type)
     if _coeff_is_const(c)
         op = _const_coeff(c) * prodop
         return t -> op
     end
-    basevars, valuefuncs = _time_basis(time_parameter)
-    pref = _compile_coeff(c, basevars...)
-    return t -> pref(map(g -> g(t), valuefuncs)...) * prodop
+    pref = _time_coeff_function(c, time_parameter, parameter)
+    return t -> pref(t) * prodop
 end
 
 """
@@ -258,6 +296,7 @@ function _translate_qo(
             _coeff_num(c),
             b,
             time_parameter,
+            parameter,
             operators,
             op_type,
         )
@@ -270,6 +309,7 @@ function _translate_qo(
         _coeff_num(pairs[1].second),
         b,
         time_parameter,
+        parameter,
         operators,
         sparse,
     )
@@ -284,6 +324,7 @@ function _translate_qo(
                 _coeff_num(pairs[k].second),
                 b,
                 time_parameter,
+                parameter,
                 operators,
                 sparse,
             )
@@ -322,27 +363,19 @@ function _translate_qo(
     operators = Dict{QSym,Any}(),
     op_type = sparse,
 )
-    arg_c = substitute(arg_c_, parameter)
     one_b = _translate_one(b, operators, op_type)
-    c = _as_cnum(arg_c)
+    c = _as_cnum(arg_c_)
 
     if isempty(time_parameter)
-        _coeff_is_const(c) || throw(
-            ArgumentError(
-                "cannot translate symbolic scalar `$arg_c` without a value: supply it via " *
-                "`parameter` (numeric) or `time_parameter` (time-dependent).",
-            ),
-        )
-        return _const_coeff(c) * one_b
+        return _coeff_value(c, parameter) * one_b
     end
 
     if _coeff_is_const(c)
         val = _const_coeff(c)
         return t -> val * one_b
     end
-    basevars, valuefuncs = _time_basis(time_parameter)
-    pref = _compile_coeff(c, basevars...)
-    return t -> pref(map(g -> g(t), valuefuncs)...) * one_b
+    pref = _time_coeff_function(c, time_parameter, parameter)
+    return t -> pref(t) * one_b
 end
 
 function translate_qo(ops::Vector, b::QuantumOpticsBase.Basis; kwargs...)
