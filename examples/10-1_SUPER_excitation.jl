@@ -72,7 +72,7 @@ Lcas_t = substitute(Lcas, dict_gt)
 Lcasd_t = substitute(Lcasd, dict_gt)
 nothing # hide
 
-# We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function [effective_input_mode](@ref) and [effective_output_mode](@ref), respectively. Due to the fast oscllations, the tolarance of the numeric solver needs to be improved. The parameters are take from the [T. K. Bracht et al., PRX Quantum 2, 040354 (2021)] (https://doi.org/10.1103/PRXQuantum.2.040354). 
+# We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function [effective_input_mode](@ref) and [effective_output_mode](@ref), respectively. Due to the fast oscillations, the tolerance of the numeric solver needs to be improved. The parameters are taken from [T. K. Bracht et al., PRX Quantum 2, 040354 (2021)](https://doi.org/10.1103/PRXQuantum.2.040354).
 
 ## Time grid
 dt = 1e-4
@@ -121,7 +121,7 @@ order = 1
 ops = [au1, au2, s(2, 2), s(2, 1), av1, av2]
 eqs = meanfield(ops, Hcas_t, [Lcas_t]; Jdagger = [Lcasd_t], order = order, iv = t)
 
-## cohernt state amplitudes 
+## Coherent-state amplitudes
 α1 = Α1_ / (2*√(2)*π^(1/4)*√(σ1_*γ_)) # field 1
 α2 = Α2_ / (2*√(2)*π^(1/4)*√(σ2_*γ_)) # field 2
 u0 = [α1, α2, 0, 0, 0, 0.0im]
@@ -283,7 +283,7 @@ display(pl4)
 
 # Let us now compare the dynamics for coherent input pulses with the case of incident non-classical photon number eigenstates (Fock states), where we choose states with the same mean photon numbers as for the coherent pulses. Since in the atom-field interaction only a few photons are exchanged, the quantum states of the excitation pulses are only changed by a couple of photons, we only need to keep a couple of nearby Fock states in the computational basis.
 
-# We define the basis of the system, create the dictionary for the time dependent variables to translate the Hamiltonian and Lindblad operator to a QuantumOptics.jl operator. 
+# We define the basis of the system and create the dictionary for the time-dependent variables to translate the Hamiltonian and Lindblad operator to a QuantumOptics.jl operator.
 
 n1_fock = round(Int, abs2(α1))
 n2_fock = round(Int, abs2(α2))
@@ -302,7 +302,7 @@ dict_fock = Dict([g_ls; M_ls] .=> [g_t_ls; M_t_ls])
 H_int_fock = translate_qo(H_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 L_int_fock = translate_qo(L_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 
-## To solve the dynamics we create the time-dependent function for the open quantum system and define the iniitla state. 
+## To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
 
 function input_output(t, ρ)
     Ht = H_int_fock(t)
@@ -324,7 +324,7 @@ using Random
 Random.seed!(1) # hide
 t_fock, ρt_fock = timeevolution.mcwf_dynamic(T_fock, ψ0, input_output; abstol, reltol)
 
-# Due to relatively long compution time of timeevolution.master_dynamic, we simulate a single trajectory with timeevolution.mcwf_dynamic.
+# Due to the relatively long computation time of timeevolution.master_dynamic, we simulate a single trajectory with timeevolution.mcwf_dynamic.
 
 ## Expectation values
 s22_fock = real.(expect(s(2, 2), ρt_fock))
@@ -377,7 +377,7 @@ plot!(
 pl3 = plot(p3_1, p3_2; layout = (2, 1), size = (800, 600))
 display(pl3)
 
-# Due to the vanishing relative phase of the Fock states the oscialliations dissapear. 
+# Due to the vanishing relative phase of the Fock states, the oscillations disappear.
 
 # ## Package versions
 
