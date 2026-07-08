@@ -32,9 +32,9 @@ function coupling_matrix(gs::NTuple{N}) where {N}
             if i == j
                 zero(ComplexF64)
             elseif j < i
-                0.5 * gvals[j] * conj(gvals[i])
+                0.5 * gvals[i] * conj(gvals[j])
             else  # j > i
-                -conj(0.5 * gvals[i] * conj(gvals[j]))
+                -0.5 * gvals[i] * conj(gvals[j])
             end
         end)
     end
