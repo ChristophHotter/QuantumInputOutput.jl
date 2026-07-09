@@ -312,6 +312,7 @@ Ld_int_sym = simplify(substitute_operators(Lcasd, int_dict))
 # M-matrix
 Mat = Matrix{Any}(undef, la, la)
 Matc = Matrix{Any}(undef, la, la)
+mod = @__MODULE__
 for i = 1:la, j = 1:la
     name = Symbol("Ma_$(i)$(j)")
     namec = Symbol("Mac_$(i)$(j)")
@@ -319,8 +320,8 @@ for i = 1:la, j = 1:la
     @eval @register_symbolic $name(t)
     @eval @register_symbolic $namec(t)
 
-    Mat[i, j] = getfield(Main, name)(t)
-    Matc[i, j] = getfield(Main, namec)(t)
+    Mat[i, j] = getfield(mod, name)(t)
+    Matc[i, j] = getfield(mod, namec)(t)
 end
 Mat_ls = [Mat[i, j] for i = 1:la for j = 1:la]
 Mat_conls = [Matc[i, j] for i = 1:la for j = 1:la]

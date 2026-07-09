@@ -217,10 +217,11 @@ nothing # hide
 
 ## Coefficient matrix M
 Mat = Matrix{Any}(undef, la, la)
+mod = @__MODULE__ # hide
 for i = 1:la, j = 1:la
     name = Symbol("Ma_$(i)$(j)")
     @eval @register_symbolic $name(t)
-    Mat[i, j] = getfield(Main, name)(t)
+    Mat[i, j] = getfield(mod, name)(t)
 end
 Mat_ls = [Mat[i, j] for i = 1:la for j = 1:la]
 M_ls = [M(i, j) for i = 1:la for j = 1:la]
