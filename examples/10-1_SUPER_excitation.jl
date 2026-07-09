@@ -1,6 +1,6 @@
 # # Input-Output Analysis of Quantum Dot SUPER Excitation
 #
-# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., TODO](TODO). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
+# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., TODO](https://arxiv.org/). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
 
 # In the first part we describe the dynamics within a cumulant expansion approach for coherent light. We then transform into the interaction-picture of the input and output cavities, which allows us to describe the interaction with large Fock states. 
 
@@ -72,7 +72,7 @@ Lcas_t = substitute(Lcas, dict_gt)
 Lcasd_t = substitute(Lcasd, dict_gt)
 nothing # hide
 
-# We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function [effective_input_mode](@ref) and [effective_output_mode](@ref), respectively. Due to the fast oscillations, the tolerance of the numeric solver needs to be improved. The parameters are taken from [T. K. Bracht et al., PRX Quantum 2, 040354 (2021)](https://doi.org/10.1103/PRXQuantum.2.040354).
+# We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function [`effective_input_mode`](@ref) and [`effective_output_mode`](@ref), respectively. Due to the fast oscillations, the tolerance of the numeric solver needs to be improved. The parameters are taken from [T. K. Bracht et al., PRX Quantum 2, 040354 (2021)](https://doi.org/10.1103/PRXQuantum.2.040354).
 
 ## Time grid
 dt = 1e-4
@@ -215,8 +215,8 @@ L_int = simplify(substitute_operators(Lcas, int_dict))
 Ld_int = simplify(substitute_operators(Lcasd, int_dict))
 nothing # hide
 
-## M-matrix
-Mat = Matrix{Any}(undef, la, la) 
+## Coefficient matrix M
+Mat = Matrix{Any}(undef, la, la)
 for i = 1:la, j = 1:la
     name = Symbol("Ma_$(i)$(j)")
     @eval @register_symbolic $name(t)
@@ -225,7 +225,7 @@ end
 Mat_ls = [Mat[i, j] for i = 1:la for j = 1:la]
 M_ls = [M(i, j) for i = 1:la for j = 1:la]
 
-## Time-evolution matrix M(t)
+## Time-evolution of the matrix M(t)
 A_uv = coupling_matrix((gu2_t_, gu1_t_, gv1_t_, gv2_t_))
 M_t = solve_mode_evolution(A_uv, T)
 

@@ -6,6 +6,8 @@ ba = "ba"
 HOM = "HOM"
 Ein = "Ein"
 nd = "nd"
+gam = "gam"
+Mat = "Mat"
 
 [type.ipynb]
 extend-glob = ["*.ipynb"]
