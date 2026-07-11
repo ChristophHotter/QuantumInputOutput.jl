@@ -81,12 +81,7 @@ function benchmark_translation!(SUITE)
 
     SUITE["Translation"]["time-dependent"]["3-cavity H+L"] = @benchmarkable begin
         to_numeric($H_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
-        to_numeric(
-            $L_sym,
-            $b_cav;
-            parameter = $dict_p_cav,
-            time_parameter = $dict_p_t_cav,
-        )
+        to_numeric($L_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
     end
 
     ## --- Closure evaluation (the ODE hot loop) ---

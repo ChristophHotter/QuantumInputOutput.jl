@@ -121,12 +121,7 @@ using Test
     @test sum(abs.((dense(F5_(0.2)) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
     F6 = to_numeric(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((dense(F6(0.2)) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
-    F7 = to_numeric(
-        conj(E) + Δ*σ(2, 2),
-        b;
-        parameter = dict_p1,
-        time_parameter = dict_p_t2,
-    )
+    F7 = to_numeric(conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
     # a bare symbolic scalar without a numeric/time value cannot be translated
     @test_throws ArgumentError to_numeric(conj(E), b; parameter = dict_p1)
