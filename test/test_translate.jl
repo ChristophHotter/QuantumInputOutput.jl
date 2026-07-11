@@ -37,19 +37,19 @@ using Test
 
     @testset "kwarg_operators" begin
         @test isequal(
-            translate_qo(Δ, bc1; parameter = dict_p1, operators = ops_dict),
+            to_numeric(Δ, bc1; parameter = dict_p1, operators = ops_dict),
             one(bc1)*Δn,
         )
         @test isequal(
-            translate_qo(2, bc1; parameter = dict_p1, operators = ops_dict),
+            to_numeric(2, bc1; parameter = dict_p1, operators = ops_dict),
             one(bc1)*2,
         )
-        @test isequal(translate_qo(a, bc1; parameter = dict_p1, operators = ops_dict), a_QO)
+        @test isequal(to_numeric(a, bc1; parameter = dict_p1, operators = ops_dict), a_QO)
         @test isequal(
-            translate_qo(a*3, bc1; parameter = dict_p1, operators = ops_dict),
+            to_numeric(a*3, bc1; parameter = dict_p1, operators = ops_dict),
             a_QO*3,
         )
-        F1 = translate_qo(
+        F1 = to_numeric(
             a*3,
             bc1;
             parameter = dict_p1,
@@ -58,7 +58,7 @@ using Test
         )
         @test isa(F1, Function)
         @test isequal(F1(0.1), a_QO*3)
-        F2 = translate_qo(
+        F2 = to_numeric(
             a*E,
             bc1;
             parameter = dict_p1,
@@ -71,7 +71,7 @@ using Test
             abs.(
                 (
                     dense(
-                        translate_qo(Δ*a'a, bc1; parameter = dict_p1, operators = ops_dict),
+                        to_numeric(Δ*a'a, bc1; parameter = dict_p1, operators = ops_dict),
                     ) - dense(Δn*dagger(a_QO)*a_QO)
                 ).data,
             ),
@@ -88,7 +88,7 @@ using Test
     @test isequal(
         a_QO2'σ_QO(1, 2),
         dense(
-            translate_qo(
+            to_numeric(
                 a'σ(1, 2),
                 b;
                 operators = Dict([a, σ(1, 2)] .=> [a_QO2, σ_QO(1, 2)]),
@@ -97,17 +97,19 @@ using Test
         ),
     )
     @test isequal(a_QO2, dense(to_numeric(a, b)))
-    @test isequal(translate_qo(Δ, b; parameter = dict_p1), one(b)*Δn)
-    F3 = translate_qo(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F3(4) - one(b)*Δn).data)) < 1e-8
-    F4 = translate_qo(
+    @test sum(
+        abs.((dense(to_numeric(Δ, b; parameter = dict_p1)) - dense(one(b)*Δn)).data),
+    ) < 1e-12
+    F3 = to_numeric(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test sum(abs.((dense(F3(4)) - dense(one(b)*Δn)).data)) < 1e-8
+    F4 = to_numeric(
         a*3*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
     @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    F5 = translate_qo(
+    F5 = to_numeric(
         a*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
@@ -115,11 +117,11 @@ using Test
     )
     @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
     @inferred F5(0.2)  # QAdd time-dependent path should return concrete type
-    F5_ = translate_qo(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F5_(0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
-    F6 = translate_qo(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F6(0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
-    F7 = translate_qo(
+    F5_ = to_numeric(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test sum(abs.((dense(F5_(0.2)) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
+    F6 = to_numeric(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test sum(abs.((dense(F6(0.2)) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
+    F7 = to_numeric(
         conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
@@ -127,15 +129,15 @@ using Test
     )
     @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
     # a bare symbolic scalar without a numeric/time value cannot be translated
-    @test_throws ArgumentError translate_qo(conj(E), b; parameter = dict_p1)
-    F8 = translate_qo(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F8(0.2) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
+    @test_throws ArgumentError to_numeric(conj(E), b; parameter = dict_p1)
+    F8 = to_numeric(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
+    @test sum(abs.((dense(F8(0.2)) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
 
 
     @testset "time_parameter_normalization" begin
         dict_p_t_num = Dict([E] .=> [2.5])
-        F_num = translate_qo(a*E, b; parameter = dict_p1, time_parameter = dict_p_t_num)
-        @test sum(abs.((F_num(0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
+        F_num = to_numeric(a*E, b; parameter = dict_p1, time_parameter = dict_p_t_num)
+        @test sum(abs.((dense(F_num(0.2)) - dense(a_QO2 * 2.5)).data)) < 1e-8
     end
 
     @testset "multiple_time_prefactors" begin
@@ -143,19 +145,19 @@ using Test
         E2_t(t) = 0.7 - 0.1im + 0.2t
         E2_t_c(t) = conj(E2_t(t))
         dict_p_t_multi = Dict([E1, conj(E2)] .=> [E1_t, E2_t_c])
-        F_multi = translate_qo(
+        F_multi = to_numeric(
             a * E1 * conj(E2),
             b;
             parameter = dict_p1,
             time_parameter = dict_p_t_multi,
         )
         expected = dense(a_QO2 * E1_t(0.4) * E2_t_c(0.4))
-        @test sum(abs.((F_multi(0.4) - expected).data)) < 1e-8
+        @test sum(abs.((dense(F_multi(0.4)) - expected).data)) < 1e-8
     end
 
-    @testset "translate_qo vector overload" begin
+    @testset "to_numeric vector overload" begin
         ops = [a, Δ, a * E]
-        translated_ops = translate_qo(
+        translated_ops = to_numeric(
             ops,
             bc1;
             parameter = dict_p1,
@@ -169,9 +171,9 @@ using Test
         @test isequal(translated_ops[3](0.3), a_QO * E_t(0.3))
     end
 
-    @testset "translate_qo SLH overload" begin
+    @testset "to_numeric SLH overload" begin
         G_sym = SLH(1, [sqrt(κ_R) * a * E], Δ * a' * a)
-        H_QO, L_QO = translate_qo(
+        H_QO, L_QO = to_numeric(
             G_sym,
             bc1;
             parameter = dict_p1,
@@ -186,7 +188,7 @@ using Test
         @test sum(abs.((L_QO[1](0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) < 1e-8
     end
 
-    @testset "substitute_operators_qmul" begin
+    @testset "substitute operators qmul" begin
         h2 = FockSpace(:h2)
         a = Destroy(h2, :a)
         @variables c1::Complex c2::Complex c3::Complex
@@ -196,16 +198,16 @@ using Test
         dict_sub2 = Dict(a => a_2)
 
         x = a*a*c1 + a*c3
-        y = substitute_operators(x, dict_sub)
-        y2 = substitute_operators(x, dict_sub2)
+        y = substitute(x, dict_sub)
+        y2 = substitute(x, dict_sub2)
 
         @test iszero(y - (a_1*a_1*c1 + a_1*c3))
         @test iszero(y2 - (a_2*a_2*c1 + a_2*c3))
 
-        @test substitute_operators(5, dict_sub) == 5
+        @test substitute(5, dict_sub) == 5
     end
 
-    @testset "substitute_operators adjoint in args_nc" begin
+    @testset "substitute adjoint in args_nc" begin
         h2 = FockSpace(:h2)
         a = Destroy(h2, :a)
         b = Destroy(h2, :b)
@@ -217,7 +219,7 @@ using Test
         op = g * ad * a
         dict_sub = Dict(a => b)
 
-        result = substitute_operators(op, dict_sub)
+        result = substitute(op, dict_sub)
         expected = g * bd * b
         @test iszero(result - expected)
     end
@@ -233,7 +235,7 @@ using Test
         a3_QO = destroy(b3)
         @variables gR::Real
         gR_t(t) = 1.0 + 2.0im
-        F = translate_qo(im * gR * a3, b3; time_parameter = Dict(gR => gR_t))
+        F = to_numeric(im * gR * a3, b3; time_parameter = Dict(gR => gR_t))
         @test F isa Function
         @test sum(abs.((F(0.0) - dense((im * (1.0 + 2.0im)) * a3_QO)).data)) < 1e-8
     end

@@ -105,8 +105,8 @@ av1_qo = one(bu1) ⊗ one(bu2) ⊗ destroy(bv1) ⊗ one(bv2)
 av2_qo = one(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ destroy(bv2)
 
 ## translate to numeric operators
-H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = [translate_qo(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
+H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = [to_numeric(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
 
 function input_output(t, ρ)
     Ht = H_QO(t)

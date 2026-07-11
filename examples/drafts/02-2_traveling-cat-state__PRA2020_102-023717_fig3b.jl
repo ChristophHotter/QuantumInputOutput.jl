@@ -87,8 +87,8 @@ b1 = bc
 dict_p = Dict([γ, K, Δ] .=> [γ_, K_, Δ_])
 dict_p_t = Dict(p => p_t)
 
-H_QO = translate_qo(H, b1; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate_qo(L, b1; parameter = dict_p, time_parameter = dict_p_t)
+H_QO = to_numeric(H, b1; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b1; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output_1(t, ρ)
     Ht = H_QO(t)
@@ -134,8 +134,8 @@ dict_p_t_2 = Dict(p => p_t, g_v => gv_t)
 bv = FockBasis(n_cut)
 b2 = bc ⊗ bv
 
-H_QO_2 = translate_qo(H_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
-L_QO_2 = translate_qo(L_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
+H_QO_2 = to_numeric(H_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
 
 function input_output_2(t, ρ)
     Ht = H_QO_2(t)

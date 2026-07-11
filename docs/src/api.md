@@ -41,7 +41,7 @@ feedback
 ## [Translation](@id API: Translation)
 
 ```@docs
-translate_qo
+to_numeric
 ```
 
 ## [Pulses](@id API: Pulses)
@@ -97,5 +97,5 @@ correlation_matrix
 ## [Utilities](@id API: Utilities)
 
 ```@docs
-substitute_operators
+substitute
 ```

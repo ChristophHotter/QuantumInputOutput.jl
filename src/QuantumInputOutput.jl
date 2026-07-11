@@ -1,10 +1,10 @@
 module QuantumInputOutput
 
-using SecondQuantizedAlgebra: SecondQuantizedAlgebra, QSym, to_numeric
-using QuantumOpticsBase: QuantumOpticsBase, expect, basis, dagger, sparse
+using SecondQuantizedAlgebra: SecondQuantizedAlgebra, to_numeric
+using QuantumOpticsBase: QuantumOpticsBase, expect, dagger
 using QuantumOptics: QuantumOptics, timeevolution
 using SymbolicUtils: SymbolicUtils, substitute, BasicSymbolic, simplify
-using Symbolics: Symbolics, build_function, Num
+using Symbolics: Symbolics
 using SpecialFunctions: erf
 using DataInterpolations: LinearInterpolation, ExtrapolationType
 using NumericalIntegration: cumul_integrate
@@ -27,7 +27,8 @@ export SLH,
     concatenate,
     feedback,
     # Translation
-    translate_qo,
+    to_numeric,
+    substitute,
     # Pulse coupling
     coupling_input,
     coupling_output,
@@ -41,13 +42,9 @@ export SLH,
     solve_mode_evolution,
     solve_mode_evolution_symmetric,
     # Correlations
-    correlation_matrix,
-    # Operators
-    substitute_operators
+    correlation_matrix
 
 include("SLH.jl")
-include("translate.jl")
-include("utils.jl")
 include("pulses.jl")
 include("correlations.jl")
 include("interaction_picture.jl")

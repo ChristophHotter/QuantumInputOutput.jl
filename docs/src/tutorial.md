@@ -87,8 +87,8 @@ bc1 = FockBasis(2)
 bv1 = FockBasis(2)
 b = bu1 ⊗ bc1 ⊗ bv1
 
-H_QO = translate_qo(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = translate_qo(L, b; parameter=dict_p, time_parameter=dict_p_t)
+H_QO = to_numeric(H, b; parameter=dict_p, time_parameter=dict_p_t)
+L_QO = to_numeric(L, b; parameter=dict_p, time_parameter=dict_p_t)
 nothing # hide
 ```
 
@@ -114,9 +114,9 @@ To extract the dominant output mode, we compute the two-time correlation matrix
 ``g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle`` and diagonalize it. To this end, we first define the desired numerical operators. 
 
 ```@example tutorial
-au_qo = translate_qo(au, b)
-c_qo = translate_qo(c, b)
-av_qo = translate_qo(av, b)
+au_qo = to_numeric(au, b)
+c_qo = to_numeric(c, b)
+av_qo = to_numeric(av, b)
 
 Ls(t) = gu_t(t) * au_qo + √(γ_) * c_qo
 g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
@@ -160,8 +160,8 @@ gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])
 
-H_QO_2 = translate_qo(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-L_QO_2 = translate_qo(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
+H_QO_2 = to_numeric(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
+L_QO_2 = to_numeric(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
 
 function input_output_2(t, ρ)
     Ht = H_QO_2(t)

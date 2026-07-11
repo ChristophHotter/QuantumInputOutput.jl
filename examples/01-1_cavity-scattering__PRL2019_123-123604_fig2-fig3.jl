@@ -74,10 +74,10 @@ bv1 = FockBasis(1)
 b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 
-# We now use the function [`translate_qo`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
+# We now use the function [`to_numeric`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
 
-H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate_qo(L, b; parameter = dict_p, time_parameter = dict_p_t)
+H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 
 
@@ -99,9 +99,9 @@ nothing # hide
 
 # We create the desired numerical operators to calculate expectation values.
 
-au_qo = translate_qo(au, b)
-c_qo = translate_qo(c, b)
-av_qo = translate_qo(av, b)
+au_qo = to_numeric(au, b)
+c_qo = to_numeric(c, b)
+av_qo = to_numeric(av, b)
 
 n_c_t = real.(expect(c_qo'*c_qo, ρt))
 n_u1_t = real.(expect(au_qo'*au_qo, ρt))
@@ -147,8 +147,8 @@ gv_t = coupling_output(v_mode, T)
 
 dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 
-H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-L_QO_2 = translate_qo(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 function input_output_2(t, ρ)
     H = H_QO_2(t)
     J = [L_QO_2(t)]
@@ -213,8 +213,8 @@ av_3 = embed(b_3, 3, destroy(bv1_3))
 cdc_3 = c_3'c_3
 
 ## we use the same Hamiltonian as before but add a depasing term to the dissipation 
-H_QO_3 = translate_qo(H, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
-L_QO_3 = translate_qo(L, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
+H_QO_3 = to_numeric(H, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_3 = to_numeric(L, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
 function input_output_3(t, ρ)
     H = H_QO_3(t)
     J = [L_QO_3(t), √(γ_)*cdc_3]

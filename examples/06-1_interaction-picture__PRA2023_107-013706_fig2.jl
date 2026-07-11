@@ -64,11 +64,11 @@ nothing # hide
 
 #
 
-H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
+H_int_sym = simplify(substitute(H_int_sym_, int_dict))
 
 #
 
-L_int_sym = simplify(substitute_operators(L, int_dict))
+L_int_sym = simplify(substitute(L, int_dict))
 
 # The above Hamiltonian and Lindblad operator are the ones in the interaction picture of the virtual cavity interaction. 
 # We define the numerical parameters of the system, calculate the solution for the coefficient matrix $M(t)$ and solve the time evolution of the system. 
@@ -109,8 +109,8 @@ ba = NLevelBasis(2)
 bv = FockBasis(5)
 b = bu ⊗ ba ⊗ bv
 
-H_int_QO = translate_qo(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate_qo(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+H_int_QO = to_numeric(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     Ht = H_int_QO(t)

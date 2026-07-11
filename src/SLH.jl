@@ -445,3 +445,23 @@ function _feedback_maps(n::Int, connections)
     end
     return mapped
 end
+
+# ──────────────────────────────────────────────
+# Numeric translation of an SLH object
+# ──────────────────────────────────────────────
+
+"""
+    to_numeric(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
+
+Translate the Hamiltonian and Lindblad operators of an SLH object `G` into numeric
+[QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators on the basis `b`.
+Returns the tuple `(H_QO, L_QO)`, where `L_QO` is a vector holding one translated operator
+per jump operator in `lindblad(G)`. All keyword arguments (`parameter`, `time_parameter`,
+`operators`, `adjoint_ops`, `op_type`) are forwarded to
+[`SecondQuantizedAlgebra.to_numeric`](@ref).
+"""
+function SQA.to_numeric(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
+    H_QO = SQA.to_numeric(hamiltonian(G), b; kwargs...)
+    L_QO = [SQA.to_numeric(L_, b; kwargs...) for L_ in lindblad(G)]
+    return H_QO, L_QO
+end
