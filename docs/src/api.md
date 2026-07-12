@@ -93,9 +93,3 @@ solve_mode_evolution_symmetric
 ```@docs
 correlation_matrix
 ```
-
-## [Utilities](@id API: Utilities)
-
-```@docs
-substitute
-```
