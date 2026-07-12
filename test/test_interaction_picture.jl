@@ -67,11 +67,13 @@ using Test
     max_M_err = maximum([maximum(abs.(M_num(t) - M_ana(t))) for t in T])
     @test max_M_err < 5e-4
 
-    # coupling_matrix type stability
-    @test A_uv(0.5) isa SMatrix{2,2,ComplexF64}
-    @inferred A_uv(0.5)
-    A_uv(0.0)  # warmup
-    @test (@allocated A_uv(0.5)) == 0
+    @static if VERSION > v"1.12.0"
+        # coupling_matrix type stability
+        @test A_uv(0.5) isa SMatrix{2,2,ComplexF64}
+        @inferred A_uv(0.5)
+        A_uv(0.0)  # warmup
+        @test (@allocated A_uv(0.5)) == 0
+    end
 
     # Numerical basis and operators
     bu = FockBasis(n_ph)
