@@ -74,8 +74,8 @@ c_qo = to_numeric(c, b)
 cdc_qo = c_qo'c_qo
 
 ## translate to numeric Hamiltonian and Lindblad
-H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = translate_qo(L, b; parameter = dict_p, time_parameter = dict_p_t)
+H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 
 # We additionally include a cavity dephasing term and solve the dynamics.

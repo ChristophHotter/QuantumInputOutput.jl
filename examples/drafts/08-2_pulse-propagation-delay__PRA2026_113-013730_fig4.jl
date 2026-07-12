@@ -95,8 +95,8 @@ int_dict = Dict(a_ls .=> a_int_ls)
 # int_dict = Dict([a1_ls; a2_ls] .=> [a1_int_ls; a2_int_ls])
 
 ## substitute interaction picture operators
-H_int = simplify(substitute_operators(H_int_, int_dict))
-L_int = [simplify(substitute_operators(L_, int_dict)) for L_ in L]
+H_int = simplify(substitute(H_int_, int_dict))
+L_int = [simplify(substitute(L_, int_dict)) for L_ in L]
 
 ## Pulse parameters 
 n = 5#9
@@ -148,13 +148,13 @@ b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
-H_QO_Δ(Δn) = translate_qo(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
+H_QO_Δ(Δn) = to_numeric(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
 L_QO_Δ(Δn) = [
-    translate_qo(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
-    for i = 1:length(L)
+    to_numeric(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
+    i = 1:length(L)
 ]
-# H_QO_Δ(Δn) = translate_qo(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
-# L_QO_Δ(Δn) = [translate_qo(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
+# H_QO_Δ(Δn) = to_numeric(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
+# L_QO_Δ(Δn) = [to_numeric(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
 nothing # hide
 #
 
@@ -162,10 +162,10 @@ nothing # hide
 
 #
 
-σ22_QO = translate_qo(σ(2, 2), b)
-au_QO = translate_qo(au, b)
-ad1_QO = translate_qo(ad1, b)
-ad2_QO = translate_qo(ad2, b)
+σ22_QO = to_numeric(σ(2, 2), b)
+au_QO = to_numeric(au, b)
+ad1_QO = to_numeric(ad1, b)
+ad2_QO = to_numeric(ad2, b)
 
 Δn = 0
 H_QO = H_QO_Δ(Δn)

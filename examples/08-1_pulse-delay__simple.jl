@@ -82,8 +82,8 @@ bd = FockBasis(n)
 bv = FockBasis(n)
 b = bu ⊗ bd ⊗ bv
 
-H_QO = translate_qo(H, b; time_parameter = dict_p_t)
-L_QO = [translate_qo(L[i], b; time_parameter = dict_p_t) for i = 1:length(L)]
+H_QO = to_numeric(H, b; time_parameter = dict_p_t)
+L_QO = [to_numeric(L[i], b; time_parameter = dict_p_t) for i = 1:length(L)]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
@@ -98,9 +98,9 @@ nothing # hide
 ψ0 = fockstate(bu, n) ⊗ fockstate(bd, 0) ⊗ fockstate(bv, 0)
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 
-au_qo = translate_qo(au, b)
-ad_qo = translate_qo(ad, b)
-av_qo = translate_qo(av, b)
+au_qo = to_numeric(au, b)
+ad_qo = to_numeric(ad, b)
+av_qo = to_numeric(av, b)
 
 nu = real.(expect(dagger(au_qo)*au_qo, ρt))
 nd = real.(expect(dagger(ad_qo)*ad_qo, ρt))
@@ -146,11 +146,11 @@ nothing # hide
 
 # 
 
-H_int_sym = simplify(substitute_operators(H_int_sym_, int_dict))
+H_int_sym = simplify(substitute(H_int_sym_, int_dict))
 
 #
 
-L_int_sym = simplify.(substitute_operators.(L, Ref(int_dict)))
+L_int_sym = simplify.(substitute.(L, Ref(int_dict)))
 L_int_sym[1]
 
 #
@@ -198,13 +198,13 @@ operators = Dict(
     [au, au', ad, ad', av, av'] .=> [au_int, au_int', ad_int, ad_int', av_int, av_int'],
 )
 
-H_int_QO = translate_qo(H_int_sym, b; time_parameter = dict_p_t_int, operators)
+H_int_QO = to_numeric(H_int_sym, b; time_parameter = dict_p_t_int, operators)
 L_int_QO = [
-    translate_qo(L_int_sym[i], b; time_parameter = dict_p_t_int, operators) for
+    to_numeric(L_int_sym[i], b; time_parameter = dict_p_t_int, operators) for
     i = 1:length(L_int_sym)
 ]
-## H_int_QO = translate_qo(H_int_sym, b; time_parameter=dict_p_t_int) # hide 
-## L_int_QO = [translate_qo(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
+## H_int_QO = to_numeric(H_int_sym, b; time_parameter=dict_p_t_int) # hide 
+## L_int_QO = [to_numeric(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
 nothing # hide
 
 #

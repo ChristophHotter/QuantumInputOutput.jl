@@ -80,8 +80,8 @@ nothing # hide
 # determine the two dominant temporal output modes from the first-order
 # correlation matrix g⁽¹⁾(t₁, t₂).
 
-H_QO_1 = translate_qo(H, b; parameter = dict_p_1)
-L_QO_1 = translate_qo(L, b; parameter = dict_p_1)
+H_QO_1 = to_numeric(H, b; parameter = dict_p_1)
+L_QO_1 = to_numeric(L, b; parameter = dict_p_1)
 
 function input_output_1(t, ρ)
     J = [L_QO_1]
@@ -115,8 +115,8 @@ gv2_t = coupling_output(v2_eff, T)
 dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
 dict_p_t_2 = Dict(g_v1 => gv1_t, g_v2 => gv2_t)
 
-H_QO_2 = translate_qo(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-L_QO_2 = translate_qo(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 
 function input_output_2(t, ρ)
     J = [L_QO_2(t)]

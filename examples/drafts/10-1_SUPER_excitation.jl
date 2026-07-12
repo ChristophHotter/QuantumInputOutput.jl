@@ -305,9 +305,9 @@ a_c_int_ls = [sum(conj(M(i, j))*a0_ls[j]' for j = 1:la) for i = 1:la] # # TODO
 
 int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; a_c_int_ls])
 
-H_int_sym = substitute_operators(H_int_sym_, int_dict)
-L_int_sym = simplify(substitute_operators(Lcas, int_dict))
-Ld_int_sym = simplify(substitute_operators(Lcasd, int_dict))
+H_int_sym = substitute(H_int_sym_, int_dict)
+L_int_sym = simplify(substitute(Lcas, int_dict))
+Ld_int_sym = simplify(substitute(Lcasd, int_dict))
 
 # M-matrix
 Mat = Matrix{Any}(undef, la, la)

@@ -210,9 +210,9 @@ la = length(a0_ls)
 a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
 int_dict = Dict(a0_ls .=> a_int_ls)
 
-H_int = substitute_operators(H_int_, int_dict)
-L_int = simplify(substitute_operators(Lcas, int_dict))
-Ld_int = simplify(substitute_operators(Lcasd, int_dict))
+H_int = substitute(H_int_, int_dict)
+L_int = simplify(substitute(Lcas, int_dict))
+Ld_int = simplify(substitute(Lcasd, int_dict))
 nothing # hide
 
 ## Coefficient matrix M
@@ -300,8 +300,8 @@ g_t_ls = [gu2_t_, gu1_t_, gv1_t_, gv2_t_]
 M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 dict_fock = Dict([g_ls; M_ls] .=> [g_t_ls; M_t_ls])
 
-H_int_fock = translate_qo(H_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
-L_int_fock = translate_qo(L_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
+H_int_fock = to_numeric(H_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
+L_int_fock = to_numeric(L_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 
 ## To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
 

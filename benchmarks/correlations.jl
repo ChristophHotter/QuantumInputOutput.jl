@@ -39,8 +39,8 @@ function benchmark_correlations!(SUITE)
     dict_p = Dict([γ, Δ, g_v] .=> [γ_, 0.0, 0])
     dict_p_t = Dict(g_u => gu_t)
 
-    H_QO = translate_qo(H_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-    L_QO = translate_qo(L_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    H_QO = to_numeric(H_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = to_numeric(L_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output(t, ρ)
         Ht = H_QO(t)
@@ -51,8 +51,8 @@ function benchmark_correlations!(SUITE)
     ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
     _, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 
-    au_qo = translate_qo(au, b)
-    c_qo = translate_qo(c, b)
+    au_qo = to_numeric(au, b)
+    c_qo = to_numeric(c, b)
     Ls(t) = gu_t(t) * au_qo + √(γ_) * c_qo
 
     ## --- Two-time correlation ---

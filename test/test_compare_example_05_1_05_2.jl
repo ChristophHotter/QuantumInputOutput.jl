@@ -58,11 +58,11 @@ using Test
 
     ba = NLevelBasis(2)
     b = tensor([ba for _ = 1:N]...)
-    H_QO = translate_qo(H, b; parameter = dict_p, time_parameter = dict_p_t)
-    L_R_QO = translate_qo(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
-    L_L_QO = translate_qo(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
+    H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_R_QO = to_numeric(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_L_QO = to_numeric(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
-    σ_qo(α, i, j) = translate_qo(σ(α, i, j), b)
+    σ_qo(α, i, j) = to_numeric(σ(α, i, j), b)
     J_add = [√(γ_add[i]) * σ_qo(i, 1, 2) for i = 1:N]
 
     function input_output_1(t, ρ)

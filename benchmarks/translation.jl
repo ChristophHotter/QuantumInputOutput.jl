@@ -45,7 +45,7 @@ function benchmark_translation!(SUITE)
     expr_composite = a * 3 + Δ_sym * σ(2, 2)
 
     SUITE["Translation"]["static"]["atom-cavity"] =
-        @benchmarkable translate_qo($expr_composite, $b_multi; parameter = $dict_p_static)
+        @benchmarkable to_numeric($expr_composite, $b_multi; parameter = $dict_p_static)
 
     ## --- Time-dependent translation ---
 
@@ -56,7 +56,7 @@ function benchmark_translation!(SUITE)
 
     expr_td = a * 3 * conj(E) + Δ_sym * σ(2, 2)
 
-    SUITE["Translation"]["time-dependent"]["atom-cavity"] = @benchmarkable translate_qo(
+    SUITE["Translation"]["time-dependent"]["atom-cavity"] = @benchmarkable to_numeric(
         $expr_td,
         $b_multi;
         parameter = $dict_p_static,
@@ -80,21 +80,16 @@ function benchmark_translation!(SUITE)
     dict_p_t_cav = Dict([gu_sym, gv_sym] .=> [gu_t, gv_t])
 
     SUITE["Translation"]["time-dependent"]["3-cavity H+L"] = @benchmarkable begin
-        translate_qo($H_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
-        translate_qo(
-            $L_sym,
-            $b_cav;
-            parameter = $dict_p_cav,
-            time_parameter = $dict_p_t_cav,
-        )
+        to_numeric($H_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
+        to_numeric($L_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
     end
 
     ## --- Closure evaluation (the ODE hot loop) ---
 
     SUITE["Translation"]["closure evaluation"] = BenchmarkGroup()
 
-    H_QO = translate_qo(H_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
-    L_QO = translate_qo(L_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
+    H_QO = to_numeric(H_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
+    L_QO = to_numeric(L_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
 
     t_mid = T[length(T)÷2]
 

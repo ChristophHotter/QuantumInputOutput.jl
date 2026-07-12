@@ -41,7 +41,7 @@ feedback
 ## [Translation](@id API: Translation)
 
 ```@docs
-translate_qo
+to_numeric
 ```
 
 ## [Pulses](@id API: Pulses)
@@ -92,10 +92,4 @@ solve_mode_evolution_symmetric
 
 ```@docs
 correlation_matrix
-```
-
-## [Utilities](@id API: Utilities)
-
-```@docs
-substitute_operators
 ```

@@ -81,8 +81,8 @@ function benchmark_interaction_picture!(SUITE)
 
     SUITE["Interaction Picture"]["operator substitution"]["TLS cascade"] =
         @benchmarkable begin
-            simplify(substitute_operators($H_int_, $int_dict))
-            simplify(substitute_operators($L, $int_dict))
+            simplify(substitute($H_int_, $int_dict))
+            simplify(substitute($L, $int_dict))
         end
 
     return nothing
