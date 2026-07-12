@@ -47,7 +47,7 @@ jobs:
       matrix:
         version:
           # - 'pre'
-          # - 'lts' # TODO
+          - 'lts' # TODO
           - '1'
         os:
           - ubuntu-latest
