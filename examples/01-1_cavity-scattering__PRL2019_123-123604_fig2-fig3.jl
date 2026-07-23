@@ -110,7 +110,10 @@ nothing # hide
 # In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.  
 
 Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
+## Pass the time-dependent operators (`H_QO`, `[L_QO]`) straight to the solver instead of
+## the `input_output_1` closure: the direct path lets the solver reuse its integrator and
+## is much faster for the many independent solves of the quantum-regression loop.
+g1_m = correlation_matrix(T, ρt, H_QO, [L_QO], Ls)
 nothing # hide
 
 #
