@@ -6,6 +6,15 @@ const _tol_div = 1e-10
 const _extrapolate = ExtrapolationType.Extension
 const _ϵ = 1e-10
 
+# Wrap a sampled interpolation in an explicit single-argument closure `t -> g(t)`.
+# SecondQuantizedAlgebra v0.10 rejects `time_parameter` values whose callable has
+# ambiguous arity (a `LinearInterpolation` responds to both `g(t)` and `g(t, order)`),
+# so the coupling functions hand back an unambiguous `t -> value` closure that plugs
+# straight into `to_numeric`'s `time_parameter` while still being callable as `g(t)`.
+_as_time_fn(itp) = let g = itp
+    t -> g(t)
+end
+
 _mode_interp(mode::AbstractVector, T::AbstractVector) =
     LinearInterpolation(mode, T; extrapolation = _extrapolate)
 _mode_interp(mode, T::AbstractVector) = mode
@@ -54,7 +63,7 @@ function _compute_coupling(mode::Vector, T::Vector, denom_fn)
             g[i] = mode[i]' / sqrt(d)
         end
     end
-    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+    return _as_time_fn(LinearInterpolation(g, T; extrapolation = _extrapolate))
 end
 
 # ──────────────────────────────────────────────
@@ -65,7 +74,8 @@ end
     coupling_input(u, T)
 
 Compute the virtual-cavity input coupling ``g_u(t)`` from an input mode `u(t)`
-sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+sampled on time grid `T`. Returns a single-argument closure `g(t)` (an interpolation of
+the sampled coupling) that plugs directly into a `to_numeric` `time_parameter`.
 """
 coupling_input(u::Vector, T::Vector) = _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
 coupling_input(u::Function, T::Vector) = coupling_input(u.(T), T)
@@ -85,7 +95,8 @@ end
     coupling_output(v, T)
 
 Compute the virtual-cavity output coupling ``g_v(t)`` from an output mode `v(t)`
-sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+sampled on time grid `T`. Returns a single-argument closure `g(t)` (an interpolation of
+the sampled coupling) that plugs directly into a `to_numeric` `time_parameter`.
 """
 coupling_output(v::Vector, T::Vector) = _compute_coupling(-v, T, x -> x + _ϵ)
 coupling_output(v::Function, T::Vector) = coupling_output(v.(T), T)
@@ -290,14 +301,14 @@ function _compute_coupling_delay(num_mode::Vector, u::Vector, v::Vector, T::Vect
             g[i] = num_mode[i]' / sqrt(d + _ϵ)
         end
     end
-    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+    return _as_time_fn(LinearInterpolation(g, T; extrapolation = _extrapolate))
 end
 
 """
     coupling_delay_out(u, v, T)
 
 Compute the out-coupling strength for a delay cavity.
-Returns `LinearInterpolation` directly.
+Returns a single-argument closure `g(t)`.
 """
 coupling_delay_out(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(u, u, v, T)
 coupling_delay_out(u::Function, v::Function, T::Vector) =
@@ -309,7 +320,7 @@ coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_in(u, v, T)
 
 Compute the in-coupling strength for a delay cavity.
-Returns `LinearInterpolation` directly.
+Returns a single-argument closure `g(t)`.
 """
 coupling_delay_in(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(-v, u, v, T)
 coupling_delay_in(u::Function, v::Function, T::Vector) = coupling_delay_in(u.(T), v.(T), T)

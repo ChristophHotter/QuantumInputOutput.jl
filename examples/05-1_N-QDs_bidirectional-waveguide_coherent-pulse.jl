@@ -8,7 +8,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using Symbolics: Symbolics
 using QuantumOptics
-using QuantumOpticsBase: dagger
+using QuantumOpticsBase: dagger, static_operator
 using Plots
 using LaTeXStrings
 
@@ -159,9 +159,12 @@ lT = length(T)
 G2 = zeros(lT, lT) # transmission
 G2_ref = zeros(lT, lT) # reflection
 
-L0(t) = L_R_QO(t)
+# `L_R_QO(t)`/`L_L_QO(t)` return a lazy `TimeDependentSum`; materialize it to a concrete
+# operator at each time so the quantum-regression products below yield a plain operator
+# (a `TimeDependentSum` product cannot serve as the solver's initial state).
+L0(t) = dense(static_operator(L_R_QO(t)))
 L0_dag(t) = dagger(L0(t))
-L0_ref(t) = L_L_QO(t)
+L0_ref(t) = dense(static_operator(L_L_QO(t)))
 L0_ref_dag(t) = dagger(L0_ref(t))
 
 for it1 = 1:(lT-1)
