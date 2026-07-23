@@ -100,7 +100,9 @@ struct SLH{N,ST,LT,HT,L}
     lindblad::SVector{N,LT}
     hamiltonian::HT
     function SLH{N,ST,LT,HT}(
-        S::SMatrix{N,N,ST,L}, lindblad::SVector{N,LT}, H::HT
+        S::SMatrix{N,N,ST,L},
+        lindblad::SVector{N,LT},
+        H::HT,
     ) where {N,ST,LT,HT,L}
         return new{N,ST,LT,HT,L}(S, lindblad, H)
     end
