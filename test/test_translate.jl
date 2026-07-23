@@ -2,8 +2,10 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using SymbolicUtils
 using QuantumOpticsBase
-using QuantumOpticsBase: dagger
+using QuantumOpticsBase: dagger, static_operator, TimeDependentSum
 using Test
+
+mat(F, t) = dense(static_operator(F(t)))
 
 @testset "translate" begin
     @variables κ_L::Real κ_R::Real Δ::Real g::Real γ::Real
@@ -56,8 +58,8 @@ using Test
             time_parameter = dict_p_t2,
             operators = ops_dict,
         )
-        @test isa(F1, Function)
-        @test isequal(F1(0.1), a_QO*3)
+        @test F1 isa TimeDependentSum
+        @test sum(abs.((mat(F1, 0.1) - dense(a_QO*3)).data)) < 1e-12
         F2 = to_numeric(
             a*E,
             bc1;
@@ -65,7 +67,7 @@ using Test
             time_parameter = dict_p_t2,
             operators = ops_dict,
         )
-        @test isequal(F2(0.1), a_QO*E_t(0.1))
+        @test sum(abs.((mat(F2, 0.1) - dense(a_QO*E_t(0.1))).data)) < 1e-12
         # association of the scalar prefactor differs from `Δn*A'*A`, compare numerically
         @test sum(
             abs.(
@@ -101,38 +103,37 @@ using Test
         abs.((dense(to_numeric(Δ, b; parameter = dict_p1)) - dense(one(b)*Δn)).data),
     ) < 1e-12
     F3 = to_numeric(Δ, b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((dense(F3(4)) - dense(one(b)*Δn)).data)) < 1e-8
+    @test sum(abs.((mat(F3, 4) - dense(one(b)*Δn)).data)) < 1e-8
     F4 = to_numeric(
         a*3*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
-    @test sum(abs.((F4(0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
+    @test sum(abs.((mat(F4, 0.2) - dense(a_QO2*3*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
     F5 = to_numeric(
         a*conj(E) + Δ*σ(2, 2),
         b;
         parameter = dict_p1,
         time_parameter = dict_p_t2,
     )
-    @test sum(abs.((F5(0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
-    @inferred F5(0.2)  # QAdd time-dependent path should return concrete type
+    @test sum(abs.((mat(F5, 0.2) - dense(a_QO2*E_t_c(0.2) + Δn*σ_QO(2, 2))).data)) < 1e-8
     F5_ = to_numeric(a*conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((dense(F5_(0.2)) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
+    @test sum(abs.((mat(F5_, 0.2) - dense(a_QO2*E_t_c(0.2))).data)) < 1e-8
     F6 = to_numeric(conj(E), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((dense(F6(0.2)) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
+    @test sum(abs.((mat(F6, 0.2) - dense(E_t_c(0.2)*one(b))).data)) < 1e-8
     F7 = to_numeric(conj(E) + Δ*σ(2, 2), b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((F7(0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
+    @test sum(abs.((mat(F7, 0.2) - dense(E_t_c(0.2)*one(b) + Δn*σ_QO(2, 2))).data)) < 1e-8
     # a bare symbolic scalar without a numeric/time value cannot be translated
     @test_throws ArgumentError to_numeric(conj(E), b; parameter = dict_p1)
     F8 = to_numeric(E^2, b; parameter = dict_p1, time_parameter = dict_p_t2)
-    @test sum(abs.((dense(F8(0.2)) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
+    @test sum(abs.((mat(F8, 0.2) - dense(E_t(0.2)^2*one(b))).data)) < 1e-8
 
 
     @testset "time_parameter_normalization" begin
         dict_p_t_num = Dict([E] .=> [2.5])
         F_num = to_numeric(a*E, b; parameter = dict_p1, time_parameter = dict_p_t_num)
-        @test sum(abs.((dense(F_num(0.2)) - dense(a_QO2 * 2.5)).data)) < 1e-8
+        @test sum(abs.((mat(F_num, 0.2) - dense(a_QO2 * 2.5)).data)) < 1e-8
     end
 
     @testset "multiple_time_prefactors" begin
@@ -147,7 +148,7 @@ using Test
             time_parameter = dict_p_t_multi,
         )
         expected = dense(a_QO2 * E1_t(0.4) * E2_t_c(0.4))
-        @test sum(abs.((dense(F_multi(0.4)) - expected).data)) < 1e-8
+        @test sum(abs.((mat(F_multi, 0.4) - expected).data)) < 1e-8
     end
 
     @testset "to_numeric vector overload" begin
@@ -160,10 +161,10 @@ using Test
             operators = ops_dict,
         )
         @test length(translated_ops) == length(ops)
-        @test all(op -> op isa Function, translated_ops)
-        @test isequal(translated_ops[1](0.3), a_QO)
-        @test isequal(translated_ops[2](0.3), one(bc1) * Δn)
-        @test isequal(translated_ops[3](0.3), a_QO * E_t(0.3))
+        @test all(op -> op isa TimeDependentSum, translated_ops)
+        @test sum(abs.((mat(translated_ops[1], 0.3) - dense(a_QO)).data)) < 1e-12
+        @test sum(abs.((mat(translated_ops[2], 0.3) - dense(one(bc1) * Δn)).data)) < 1e-12
+        @test sum(abs.((mat(translated_ops[3], 0.3) - dense(a_QO * E_t(0.3))).data)) < 1e-12
     end
 
     @testset "to_numeric SLH overload" begin
@@ -176,11 +177,12 @@ using Test
             operators = ops_dict,
         )
 
-        @test H_QO isa Function
+        @test H_QO isa TimeDependentSum
         @test length(L_QO) == 1
-        @test L_QO[1] isa Function
-        @test sum(abs.((H_QO(0.4) - dense(Δn * dagger(a_QO) * a_QO)).data)) < 1e-8
-        @test sum(abs.((L_QO[1](0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) < 1e-8
+        @test L_QO[1] isa TimeDependentSum
+        @test sum(abs.((mat(H_QO, 0.4) - dense(Δn * dagger(a_QO) * a_QO)).data)) < 1e-8
+        @test sum(abs.((mat(L_QO[1], 0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) <
+              1e-8
     end
 
     @testset "substitute operators qmul" begin
@@ -231,7 +233,29 @@ using Test
         @variables gR::Real
         gR_t(t) = 1.0 + 2.0im
         F = to_numeric(im * gR * a3, b3; time_parameter = Dict(gR => gR_t))
-        @test F isa Function
-        @test sum(abs.((F(0.0) - dense((im * (1.0 + 2.0im)) * a3_QO)).data)) < 1e-8
+        @test F isa TimeDependentSum
+        @test sum(abs.((mat(F, 0.0) - dense((im * (1.0 + 2.0im)) * a3_QO)).data)) < 1e-8
+    end
+
+    @testset "PulseCoupling as time_parameter" begin
+        # A `PulseCoupling` from a coupling constructor must plug into `to_numeric`'s
+        # `time_parameter` without the conflicting-arity error a raw interpolation triggers.
+        hcp = FockSpace(:cp)
+        acp = Destroy(hcp, :a)
+        bcp = FockBasis(3)
+        acp_QO = destroy(bcp)
+        @variables gu::Complex
+        Tg = collect(0.0:0.05:1.0)
+        umode(t) = exp(-(t - 0.5)^2)
+        gu_t = coupling_input(umode, Tg)
+        @test gu_t isa PulseCoupling
+        Fpc = to_numeric(
+            acp * gu,
+            bcp;
+            time_parameter = Dict(gu => gu_t),
+            operators = Dict([acp, acp'] .=> [acp_QO, dagger(acp_QO)]),
+        )
+        @test Fpc isa TimeDependentSum
+        @test sum(abs.((mat(Fpc, 0.3) - dense(gu_t(0.3) * acp_QO)).data)) < 1e-10
     end
 end

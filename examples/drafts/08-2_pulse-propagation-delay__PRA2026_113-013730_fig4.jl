@@ -11,6 +11,7 @@ using QuantumInputOutput
 using SecondQuantizedAlgebra
 using Symbolics: Symbolics
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using SymbolicUtils
 using LinearAlgebra
 using Plots
@@ -181,9 +182,9 @@ t_, ρt = timeevolution.master_dynamic(T, ψ0_fock, input_output)
 
 expect(au_QO'au_QO, ρt)
 
-p = plot(T, expect(au_QO' * au_QO, ρt); label = "")
-plot!(p, T, expect(ad1_QO' * ad1_QO, ρt); label = "")
-plot!(p, T, expect(ad2_QO' * ad2_QO, ρt); label = "")
+p = plot(T, real.(expect(au_QO' * au_QO, ρt)); label = "")
+plot!(p, T, real.(expect(ad1_QO' * ad1_QO, ρt)); label = "")
+plot!(p, T, real.(expect(ad2_QO' * ad2_QO, ρt)); label = "")
 p
 
 
@@ -197,8 +198,6 @@ expect(σ22_QO, ρt[end])
 pop_fock = zeros(length(Δ_ls))
 pop_coh = zeros(length(Δ_ls))
 idx_t1 = findmin(abs.(T .- t1))[2]
-using ProgressMeter
-prog = Progress(length(Δ_ls))
 
 for (it, Δn) in enumerate(Δ_ls)
     Δn = Δ_ls[it]
@@ -219,7 +218,6 @@ for (it, Δn) in enumerate(Δ_ls)
 
     # t_, ρt = timeevolution.master_dynamic(T, ψ0_coh, input_output)
     # pop_coh[it] = real(expect(σ22_QO, ρt[idx_t1]))
-    next!(prog)
 end
 nothing # hide
 

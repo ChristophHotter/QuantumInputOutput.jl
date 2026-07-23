@@ -6,9 +6,23 @@ const _tol_div = 1e-10
 const _extrapolate = ExtrapolationType.Extension
 const _ϵ = 1e-10
 
-_mode_interp(mode::AbstractVector, T::AbstractVector) =
+"""
+    PulseCoupling(f)
+
+A single-argument time function `g(t)` used as a `to_numeric` `time_parameter` value.
+Wraps any evaluator `f` (a sampled interpolation, an analytic closure, ...) behind exactly
+one call method, so it satisfies SecondQuantizedAlgebra's single-arity `time_parameter`
+contract by construction (a raw interpolation is rejected for having methods of conflicting
+arity). Callable as `g(t)` and broadcastable as `g.(T)`.
+"""
+struct PulseCoupling{F}
+    f::F
+end
+(g::PulseCoupling)(t::Real) = g.f(t)
+
+_interpolate_mode(mode::AbstractVector, T::AbstractVector) =
     LinearInterpolation(mode, T; extrapolation = _extrapolate)
-_mode_interp(mode, T::AbstractVector) = mode
+_interpolate_mode(mode, T::AbstractVector) = mode
 
 # ──────────────────────────────────────────────
 # Gaussian pulse type
@@ -42,19 +56,19 @@ end
 # Shared coupling core
 # ──────────────────────────────────────────────
 
-function _compute_coupling(mode::Vector, T::Vector, denom_fn)
-    l_T = length(T)
-    buf = Vector{Float64}(undef, l_T)
-    map!(abs2, buf, mode)
-    ∫m2 = cumul_integrate(T, buf)
-    g = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        d = denom_fn(∫m2[i])
-        if sqrt(abs(d)) > _tol_div
-            g[i] = mode[i]' / sqrt(d)
+function _coupling_from_mode(mode::Vector, T::Vector, denominator)
+    nt = length(T)
+    mode_sq = Vector{Float64}(undef, nt)
+    map!(abs2, mode_sq, mode)
+    ∫mode2 = cumul_integrate(T, mode_sq)
+    coupling = zeros(ComplexF64, nt)
+    @inbounds for i = 2:nt
+        denom = denominator(∫mode2[i])
+        if sqrt(abs(denom)) > _tol_div
+            coupling[i] = mode[i]' / sqrt(denom)
         end
     end
-    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+    return PulseCoupling(LinearInterpolation(coupling, T; extrapolation = _extrapolate))
 end
 
 # ──────────────────────────────────────────────
@@ -65,9 +79,10 @@ end
     coupling_input(u, T)
 
 Compute the virtual-cavity input coupling ``g_u(t)`` from an input mode `u(t)`
-sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+sampled on time grid `T`. Returns a [`PulseCoupling`](@ref) (callable as `g(t)`,
+broadcastable as `g.(T)`) that plugs directly into a `to_numeric` `time_parameter`.
 """
-coupling_input(u::Vector, T::Vector) = _compute_coupling(u, T, x -> abs(1 - x) + _ϵ)
+coupling_input(u::Vector, T::Vector) = _coupling_from_mode(u, T, x -> abs(1 - x) + _ϵ)
 coupling_input(u::Function, T::Vector) = coupling_input(u.(T), T)
 coupling_input(u::LinearInterpolation, T::Vector) = coupling_input(u.(T), T)
 
@@ -78,16 +93,17 @@ Analytical input coupling ``g_u(t)`` for a Gaussian pulse.
 """
 function coupling_input(g::Gaussian)
     mode, ∫m2 = _gaussian_mode(g)
-    return t -> mode(t)' / √(abs(1 - ∫m2(t)) + _ϵ)
+    return PulseCoupling(t -> mode(t)' / √(abs(1 - ∫m2(t)) + _ϵ))
 end
 
 """
     coupling_output(v, T)
 
 Compute the virtual-cavity output coupling ``g_v(t)`` from an output mode `v(t)`
-sampled on time grid `T`. Returns the `LinearInterpolation` directly (callable as `g(t)`).
+sampled on time grid `T`. Returns a [`PulseCoupling`](@ref) (callable as `g(t)`,
+broadcastable as `g.(T)`) that plugs directly into a `to_numeric` `time_parameter`.
 """
-coupling_output(v::Vector, T::Vector) = _compute_coupling(-v, T, x -> x + _ϵ)
+coupling_output(v::Vector, T::Vector) = _coupling_from_mode(-v, T, x -> x + _ϵ)
 coupling_output(v::Function, T::Vector) = coupling_output(v.(T), T)
 coupling_output(v::LinearInterpolation, T::Vector) = coupling_output(v.(T), T)
 
@@ -98,7 +114,7 @@ Analytical output coupling ``g_v(t)`` for a Gaussian pulse.
 """
 function coupling_output(g::Gaussian)
     mode, ∫m2 = _gaussian_mode(g)
-    return t -> -mode(t)' / √(∫m2(t) + _ϵ)
+    return PulseCoupling(t -> -mode(t)' / √(∫m2(t) + _ϵ))
 end
 
 # ──────────────────────────────────────────────
@@ -118,14 +134,13 @@ All kwargs are passed on to the ODE solver.
 function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     n = i - 1
-    # Capture as tuples for concrete closure types
-    gv_t = ntuple(k -> gv_fcts[k], n)
+    # Capture as a tuple for concrete closure types
+    gv = ntuple(k -> gv_fcts[k], n)
     v_i = v_fcts[i]
-    gv_all = ntuple(k -> gv_fcts[k], n)
     function multiple_outputs_α!(dα, α, p, t)
         gv_buf = p
         @inbounds for k = 1:n
-            gv_buf[k] = gv_t[k](t)
+            gv_buf[k] = gv[k](t)
         end
         vi_t = v_i(t)
         @inbounds for j = 1:n
@@ -145,7 +160,7 @@ function effective_output_mode(v_fcts, gv_fcts, T, i; alg = Tsit5(), kwargs...)
         α_t = sol_α(t)
         result = v_i(t)
         @inbounds for k = 1:n
-            result += gv_all[k](t)' * α_t[k]
+            result += gv[k](t)' * α_t[k]
         end
         return result
     end
@@ -168,8 +183,8 @@ function effective_output_mode(
     alg = Tsit5(),
     kwargs...,
 )
-    v_fcts = [_mode_interp(v_, T) for v_ in v_data]
-    gv_fcts = [_mode_interp(gv_, T) for gv_ in gv_data]
+    v_fcts = [_interpolate_mode(v_, T) for v_ in v_data]
+    gv_fcts = [_interpolate_mode(gv_, T) for gv_ in gv_data]
     return effective_output_mode(v_fcts, gv_fcts, T, i; alg, kwargs...)
 end
 
@@ -205,15 +220,14 @@ All kwargs are passed on to the ODE solver.
 function effective_input_mode(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
     @assert i > 1
     n = i - 1
-    # Capture as tuples for concrete closure types
-    gu_t = ntuple(k -> gu_fcts[k], n)
+    # Capture as a tuple for concrete closure types
+    gu = ntuple(k -> gu_fcts[k], n)
     u_i = u_fcts[i]
     gu_i = gu_fcts[i]
-    gu_all = ntuple(k -> gu_fcts[k], n)
     function multiple_inputs_α!(dα, α, p, t)
         gu_buf = p
         @inbounds for k = 1:n
-            gu_buf[k] = gu_t[k](t)
+            gu_buf[k] = gu[k](t)
         end
         ui_t = u_i(t)
         gui_t = gu_i(t)
@@ -234,7 +248,7 @@ function effective_input_mode(u_fcts, gu_fcts, T, i; alg = Tsit5(), kwargs...)
         α_t = sol_α(t)
         result = u_i(t)
         @inbounds for k = 1:n
-            result -= gu_all[k](t)' * α_t[k]
+            result -= gu[k](t)' * α_t[k]
         end
         return result
     end
@@ -252,8 +266,8 @@ function effective_input_mode(
     alg = Tsit5(),
     kwargs...,
 )
-    u_fcts = [_mode_interp(u_, T) for u_ in u_data]
-    gu_fcts = [_mode_interp(gu_, T) for gu_ in gu_data]
+    u_fcts = [_interpolate_mode(u_, T) for u_ in u_data]
+    gu_fcts = [_interpolate_mode(gu_, T) for gu_ in gu_data]
     return effective_input_mode(u_fcts, gu_fcts, T, i; alg, kwargs...)
 end
 
@@ -276,30 +290,30 @@ effective_input_mode(
 # coupling_delay_out / coupling_delay_in
 # ──────────────────────────────────────────────
 
-function _compute_coupling_delay(num_mode::Vector, u::Vector, v::Vector, T::Vector)
-    l_T = length(T)
-    buf = Vector{Float64}(undef, l_T)
-    map!(abs2, buf, u)
-    ∫u2 = cumul_integrate(T, buf)
-    map!(abs2, buf, v)
-    ∫v2 = cumul_integrate(T, buf)
-    g = zeros(ComplexF64, l_T)
-    @inbounds for i = 2:l_T
-        d = abs(∫v2[i] - ∫u2[i])
-        if sqrt(abs(d)) > _tol_div
-            g[i] = num_mode[i]' / sqrt(d + _ϵ)
+function _delay_coupling_from_modes(num_mode::Vector, u::Vector, v::Vector, T::Vector)
+    nt = length(T)
+    mode_sq = Vector{Float64}(undef, nt)
+    map!(abs2, mode_sq, u)
+    ∫u2 = cumul_integrate(T, mode_sq)
+    map!(abs2, mode_sq, v)
+    ∫v2 = cumul_integrate(T, mode_sq)
+    coupling = zeros(ComplexF64, nt)
+    @inbounds for i = 2:nt
+        denom = abs(∫v2[i] - ∫u2[i])
+        if sqrt(abs(denom)) > _tol_div
+            coupling[i] = num_mode[i]' / sqrt(denom + _ϵ)
         end
     end
-    return LinearInterpolation(g, T; extrapolation = _extrapolate)
+    return PulseCoupling(LinearInterpolation(coupling, T; extrapolation = _extrapolate))
 end
 
 """
     coupling_delay_out(u, v, T)
 
 Compute the out-coupling strength for a delay cavity.
-Returns `LinearInterpolation` directly.
+Returns a [`PulseCoupling`](@ref) (callable as `g(t)`, broadcastable as `g.(T)`).
 """
-coupling_delay_out(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(u, u, v, T)
+coupling_delay_out(u::Vector, v::Vector, T::Vector) = _delay_coupling_from_modes(u, u, v, T)
 coupling_delay_out(u::Function, v::Function, T::Vector) =
     coupling_delay_out(u.(T), v.(T), T)
 coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
@@ -309,9 +323,9 @@ coupling_delay_out(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_in(u, v, T)
 
 Compute the in-coupling strength for a delay cavity.
-Returns `LinearInterpolation` directly.
+Returns a [`PulseCoupling`](@ref) (callable as `g(t)`, broadcastable as `g.(T)`).
 """
-coupling_delay_in(u::Vector, v::Vector, T::Vector) = _compute_coupling_delay(-v, u, v, T)
+coupling_delay_in(u::Vector, v::Vector, T::Vector) = _delay_coupling_from_modes(-v, u, v, T)
 coupling_delay_in(u::Function, v::Function, T::Vector) = coupling_delay_in(u.(T), v.(T), T)
 coupling_delay_in(u::LinearInterpolation, v::LinearInterpolation, T::Vector) =
     coupling_delay_in(u.(T), v.(T), T)

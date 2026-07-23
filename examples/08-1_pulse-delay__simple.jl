@@ -190,6 +190,9 @@ p_t_sym = [g_u, g_in, g_out, g_v, M_ls...]
 p_t_num = [gu_, gin_, gout_, gv_, M_t_ls...]
 dict_p_t_int = Dict(p_t_sym .=> p_t_num)
 
+# The interaction picture eliminates the delay cavity `d`, so the numeric operators live
+# on the two-mode basis `bu ⊗ bv` (with `ad` mapped to the identity). Build on that basis.
+b_int = bu ⊗ bv
 au_int = destroy(bu) ⊗ one(bv)
 ## This is amazing! # hide
 ad_int = one(bu ⊗ bv)
@@ -198,13 +201,13 @@ operators = Dict(
     [au, au', ad, ad', av, av'] .=> [au_int, au_int', ad_int, ad_int', av_int, av_int'],
 )
 
-H_int_QO = to_numeric(H_int_sym, b; time_parameter = dict_p_t_int, operators)
+H_int_QO = to_numeric(H_int_sym, b_int; time_parameter = dict_p_t_int, operators)
 L_int_QO = [
-    to_numeric(L_int_sym[i], b; time_parameter = dict_p_t_int, operators) for
+    to_numeric(L_int_sym[i], b_int; time_parameter = dict_p_t_int, operators) for
     i = 1:length(L_int_sym)
 ]
-## H_int_QO = to_numeric(H_int_sym, b; time_parameter=dict_p_t_int) # hide 
-## L_int_QO = [to_numeric(L_int_sym[i], b; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
+## H_int_QO = to_numeric(H_int_sym, b_int; time_parameter=dict_p_t_int) # hide
+## L_int_QO = [to_numeric(L_int_sym[i], b_int; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
 nothing # hide
 
 #

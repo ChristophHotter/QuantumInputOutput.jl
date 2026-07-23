@@ -38,4 +38,5 @@ end
 
     all_concrete(typeof(QIO.SLH(1, 0, 0))) # TODO
     all_concrete(QIO.Gaussian)
+    all_concrete(QIO.PulseCoupling)
 end

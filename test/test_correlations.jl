@@ -1,6 +1,6 @@
 using QuantumInputOutput
 using QuantumOptics
-using QuantumOpticsBase: dagger
+using QuantumOpticsBase: dagger, TimeDependentSum
 using LinearAlgebra
 using Test
 
@@ -45,4 +45,17 @@ using Test
     mode_num_aligned = mode_num * exp(-1im * angle(overlap))
     overlap_aligned = abs(sum(conj.(mode_exp) .* mode_num_aligned) * ΔT)
     @test overlap_aligned > 0.99
+
+    @testset "time-dependent Ls rejected" begin
+        td_Ls = TimeDependentSum([t -> 1.0 + 0im], J)
+        @test_throws ArgumentError correlation_matrix(T, ρt_static, H, J, td_Ls)
+    end
+
+    @testset "time-dependent operator path matches static" begin
+        H_td = TimeDependentSum([t -> 0.0 + 0im], [one(ba)])
+        J_td = [TimeDependentSum([t -> sqrt(γ) + 0im], [σm])]
+        _, ρt_td = timeevolution.master_dynamic(T, ψ0, H_td, J_td)
+        g1_td = correlation_matrix(T, ρt_td, H_td, J_td, Ls)
+        @test maximum(abs.(g1_td .- g1_static)) < 1e-8
+    end
 end

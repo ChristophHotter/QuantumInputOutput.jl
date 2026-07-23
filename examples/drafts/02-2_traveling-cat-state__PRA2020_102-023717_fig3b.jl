@@ -13,6 +13,7 @@
 using QuantumInputOutput
 using SecondQuantizedAlgebra
 using QuantumOptics
+using QuantumOpticsBase: dagger
 using Plots
 using LinearAlgebra
 using DataInterpolations
@@ -23,7 +24,7 @@ using DataInterpolations
 hc = FockSpace(:c)
 
 ## symbolic operator
-a = Destroy(hc, :a, 1)
+a = Destroy(hc, :a)
 
 ## symbolic parameters
 @variables γ::Real K::Real Δ::Real p::Number
