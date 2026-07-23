@@ -94,6 +94,7 @@ using Test
     @test maximum(abs.(coupling_output(u_itp, T).(T[2:end]) .- gv_ana.(T[2:end]))) < 5e-4
     uc_itp = LinearInterpolation(uc.(Td), Td)
     vc_itp = LinearInterpolation(vc.(Td), Td)
-    @test maximum(abs.(coupling_delay_out(uc_itp, vc_itp, Td).(Td[2:end]) .- exp_out)) < 1e-6
+    @test maximum(abs.(coupling_delay_out(uc_itp, vc_itp, Td).(Td[2:end]) .- exp_out)) <
+          1e-6
     @test maximum(abs.(coupling_delay_in(uc_itp, vc_itp, Td).(Td[2:end]) .- exp_in)) < 1e-6
 end
