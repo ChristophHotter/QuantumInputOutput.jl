@@ -61,4 +61,16 @@ using Test
     u_eff_data2 = effective_input_mode([u1.(T), u2.(T)], [gu1.(T), gu2.(T)], T, 2)
     @test maximum(abs.(u_eff_f.(T) .- u_eff_data2.(T))) /
           maximum(abs.(u_eff_f.(T) .+ u_eff_data2.(T))) < 1e-2
+
+    v3(t) = 1 / (sqrt(σ) * π^(1/4)) * exp(-0.5 * ((t - τ) / σ)^2)
+    v_eff3_f = effective_output_mode([v1, v2, v3], T, 3)
+    v_eff3_data = effective_output_mode([v1.(T), v2.(T), v3.(T)], T, 3)
+    @test maximum(abs.(v_eff3_f.(T) .- v_eff3_data.(T))) /
+          maximum(abs.(v_eff3_f.(T) .+ v_eff3_data.(T))) < 1e-2
+
+    u3(t) = 1 / (sqrt(σ) * π^(1/4)) * exp(-0.5 * ((t - τ) / σ)^2)
+    u_eff3_f = effective_input_mode([u1, u2, u3], T, 3)
+    u_eff3_data = effective_input_mode([u1.(T), u2.(T), u3.(T)], T, 3)
+    @test maximum(abs.(u_eff3_f.(T) .- u_eff3_data.(T))) /
+          maximum(abs.(u_eff3_f.(T) .+ u_eff3_data.(T))) < 1e-2
 end
