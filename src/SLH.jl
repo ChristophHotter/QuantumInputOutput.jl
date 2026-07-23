@@ -95,10 +95,15 @@ SLH triple with scattering matrix `S`, Lindblad vector `L`, and Hamiltonian `H`.
 
 See also [`▷`](@ref), [`⊞`](@ref), [`feedback`](@ref)
 """
-struct SLH{N,ST,LT,HT}
-    scattering::SMatrix{N,N,ST}
+struct SLH{N,ST,LT,HT,L}
+    scattering::SMatrix{N,N,ST,L}
     lindblad::SVector{N,LT}
     hamiltonian::HT
+    function SLH{N,ST,LT,HT}(
+        S::SMatrix{N,N,ST,L}, lindblad::SVector{N,LT}, H::HT
+    ) where {N,ST,LT,HT,L}
+        return new{N,ST,LT,HT,L}(S, lindblad, H)
+    end
 end
 
 """
