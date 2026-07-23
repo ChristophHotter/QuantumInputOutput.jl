@@ -23,6 +23,14 @@ using Test
     gu_ana = coupling_input(Gaussian(τ, σ; δ = δ))
     gv_ana = coupling_output(Gaussian(τ, σ; δ = δ))
 
+    # Every coupling constructor returns a `PulseCoupling`: callable and broadcastable.
+    @test gu_num isa PulseCoupling
+    @test gv_num isa PulseCoupling
+    @test gu_ana isa PulseCoupling
+    @test gv_ana isa PulseCoupling
+    @test gu_num(T[5]) isa ComplexF64
+    @test gu_num.(T[1:3]) isa AbstractVector{ComplexF64}
+
     gv_err = maximum(abs.(gv_num.(T[2:end]) .- gv_ana.(T[2:end])))
     gu_err = maximum(abs.(gu_num.(T[2:end]) .- gu_ana.(T[2:end])))
 

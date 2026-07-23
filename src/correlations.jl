@@ -6,18 +6,14 @@ Compute the two-time correlation matrix
 ``g^{(1)}(t_1, t_2) = \\langle L_s^\\dagger(t_1) L_s(t_2) \\rangle``
 on the time grid `T`. Writes directly into output matrix.
 
-The dynamics can be supplied either as a `master_dynamic`-style function `f(t, ρ)` or,
-much more efficiently for time-dependent problems, as operators passed straight to the
-solver: a time-dependent `H` (an `AbstractTimeDependentOperator`, e.g. the
-`TimeDependentSum` returned by [`to_numeric`](@ref)) together with its jump operators `J`,
-or a constant `H` with constant `J`. Passing the operators directly lets the solver build
-the integrator once instead of rebuilding it from `f`'s return value at every step.
-
-`Ls` may be a constant operator or a function `Ls(t)` returning the (concrete) operator at
-time `t`.
+Supply the dynamics either as a `master_dynamic`-style function `f(t, ρ)`, or as operators
+passed straight to the solver: a time-dependent `H` (e.g. the `TimeDependentSum` from
+[`to_numeric`](@ref)) with jump operators `J`, or a constant `H` with constant `J`. The
+operator form is much faster for time-dependent problems (the integrator is built once).
+`Ls` is either a constant operator or a function `Ls(t)` returning the operator at `t`.
 """
 function correlation_matrix(T::Vector, ρt::Vector, f::Function, Ls; kwargs...)
-    Ls_vec, Ls_dag_vec = _ls_vectors(T, Ls)
+    Ls_vec, Ls_dag_vec = _sample_operator_and_adjoint(T, Ls)
     _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
         timeevolution.master_dynamic(T_slice, ρ0, f; kwargs...)
     end
@@ -31,30 +27,37 @@ function correlation_matrix(
     Ls;
     kwargs...,
 )
-    Ls_vec, Ls_dag_vec = _ls_vectors(T, Ls)
-    # `master_dynamic` mutates the operator's current time via `set_time!`, so each parallel
-    # iteration solves with its own copy to avoid a data race on the shared `H`/`J`.
+    Ls_vec, Ls_dag_vec = _sample_operator_and_adjoint(T, Ls)
     _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
         timeevolution.master_dynamic(T_slice, ρ0, copy(H), [copy(j) for j in J]; kwargs...)
     end
 end
 
 function correlation_matrix(T::Vector, ρt::Vector, H, J::AbstractVector, Ls; kwargs...)
-    Ls_vec, Ls_dag_vec = _ls_vectors(T, Ls)
+    Ls_vec, Ls_dag_vec = _sample_operator_and_adjoint(T, Ls)
     _correlation_loop(T, ρt, Ls_vec, Ls_dag_vec) do T_slice, ρ0
         timeevolution.master(T_slice, ρ0, H, J; kwargs...)
     end
 end
 
-# Build the per-time `Ls`/`Ls†` vectors. A function `Ls(t)` is sampled on `T`; a constant
-# operator is broadcast to every time.
-function _ls_vectors(T::Vector, Ls::Function)
-    Ls_vec = Ls.(T)
-    return Ls_vec, dagger.(Ls_vec)
+function _sample_operator_and_adjoint(T::Vector, op::Function)
+    vals = op.(T)
+    return vals, dagger.(vals)
 end
-function _ls_vectors(T::Vector, Ls)
-    l_T = length(T)
-    return fill(Ls, l_T), fill(dagger(Ls), l_T)
+function _sample_operator_and_adjoint(
+    ::Vector,
+    op::QuantumOpticsBase.AbstractTimeDependentOperator,
+)
+    throw(
+        ArgumentError(
+            "`Ls` is a time-dependent operator ($(nameof(typeof(op)))); pass it as a " *
+            "function `Ls(t)` returning the concrete operator at time `t`.",
+        ),
+    )
+end
+function _sample_operator_and_adjoint(T::Vector, op)
+    nt = length(T)
+    return fill(op, nt), fill(dagger(op), nt)
 end
 
 function _correlation_loop(solve_fn, T, ρt, Ls_vec, Ls_dag_vec)

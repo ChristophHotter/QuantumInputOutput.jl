@@ -51,6 +51,10 @@ Gaussian
 ```
 
 ```@docs
+PulseCoupling
+```
+
+```@docs
 coupling_input
 ```
 

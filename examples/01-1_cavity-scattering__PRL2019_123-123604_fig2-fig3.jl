@@ -1,8 +1,8 @@
 # # Cavity Scattering of a Single Photon
 
-# In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604). 
+# In this example, we simulate the scattering of a resonant single photon on an empty one-sided cavity. The temporal mode of the light pulse is a Gaussian with width $\sigma$ and the cavity has a decay rate $\gamma$. This system has been studied in [A. Kiilerich, et al., Phys. Rev. Lett. 123, 123604 (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.123604).
 
-# We start by loading the needed packages and specifying the model. 
+# We start by loading the needed packages and specifying the model.
 
 using QuantumInputOutput
 using SecondQuantizedAlgebra
@@ -29,9 +29,9 @@ av = Destroy(h, :a_v, 3)
 @variables g_u::Number Δ::Real γ::Real g_v::Number
 nothing # hide
 
-# We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system. 
+# We use the symbolic operators and parameters to define the SLH triples and cascade them to obtain the Hamiltonian and Lindblad for the system.
 
-G_u = SLH(1, g_u'*au, 0) # input cavity 
+G_u = SLH(1, g_u'*au, 0) # input cavity
 G_c = SLH(1, √(γ)*c, Δ*c'c) # system cavity
 G_v = SLH(1, g_v'*av, 0) # output cavity
 
@@ -46,9 +46,9 @@ H = hamiltonian(G_cas)
 
 L = lindblad(G_cas)[1] # only one Lindblad term in this example
 
-# To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis. 
+# To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.
 
-## numerical parameters 
+## numerical parameters
 γ_ = 1.0
 Δ_ = 0.0
 
@@ -67,21 +67,21 @@ T = [0:0.002:1;]*T_end
 gu_t = coupling_input(u1, T)
 dict_p_t = Dict(g_u => gu_t)
 
-## numeric bases 
+## numeric bases
 bu1 = FockBasis(1)
 bc1 = FockBasis(1)
 bv1 = FockBasis(1)
 b = bu1 ⊗ bc1 ⊗ bv1
 nothing # hide
 
-# We now use the function [`to_numeric`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function. 
+# We now use the function [`to_numeric`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
 L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 
 
-# To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master_dynamic`. 
+# To solve the dynamics we use the QuantumOptics.jl function `timeevolution.master_dynamic`.
 
 ## time-dependent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
 function input_output_1(t, ρ)
@@ -107,12 +107,9 @@ n_c_t = real.(expect(c_qo'*c_qo, ρt))
 n_u1_t = real.(expect(au_qo'*au_qo, ρt))
 nothing # hide
 
-# In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.  
+# In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.
 
 Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-## Pass the time-dependent operators (`H_QO`, `[L_QO]`) straight to the solver instead of
-## the `input_output_1` closure: the direct path lets the solver reuse its integrator and
-## is much faster for the many independent solves of the quantum-regression loop.
 g1_m = correlation_matrix(T, ρt, H_QO, [L_QO], Ls)
 nothing # hide
 
@@ -130,7 +127,7 @@ p = heatmap(
 )
 p
 
-# The eigenvalues and corresponding eigenvectors are sorted in ascending order, which means the last eigenvalue corresponds to the highest populated temporal mode. 
+# The eigenvalues and corresponding eigenvectors are sorted in ascending order, which means the last eigenvalue corresponds to the highest populated temporal mode.
 
 F = eigen(g1_m)
 n_avg = round.(real.(F.values)*ΔT; digits = 3)
@@ -140,7 +137,7 @@ v_mode = (modes[:, end]) / sqrt(ΔT)
 @show n_avg[(end-1):end]
 nothing # hide
 
-# We use now the mode with the highest mean photon number as our out-mode to determine its quantum state. 
+# We use now the mode with the highest mean photon number as our out-mode to determine its quantum state.
 p_sym_2 = [γ, Δ]
 p_num_2 = [γ_, Δ_]
 dict_p_2 = Dict(p_sym_2 .=> p_num_2)
@@ -201,7 +198,7 @@ plot(p1, p2; layout = (2, 1), size = (600, 550))
 
 # ## Cavity with phase noise
 
-# We slightly adapt the above example by assuming the initial pulse to be in a coherent state and adding phase noise to the cavity. This results in scattering into multiple modes. 
+# We slightly adapt the above example by assuming the initial pulse to be in a coherent state and adding phase noise to the cavity. This results in scattering into multiple modes.
 
 ## new basis of the system
 bu1_3 = FockBasis(12)
@@ -215,7 +212,7 @@ c_3 = embed(b_3, 2, destroy(bc1_3))
 av_3 = embed(b_3, 3, destroy(bv1_3))
 cdc_3 = c_3'c_3
 
-## we use the same Hamiltonian as before but add a depasing term to the dissipation 
+## we use the same Hamiltonian as before but add a depasing term to the dissipation
 H_QO_3 = to_numeric(H, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
 L_QO_3 = to_numeric(L, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
 function input_output_3(t, ρ)
@@ -226,7 +223,7 @@ end;
 
 #
 
-# Due to the larger Hilbert space the time evolution takes a few seconds. 
+# Due to the larger Hilbert space the time evolution takes a few seconds.
 
 ψ0_3 = coherentstate(bu1_3, 2) ⊗ fockstate(bc1_3, 0) ⊗ fockstate(bv1_3, 0)
 t_3, ρt_3 = timeevolution.master_dynamic(T, ψ0_3, input_output_3)

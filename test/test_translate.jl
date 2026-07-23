@@ -5,10 +5,6 @@ using QuantumOpticsBase
 using QuantumOpticsBase: dagger, static_operator, TimeDependentSum
 using Test
 
-# Since SecondQuantizedAlgebra v0.10, `to_numeric` returns a `TimeDependentSum` for
-# time-dependent inputs instead of a plain callable. Calling it at a time `t` sets the
-# current time and still returns a `TimeDependentSum`; `mat` materializes it to a dense
-# `Operator` for numeric comparison.
 mat(F, t) = dense(static_operator(F(t)))
 
 @testset "translate" begin
@@ -239,5 +235,27 @@ mat(F, t) = dense(static_operator(F(t)))
         F = to_numeric(im * gR * a3, b3; time_parameter = Dict(gR => gR_t))
         @test F isa TimeDependentSum
         @test sum(abs.((mat(F, 0.0) - dense((im * (1.0 + 2.0im)) * a3_QO)).data)) < 1e-8
+    end
+
+    @testset "PulseCoupling as time_parameter" begin
+        # A `PulseCoupling` from a coupling constructor must plug into `to_numeric`'s
+        # `time_parameter` without the conflicting-arity error a raw interpolation triggers.
+        hcp = FockSpace(:cp)
+        acp = Destroy(hcp, :a)
+        bcp = FockBasis(3)
+        acp_QO = destroy(bcp)
+        @variables gu::Complex
+        Tg = collect(0.0:0.05:1.0)
+        umode(t) = exp(-(t - 0.5)^2)
+        gu_t = coupling_input(umode, Tg)
+        @test gu_t isa PulseCoupling
+        Fpc = to_numeric(
+            acp * gu,
+            bcp;
+            time_parameter = Dict(gu => gu_t),
+            operators = Dict([acp, acp'] .=> [acp_QO, dagger(acp_QO)]),
+        )
+        @test Fpc isa TimeDependentSum
+        @test sum(abs.((mat(Fpc, 0.3) - dense(gu_t(0.3) * acp_QO)).data)) < 1e-10
     end
 end

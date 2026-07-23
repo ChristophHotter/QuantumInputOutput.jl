@@ -30,6 +30,7 @@ export SLH,
     to_numeric,
     substitute,
     # Pulse coupling
+    PulseCoupling,
     coupling_input,
     coupling_output,
     coupling_delay_in,

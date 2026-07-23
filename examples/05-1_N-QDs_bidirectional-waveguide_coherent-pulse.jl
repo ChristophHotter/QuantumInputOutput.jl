@@ -159,9 +159,8 @@ lT = length(T)
 G2 = zeros(lT, lT) # transmission
 G2_ref = zeros(lT, lT) # reflection
 
-# `L_R_QO(t)`/`L_L_QO(t)` return a lazy `TimeDependentSum`; materialize it to a concrete
-# operator at each time so the quantum-regression products below yield a plain operator
-# (a `TimeDependentSum` product cannot serve as the solver's initial state).
+# Materialize the lazy `TimeDependentSum` to a concrete operator at each time, so the
+# quantum-regression products below give a plain operator usable as the solver's initial state.
 L0(t) = dense(static_operator(L_R_QO(t)))
 L0_dag(t) = dagger(L0(t))
 L0_ref(t) = dense(static_operator(L_L_QO(t)))
