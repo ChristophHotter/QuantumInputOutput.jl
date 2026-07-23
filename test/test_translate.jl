@@ -185,7 +185,8 @@ mat(F, t) = dense(static_operator(F(t)))
         @test length(L_QO) == 1
         @test L_QO[1] isa TimeDependentSum
         @test sum(abs.((mat(H_QO, 0.4) - dense(Δn * dagger(a_QO) * a_QO)).data)) < 1e-8
-        @test sum(abs.((mat(L_QO[1], 0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) < 1e-8
+        @test sum(abs.((mat(L_QO[1], 0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) <
+              1e-8
     end
 
     @testset "substitute operators qmul" begin

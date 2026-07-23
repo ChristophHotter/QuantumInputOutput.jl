@@ -11,9 +11,10 @@ const _ϵ = 1e-10
 # ambiguous arity (a `LinearInterpolation` responds to both `g(t)` and `g(t, order)`),
 # so the coupling functions hand back an unambiguous `t -> value` closure that plugs
 # straight into `to_numeric`'s `time_parameter` while still being callable as `g(t)`.
-_as_time_fn(itp) = let g = itp
-    t -> g(t)
-end
+_as_time_fn(itp) =
+    let g = itp
+        t -> g(t)
+    end
 
 _mode_interp(mode::AbstractVector, T::AbstractVector) =
     LinearInterpolation(mode, T; extrapolation = _extrapolate)
