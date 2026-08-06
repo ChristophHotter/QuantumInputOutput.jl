@@ -17,28 +17,39 @@ coupling functions/constants `gs = (g_1, ..., g_N)`. Returns a closure `t -> A(t
 A_{ij}(t) = \\frac{1}{2} \\begin{cases}
 0 & i = j \\\\
 g_i(t)\\, g_j^*(t) & i < j \\\\
--g_i^*(t)\\, g_j(t) & i > j
+-g_j^*(t)\\, g_i(t) & i > j
 \\end{cases}
 ```
 
-All couplings may be time-dependent or constant.
+so that `A(t)` is anti-Hermitian. All couplings may be time-dependent or constant.
 """
-function coupling_matrix(gs::NTuple{N}) where {N}
+function coupling_matrix(gs::Tuple{Vararg{Any,N}}) where {N}
     gfs = map(_as_time_function, gs)
-    function A(t)
-        gvals = ntuple(i -> gfs[i](t), Val(N))
-        SMatrix{N,N,ComplexF64}(ntuple(Val(N * N)) do k
-            i, j = divrem(k - 1, N) .+ (1, 1)
-            if i == j
-                zero(ComplexF64)
-            elseif j < i
-                0.5 * gvals[i] * conj(gvals[j])
-            else  # j > i
-                -0.5 * gvals[i] * conj(gvals[j])
-            end
-        end)
-    end
+    A(t) = _coupling_matrix(gfs, t)
     return A
+end
+
+# Unrolled at compile time so that tuples of mixed element type (a constant next to
+# an interpolant, say) stay allocation-free: indexing such a tuple in a loop is only
+# type stable if constant propagation reaches the index, and it does not.
+@generated function _coupling_matrix(gfs::Tuple{Vararg{Any,N}}, t) where {N}
+    g = [Symbol(:g_, i) for i = 1:N]
+    calls = [:($(g[i]) = ComplexF64(gfs[$i](t))) for i = 1:N]
+    entries = Expr[]
+    for j = 1:N, i = 1:N  # column-major
+        e = if i == j
+            :(zero(ComplexF64))
+        elseif i < j
+            :(0.5 * $(g[i]) * conj($(g[j])))
+        else
+            :(-0.5 * conj($(g[j])) * $(g[i]))
+        end
+        push!(entries, e)
+    end
+    quote
+        $(calls...)
+        SMatrix{$N,$N,ComplexF64,$(N * N)}(($(entries...),))
+    end
 end
 
 coupling_matrix(g1, g2, gs...) = coupling_matrix((g1, g2, gs...))
