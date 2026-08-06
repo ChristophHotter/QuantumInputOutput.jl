@@ -67,12 +67,35 @@ using Test
     max_M_err = maximum([maximum(abs.(M_num(t) - M_ana(t))) for t in T])
     @test max_M_err < 5e-4
 
+    # Complex couplings: A_ij = g_i g_j^* / 2 for i < j, -g_j^* g_i / 2 for i > j
+    let g1 = 1 + 2im, g2 = 3 + 4im, g3 = -1 + 0.5im
+        A2 = coupling_matrix((g1, g2))(0.0)
+        @test A2 ≈ 0.5 * [0 g1*conj(g2); -conj(g1)*g2 0]
+
+        A3 = coupling_matrix(g1, g2, g3)(0.0)
+        A3_expected =
+            0.5 * [
+                0 g1*conj(g2) g1*conj(g3)
+                -conj(g1)*g2 0 g2*conj(g3)
+                -conj(g1)*g3 -conj(g2)*g3 0
+            ]
+        @test A3 ≈ A3_expected
+        @test A3' ≈ -A3  # anti-Hermitian generator
+    end
+
     @static if VERSION > v"1.12.0"
         # coupling_matrix type stability
         @test A_uv(0.5) isa SMatrix{2,2,ComplexF64}
         @inferred A_uv(0.5)
         A_uv(0.0)  # warmup
         @test (@allocated A_uv(0.5)) == 0
+
+        # also for a tuple of mixed element type (constant next to interpolant)
+        A_mixed = coupling_matrix(gu_t, 1.0 + 0.5im, gv_t)
+        @test A_mixed(0.5) isa SMatrix{3,3,ComplexF64}
+        @inferred A_mixed(0.5)
+        A_mixed(0.0)  # warmup
+        @test (@allocated A_mixed(0.5)) == 0
     end
 
     # Numerical basis and operators
