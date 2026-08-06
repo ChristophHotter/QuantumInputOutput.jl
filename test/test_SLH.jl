@@ -15,7 +15,7 @@ using Test
 
     au = Destroy(h, :a_u, 1)
     c = Destroy(h, :c, 2)
-    av = Destroy(h, :a_v, 3);
+    av = Destroy(h, :a_v, 3)
 
     @variables gu::Real Δ::Real γ::Real
     @variables gv::Complex
