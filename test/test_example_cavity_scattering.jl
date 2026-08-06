@@ -84,11 +84,11 @@ using Test
     # output mode
     p_sym_2 = [γ, Δ]
     p_num_2 = [γ_, Δ_]
-    dict_p_2 = Dict(p_sym_2 .=> p_num_2);
+    dict_p_2 = Dict(p_sym_2 .=> p_num_2)
 
     gv_t = coupling_output(v_mode, T)
 
-    dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t]);
+    dict_p_t_2 = Dict([gu, gv] .=> [gu_t, gv_t])
 
     H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
     L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
@@ -96,7 +96,7 @@ using Test
         H = H_QO_2(t)
         J = [L_QO_2(t)]
         return H, J, dagger.(J)
-    end;
+    end
 
     t_2, ρt_2 = timeevolution.master_dynamic(T, ψ0, input_output_2)
 
