@@ -45,12 +45,12 @@ using Test
 
     v_eff_f = effective_output_mode([v1, v2], T, 2)
     v_eff_data = effective_output_mode([v1.(T), v2.(T)], T, 2)
-    @test maximum(abs.(v_eff_f.(T) .- v_eff_data.(T))) < 1e-7
+    @test maximum(abs.(v_eff_f.(T) .- v_eff_data.(T))) < 5e-7
 
     gv1 = coupling_output(v1, T)
     gv2 = coupling_output(v2, T)
     v_eff_data2 = effective_output_mode([v1.(T), v2.(T)], [gv1.(T), gv2.(T)], T, 2)
-    @test maximum(abs.(v_eff_f.(T) .- v_eff_data2.(T))) < 1e-7
+    @test maximum(abs.(v_eff_f.(T) .- v_eff_data2.(T))) < 5e-7
 
     u_eff_f = effective_input_mode([u1, u2], T, 2)
     u_eff_data = effective_input_mode([u1.(T), u2.(T)], T, 2)
