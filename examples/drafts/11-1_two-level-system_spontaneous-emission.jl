@@ -173,12 +173,6 @@ p_capture = plot(
     ylims = (0, 1.02),
 )
 plot!(p_capture, T, nv_t; lw = 2, color = :blue, label = L"\langle n_v\rangle")
-annotate!(
-    p_capture,
-    0.58T_end,
-    0.45,
-    text("F₁ = $(round(F_1; digits = 6))", 11, :left),
-)
+annotate!(p_capture, 0.58T_end, 0.45, text("F₁ = $(round(F_1; digits = 6))", 11, :left))
 
 plot(p_mode, p_capture; layout = (1, 2), size = (900, 350))
-

@@ -130,7 +130,8 @@ sol_cl = solve(prob_cl, Tsit5(); abstol, reltol)
 t_cl = sol_cl.t
 s22_cl = real.(solution_values(sol_cl, s(2, 2), eqs_cl));
 
-using PyPlot; pygui(true)
+using PyPlot;
+pygui(true)
 
 close(123)
 figure(123)
@@ -151,16 +152,16 @@ T_3ph = π/Ω_3ph
 0.01/3.99
 
 Ω_max = maximum(abs.(Ω1.(T)) + abs.(Ω2.(T)))
-Ω_eff(t) = 0.5*Ω_3ph * abs.(abs.(Ω1.(t)) + abs.(Ω2.(t)))/Ω_max
+Ω_eff(t) = 0.5 * Ω_3ph * abs.(abs.(Ω1.(t)) + abs.(Ω2.(t)))/Ω_max
 
 b = NLevelBasis(2)
-s(i,j) = transition(b,i,j)
+s(i, j) = transition(b, i, j)
 
-H_(t, psi) = Ω_eff(t)*(s(1,2) + s(2,1))
+H_(t, psi) = Ω_eff(t)*(s(1, 2) + s(2, 1))
 
-t_, psi_ = timeevolution.schroedinger_dynamic(T, nlevelstate(b,1), H_)
+t_, psi_ = timeevolution.schroedinger_dynamic(T, nlevelstate(b, 1), H_)
 
-s22_eff = real(expect(s(2,2), psi_))
+s22_eff = real(expect(s(2, 2), psi_))
 subplot(212)
 PyPlot.plot(t_, s22_eff)
 
