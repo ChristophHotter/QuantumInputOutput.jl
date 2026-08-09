@@ -62,7 +62,7 @@ function _coupling_from_mode(mode::Vector, T::Vector, denominator)
     map!(abs2, mode_sq, mode)
     ∫mode2 = cumul_integrate(T, mode_sq)
     coupling = zeros(ComplexF64, nt)
-    @inbounds for i = 2:nt
+    @inbounds for i = 1:nt
         denom = denominator(∫mode2[i])
         if sqrt(abs(denom)) > _tol_div
             coupling[i] = mode[i]' / sqrt(denom)
@@ -298,7 +298,7 @@ function _delay_coupling_from_modes(num_mode::Vector, u::Vector, v::Vector, T::V
     map!(abs2, mode_sq, v)
     ∫v2 = cumul_integrate(T, mode_sq)
     coupling = zeros(ComplexF64, nt)
-    @inbounds for i = 2:nt
+    @inbounds for i = 1:nt
         denom = abs(∫v2[i] - ∫u2[i])
         if sqrt(abs(denom)) > _tol_div
             coupling[i] = num_mode[i]' / sqrt(denom + _ϵ)
