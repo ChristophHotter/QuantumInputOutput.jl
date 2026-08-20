@@ -42,7 +42,7 @@ H = hamiltonian(G_cas)
 
 #
 
-L = lindblad(G_cas)[1]
+L = jump_operator(G_cas)[1]
 
 # Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$. 
 

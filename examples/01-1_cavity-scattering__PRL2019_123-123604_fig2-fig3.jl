@@ -44,7 +44,7 @@ H = hamiltonian(G_cas)
 
 #
 
-L = lindblad(G_cas)[1] # only one Lindblad term in this example
+L = jump_operator(G_cas)[1] # only one Lindblad term in this example
 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.
 

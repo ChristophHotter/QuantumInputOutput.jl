@@ -36,7 +36,7 @@ nothing # hide
 #
 
 S_loop = scattering(G_loop)
-L_loop = lindblad(G_loop)[1]
+L_loop = jump_operator(G_loop)[1]
 
 #
 

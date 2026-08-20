@@ -23,7 +23,7 @@ function benchmark_correlations!(SUITE)
     G_cas = ▷(G_u, G_c, G_v)
 
     H_sym = hamiltonian(G_cas)
-    L_sym = lindblad(G_cas)[1]
+    L_sym = jump_operator(G_cas)[1]
 
     γ_ = 1.0
     σ_pulse = 1 / γ_

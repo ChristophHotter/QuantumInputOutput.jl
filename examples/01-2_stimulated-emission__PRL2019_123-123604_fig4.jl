@@ -43,7 +43,7 @@ H = G_cas.hamiltonian
 
 #
 
-L = G_cas.lindblad[1] # only one Lindblad in this example
+L = G_cas.jump_operator[1] # only one Lindblad in this example
 
 #
 

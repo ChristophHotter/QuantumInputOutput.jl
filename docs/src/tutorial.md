@@ -52,7 +52,7 @@ H = hamiltonian(G_cas)
 ```
 
 ```@example tutorial
-L = lindblad(G_cas)[1]
+L = jump_operator(G_cas)[1]
 ```
 
 ## 2. Numerical parameters and input pulse

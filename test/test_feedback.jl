@@ -56,7 +56,7 @@ using Test
 
     @test scattering(G_red) isa SMatrix{1,1}
     @test abs(scattering(G_red)[1, 1] - expected_S) < 1e-10
-    @test abs(lindblad(G_red)[1] - expected_L) < 1e-10
+    @test abs(jump_operator(G_red)[1] - expected_L) < 1e-10
     @test abs(hamiltonian(G_red) - expected_H) < 1e-10
 
     @testset "coherent-feedback OPO loop" begin
@@ -77,7 +77,7 @@ using Test
         l = simplify(η / (1 + r))
 
         @test scattering(G_loop) isa SMatrix{1,1}
-        @test iszero(simplify(lindblad(G_loop)[1] - simplify(l * √(κ) * a)))
+        @test iszero(simplify(jump_operator(G_loop)[1] - simplify(l * √(κ) * a)))
         @test iszero(simplify(hamiltonian(G_loop) - hamiltonian(G_opo)))
     end
 
@@ -109,8 +109,8 @@ using Test
         G_network = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
         G_feedback = feedback(G_network, 1 => 3, 3 => 5, 5 => 7, 8 => 6, 6 => 4, 4 => 2)
 
-        @test isequal(lindblad(G_feedback)[1], lindblad(G_manual)[2])
-        @test isequal(lindblad(G_feedback)[2], lindblad(G_manual)[1])
+        @test isequal(jump_operator(G_feedback)[1], jump_operator(G_manual)[2])
+        @test isequal(jump_operator(G_feedback)[2], jump_operator(G_manual)[1])
         @test iszero(simplify(hamiltonian(G_feedback) - hamiltonian(G_manual)))
     end
 
@@ -125,9 +125,9 @@ using Test
         G_cat = SLH(1, gu_f, H_s) ⊞ SLH(1, gv_f, H_s)
         G_fb = feedback(G_cat, 1, 1)
 
-        LT = eltype(lindblad(G_fb))
+        LT = eltype(jump_operator(G_fb))
         @test LT <: FunctionWrapper
         @test LT !== Any
-        @inferred lindblad(G_fb)[1](0.5)
+        @inferred jump_operator(G_fb)[1](0.5)
     end
 end

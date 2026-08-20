@@ -36,7 +36,7 @@ G_v = SLH(1, g_v' * av, 0)
 G = cascade(G_s, G_v)
 
 H = hamiltonian(G)
-L = lindblad(G)[1]
+L = jump_operator(G)[1]
 nothing # hide
 
 # We use the spontaneous-emission rate as the frequency unit. At

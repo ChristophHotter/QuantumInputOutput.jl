@@ -66,7 +66,7 @@ G_atom = SLH(I4, L_atom, Δ*σ(2, 2))
 
 G_u_bs_d1_d2_atom = G_u_bs_d1_d2 ▷ G_atom
 H = hamiltonian(G_u_bs_d1_d2_atom)
-L = lindblad(G_u_bs_d1_d2_atom)
+L = jump_operator(G_u_bs_d1_d2_atom)
 
 #
 

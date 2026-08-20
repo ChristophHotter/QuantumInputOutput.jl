@@ -30,7 +30,7 @@ function benchmark_translation!(SUITE)
     G_v = SLH(1, gv_sym * av_, 0)
     G_cas = ▷(G_u, G_c, G_v)
     H_sym = hamiltonian(G_cas)
-    L_sym = lindblad(G_cas)[1]
+    L_sym = jump_operator(G_cas)[1]
 
     ## --- Static translation (no time dependence) ---
 

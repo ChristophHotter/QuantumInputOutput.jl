@@ -184,7 +184,7 @@ G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2) # cascade
 
 # Hamiltonian and Lindbladian
 Hcas = hamiltonian(G_cas)
-Lcas = lindblad(G_cas)[1]
+Lcas = jump_operator(G_cas)[1]
 Lcasd = adjoint(Lcas)
 
 # Time-dependent couplings
@@ -577,8 +577,8 @@ Gcon = ⊞(G_ch1, G_ch2) # concatenation
 
 # Hamiltonian and Lindblad operators (two channels)
 Hcon = hamiltonian(Gcon)
-Lch1g = lindblad(Gcon)[1]
-Lch2g = lindblad(Gcon)[2]
+Lch1g = jump_operator(Gcon)[1]
+Lch2g = jump_operator(Gcon)[2]
 Ldch1g = adjoint(Lch1g)
 Ldch2g = adjoint(Lch2g)
 
@@ -734,7 +734,7 @@ G_cas_1m = ▷(G_u, G_2lvls, G_v)
 
 # Hamiltonian and Lindbladian
 Hcas_1m = hamiltonian(G_cas_1m)
-Lcas_1m = lindblad(G_cas_1m)[1]
+Lcas_1m = jump_operator(G_cas_1m)[1]
 Lcas_1md = adjoint(Lcas_1m)
 
 # Time-dependent couplings
@@ -869,7 +869,7 @@ T = [dt:dt:Tend;]
 G_cas_1m0 = ▷(G_u, G_2lvls, G_v)
 
 Hcas_1m0 = hamiltonian(G_cas_1m0)
-Lcas_1m0 = lindblad(G_cas_1m0)[1]
+Lcas_1m0 = jump_operator(G_cas_1m0)[1]
 Lcas_1m0d = adjoint(Lcas_1m0)
 
 # Set v-coupling to zero (collect only input-system correlations)
@@ -1201,7 +1201,7 @@ G_cas_1m = ▷(G_u, G_2lvls, G_v)
 
 # Hamiltonian and Lindbladian
 Hcas_1m = hamiltonian(G_cas_1m)
-Lcas_1m = lindblad(G_cas_1m)[1]
+Lcas_1m = jump_operator(G_cas_1m)[1]
 Lcas_1md = adjoint(Lcas_1m)
 
 # Time-dependent couplings

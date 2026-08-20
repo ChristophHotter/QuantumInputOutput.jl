@@ -67,7 +67,7 @@ function benchmark_interaction_picture!(SUITE)
     G_cas = ▷(G_u, G_s, G_v)
 
     H = hamiltonian(G_cas)
-    L = lindblad(G_cas)[1]
+    L = jump_operator(G_cas)[1]
     H_uv = hamiltonian(▷(G_u, G_v))
     H_int_ = simplify(H - H_uv)
 

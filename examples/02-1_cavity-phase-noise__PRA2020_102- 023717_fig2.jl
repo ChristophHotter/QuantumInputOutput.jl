@@ -41,7 +41,7 @@ H = hamiltonian(G_cas)
 
 #
 
-L = lindblad(G_cas)[1] # only one Lindblad in this example
+L = jump_operator(G_cas)[1] # only one jump operator in this example
 
 #
 

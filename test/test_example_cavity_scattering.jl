@@ -24,7 +24,7 @@ using Test
     G_cas = ▷(G_u, G_c, G_v)
 
     H = hamiltonian(G_cas)
-    L = lindblad(G_cas)[1]
+    L = jump_operator(G_cas)[1]
 
     γ_ = 1.0
     Δ_ = 0.0

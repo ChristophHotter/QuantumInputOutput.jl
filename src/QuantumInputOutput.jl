@@ -18,6 +18,7 @@ const SQA = SecondQuantizedAlgebra
 export SLH,
     Gaussian,
     scattering,
+    jump_operator,
     lindblad,
     hamiltonian,
     # Composition
