@@ -51,7 +51,7 @@ nothing # hide
 # second one to the transmitted right-moving output.
 
 H = hamiltonian(G_t)
-L = lindblad(G_t)
+L = jump_operator(G_t)
 L_L = L[1]
 L_R = L[2]
 nothing # hide

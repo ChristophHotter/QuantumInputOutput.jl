@@ -11,6 +11,7 @@ scattering
 ```
 
 ```@docs
+jump_operator
 lindblad
 ```
 

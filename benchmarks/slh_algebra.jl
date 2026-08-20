@@ -26,7 +26,7 @@ function benchmark_slh_algebra!(SUITE)
     SUITE["SLH Algebra"]["symbolic"]["3-cavity cascade"] = @benchmarkable begin
         G_cas = ▷($G_u, $G_c, $G_v)
         hamiltonian(G_cas)
-        lindblad(G_cas)
+        jump_operator(G_cas)
     end
 
     SUITE["SLH Algebra"]["symbolic"]["concatenate + cascade"] = @benchmarkable begin
@@ -87,7 +87,7 @@ function benchmark_slh_algebra!(SUITE)
         G_L_t = $G_L2 ▷ $G_ϕ_12 ▷ $G_L1
         G_t = G_R_t ⊞ G_L_t
         hamiltonian(G_t)
-        lindblad(G_t)
+        jump_operator(G_t)
     end
 
     ## --- Time-dependent closure evaluation (the ODE hot loop) ---
@@ -99,7 +99,7 @@ function benchmark_slh_algebra!(SUITE)
     G_t = G_R_t ⊞ G_L_t
 
     H_f = hamiltonian(G_t)
-    L_f = lindblad(G_t)
+    L_f = jump_operator(G_t)
 
     t_mid = T[length(T)÷2]
 

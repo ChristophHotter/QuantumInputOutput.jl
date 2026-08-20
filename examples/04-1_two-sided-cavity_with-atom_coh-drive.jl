@@ -46,11 +46,11 @@ H1 = hamiltonian(G_cav_L_R_drive)
 
 # 
 
-L1_L = lindblad(G_cav_L_R_drive)[1]
+L1_L = jump_operator(G_cav_L_R_drive)[1]
 
 # 
 
-L1_R = lindblad(G_cav_L_R_drive)[2]
+L1_R = jump_operator(G_cav_L_R_drive)[2]
 
 # Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term. 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`to_numeric`](@ref). 
@@ -140,11 +140,11 @@ H2 = G_ac_drive.hamiltonian
 
 #
 
-L2_L = G_ac_drive.lindblad[1]
+L2_L = G_ac_drive.jump_operator[1]
 
 #
 
-L2_R = G_ac_drive.lindblad[2]
+L2_R = G_ac_drive.jump_operator[2]
 
 #
 

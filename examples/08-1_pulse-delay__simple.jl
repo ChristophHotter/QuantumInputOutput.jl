@@ -49,7 +49,7 @@ G_v2 = concatenate(SLH(1, 0, 0), G_v)
 
 G_cas = cascade(G_u2, G_d, G_v2)
 H = hamiltonian(G_cas)
-L = lindblad(G_cas)
+L = jump_operator(G_cas)
 nothing # hide
 
 #

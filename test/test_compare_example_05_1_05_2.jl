@@ -39,7 +39,7 @@ using Test
     G_t = G_R_t ⊞ G_L_t
 
     H = hamiltonian(G_t)
-    L = lindblad(G_t)
+    L = jump_operator(G_t)
     L_R = L[1]
     L_L = L[2]
 
@@ -96,7 +96,7 @@ using Test
     G_t_qo = G_R_t_qo ⊞ G_L_t_qo
 
     H_qo = hamiltonian(G_t_qo)
-    L_qo = lindblad(G_t_qo)
+    L_qo = jump_operator(G_t_qo)
     L_R_qo = L_qo[1]
     L_L_qo = L_qo[2]
 

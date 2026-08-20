@@ -50,7 +50,7 @@ H = hamiltonian(G)
 
 #
 
-L = lindblad(G)
+L = jump_operator(G)
 L[1]
 
 #

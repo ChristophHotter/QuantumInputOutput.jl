@@ -68,7 +68,7 @@ end
 
 _fw_return_type(::Type{FunctionWrapper{R,A}}) where {R,A} = R
 
-function _maybe_wrap_lindblad(L::SVector{N}, ::Type{OpType}) where {N,OpType}
+function _maybe_wrap_jump_operators(L::SVector{N}, ::Type{OpType}) where {N,OpType}
     if any(_is_time_dep, L)
         fw_type = FunctionWrapper{OpType,Tuple{Float64}}
         return SVector{N,fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
@@ -90,21 +90,21 @@ end
 """
     SLH{N, ST, LT, HT}
 
-SLH triple with scattering matrix `S`, Lindblad vector `L`, and Hamiltonian `H`.
-`S` and `L` can also be vectors of scattering matrices and Lindblad terms.
+SLH triple with scattering matrix `S`, jump-operator vector `L`, and Hamiltonian `H`.
+`S` and `L` can also be vectors of scattering matrices and jump operators.
 
 See also [`▷`](@ref), [`⊞`](@ref), [`feedback`](@ref)
 """
 struct SLH{N,ST,LT,HT,L}
     scattering::SMatrix{N,N,ST,L}
-    lindblad::SVector{N,LT}
+    jump_operator::SVector{N,LT}
     hamiltonian::HT
     function SLH{N,ST,LT,HT}(
         S::SMatrix{N,N,ST,L},
-        lindblad::SVector{N,LT},
+        jump_operator::SVector{N,LT},
         H::HT,
     ) where {N,ST,LT,HT,L}
-        return new{N,ST,LT,HT,L}(S, lindblad, H)
+        return new{N,ST,LT,HT,L}(S, jump_operator, H)
     end
 end
 
@@ -138,7 +138,7 @@ end
 function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H, ::Type{OpType}) where {N,OpType}
     has_td = any(_is_time_dep, L) || _is_time_dep(H)
     if has_td
-        L_w = _maybe_wrap_lindblad(L, OpType)
+        L_w = _maybe_wrap_jump_operators(L, OpType)
         H_w = _maybe_wrap_hamiltonian(H, true, OpType)
         return SLH{N,eltype(S),eltype(L_w),typeof(H_w)}(S, L_w, H_w)
     end
@@ -188,11 +188,21 @@ Return the scattering matrix `S` of an SLH object.
 scattering(G::SLH) = G.scattering
 
 """
+    jump_operator(G::SLH)
+
+Return the jump-operator vector `L` of an SLH object.
+"""
+jump_operator(G::SLH) = G.jump_operator
+
+"""
     lindblad(G::SLH)
 
-Return the Lindblad vector `L` of an SLH object.
+Deprecated alias for [`jump_operator`](@ref).
 """
-lindblad(G::SLH) = G.lindblad
+Base.@noinline function lindblad(G::SLH)
+    Base.depwarn("`lindblad` is deprecated; use `jump_operator` instead.", :lindblad)
+    return jump_operator(G)
+end
 
 """
     hamiltonian(G::SLH)
@@ -208,7 +218,7 @@ hamiltonian(G::SLH) = G.hamiltonian
 
 function Base.isequal(G1::SLH, G2::SLH)
     isequal(scattering(G1), scattering(G2)) &&
-        isequal(lindblad(G1), lindblad(G2)) &&
+        isequal(jump_operator(G1), jump_operator(G2)) &&
         isequal(hamiltonian(G1), hamiltonian(G2))
 end
 
@@ -260,8 +270,8 @@ Cascade two SLH triples:
 Unicode `\\triangleright<tab>`. See also [`cascade`](@ref).
 """
 function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
-    S1, L1, H1 = scattering(G1), lindblad(G1), hamiltonian(G1)
-    S2, L2, H2 = scattering(G2), lindblad(G2), hamiltonian(G2)
+    S1, L1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
+    S2, L2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
 
     S_t = _post.(S2 * S1)
     S2L1 = _slh_matvec(S2, L1)
@@ -315,8 +325,8 @@ Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
     end
 
     quote
-        S1, L1, H1 = scattering(G1), lindblad(G1), hamiltonian(G1)
-        S2, L2, H2 = scattering(G2), lindblad(G2), hamiltonian(G2)
+        S1, L1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
+        S2, L2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
         S_t = SMatrix{$N,$N}($(s_exprs...))
         L_t = vcat(L1, L2)
         H_t = _add(H1, H2)
@@ -386,7 +396,7 @@ end
 
 function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N,M}
     S = scattering(G)
-    L = lindblad(G)
+    L = jump_operator(G)
     H = hamiltonian(G)
 
     @assert 1 <= x <= N && 1 <= y <= N
@@ -463,12 +473,12 @@ end
 Translate the Hamiltonian and Lindblad operators of an SLH object `G` into numeric
 [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators on the basis `b`.
 Returns the tuple `(H_QO, L_QO)`, where `L_QO` is a vector holding one translated operator
-per jump operator in `lindblad(G)`. All keyword arguments (`parameter`, `time_parameter`,
+per jump operator in `jump_operator(G)`. All keyword arguments (`parameter`, `time_parameter`,
 `operators`, `adjoint_ops`, `op_type`) are forwarded to
 [`SecondQuantizedAlgebra.to_numeric`](@ref).
 """
 function SQA.to_numeric(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
     H_QO = SQA.to_numeric(hamiltonian(G), b; kwargs...)
-    L_QO = [SQA.to_numeric(L_, b; kwargs...) for L_ in lindblad(G)]
+    L_QO = [SQA.to_numeric(L_, b; kwargs...) for L_ in jump_operator(G)]
     return H_QO, L_QO
 end

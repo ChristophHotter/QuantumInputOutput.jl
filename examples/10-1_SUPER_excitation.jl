@@ -50,7 +50,7 @@ nothing # hide
 
 ## Hamiltonian and Lindbladian
 Hcas = hamiltonian(G_cas)
-Lcas = lindblad(G_cas)[1]
+Lcas = jump_operator(G_cas)[1]
 Lcasd = adjoint(Lcas)
 nothing # hide 
 

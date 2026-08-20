@@ -38,7 +38,7 @@ H_s = p / 2 * (a'^2 + a^2) - K / 2 * (a'^2) * (a^2) + Δ * a' * a
 G_s = SLH(1, √(γ) * a, H_s)
 
 H = hamiltonian(G_s)
-L = lindblad(G_s)[1]
+L = jump_operator(G_s)[1]
 nothing # hide
 
 # Next, we define the numerical parameters from Sec. II.D. The classical pump
@@ -127,7 +127,7 @@ G_v = SLH(1, g_v * av, 0)
 G = G_s2 ▷ G_v
 
 H_2 = hamiltonian(G)
-L_2 = lindblad(G)[1]
+L_2 = jump_operator(G)[1]
 
 gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict(p => p_t, g_v => gv_t)

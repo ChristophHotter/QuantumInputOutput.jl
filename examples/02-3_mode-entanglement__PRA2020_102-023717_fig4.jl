@@ -48,7 +48,7 @@ G_v2 = SLH(1, g_v2' * av2, 0)
 G = cascade(G_s, G_v1, G_v2)
 
 H = hamiltonian(G)
-L = lindblad(G)[1]
+L = jump_operator(G)[1]
 nothing # hide
 
 # We use the parameters quoted in the paper and initialize the emitter in the excited state.

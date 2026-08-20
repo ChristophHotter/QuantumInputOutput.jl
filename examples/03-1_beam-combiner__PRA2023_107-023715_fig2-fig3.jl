@@ -49,7 +49,7 @@ H = hamiltonian(G_cas)
 
 #
 
-L = lindblad(G_cas)[1] # only one Lindblad in this example
+L = jump_operator(G_cas)[1] # only one Lindblad in this example
 
 # Next, the numerical parameters and functions of the system are defined.
 

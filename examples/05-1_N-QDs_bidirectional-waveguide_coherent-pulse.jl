@@ -55,7 +55,7 @@ H = hamiltonian(G_t)
 
 #
 
-L = lindblad(G_t)
+L = jump_operator(G_t)
 L_R = L[1]
 
 #

@@ -68,7 +68,7 @@ nothing # hide
 # The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be time-dependent. 
 
 H = hamiltonian(G_t)
-L = lindblad(G_t)
+L = jump_operator(G_t)
 L_R = L[1]
 L_L = L[2]
 
