@@ -58,6 +58,22 @@ using Test
         @test iszero(simplify(jump_operator(G2)[1] - (gu'*au + √(γ)*c + gv'*av)))
     end
 
+    @testset "cascade port mismatch" begin
+        G_two_port = G_u ⊞ G_c
+        expected_message = "cannot cascade SLH systems with different numbers of ports: 1 and 2"
+
+        for compose in (▷, cascade)
+            exception = try
+                compose(G_u, G_two_port)
+                nothing
+            catch exception
+                exception
+            end
+            @test exception isa DimensionMismatch
+            @test exception.msg == expected_message
+        end
+    end
+
     @testset "simple_concatenate" begin
         G1 = SLH(1, gu'*au, 0)
         G2 = SLH(1, √(γ)*c, Δ*c'c)

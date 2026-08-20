@@ -288,6 +288,14 @@ function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
     return _build_slh(S_t, L_t, H_t, op_hint)
 end
 
+function ▷(::SLH{N1}, ::SLH{N2}) where {N1,N2}
+    throw(
+        DimensionMismatch(
+            "cannot cascade SLH systems with different numbers of ports: $N1 and $N2",
+        ),
+    )
+end
+
 ▷(a::SLH, b::SLH, c::SLH...) = ▷(a ▷ b, c...)
 
 """
