@@ -136,9 +136,9 @@ p
 
 # In the following, we include $N=2$ two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with a mean photon number of $|\alpha|^2 = 1/10$. We assume that the atoms are on resonance with the cavity, i.e. $\Delta = \Delta_c = \Delta_a$.
 
-# Obtain the ModelingToolkit independent variable from a seed mean-field problem and
-# register the classical drive as a function of it (QuantumCumulants v0.5 convention).
-t = meanfield([a], -Δ*a'a, [a]).iv
+# Define the ModelingToolkit independent variable and register the classical drive as a
+# function of it.
+@independent_variables t
 @register_symbolic Et(tt)
 
 G_d_t = SLH(1, Et(t), 0)

@@ -189,6 +189,7 @@ nothing # hide
 p_t_sym = [g_u, g_in, g_out, g_v, M_ls...]
 p_t_num = [gu_, gin_, gout_, gv_, M_t_ls...]
 dict_p_t_int = Dict(p_t_sym .=> p_t_num)
+nothing # hide
 
 # The interaction picture eliminates the delay cavity `d`, so the numeric operators live
 # on the two-mode basis `bu ⊗ bv` (with `ad` mapped to the identity). Build on that basis.
