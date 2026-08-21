@@ -50,12 +50,12 @@ H = hamiltonian(G)
 
 #
 
-L = jump_operator(G)
-L[1]
+J = jump_operator(G)
+J[1]
 
 #
 
-L[2]
+J[2]
 
 #
 
@@ -106,11 +106,11 @@ av2_qo = one(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ destroy(bv2)
 
 ## translate to numeric operators
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = [to_numeric(Li, b; parameter = dict_p, time_parameter = dict_p_t) for Li in L]
+J_QO = [to_numeric(Ji, b; parameter = dict_p, time_parameter = dict_p_t) for Ji in J]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
-    J = [L_QO[1](t), L_QO[2](t)]
+    J = [J_QO[1](t), J_QO[2](t)]
     return Ht, J, dagger.(J)
 end
 nothing # hide
@@ -147,7 +147,7 @@ n_v2_coll(t) = (t > 0.9*T[end])*R*av2_qo'av2_qo
 
 function input_output_mc(t, ρ)
     Ht = H_QO(t)
-    J = [L_QO[1](t), L_QO[2](t), n_v1_coll(t), n_v2_coll(t)]
+    J = [J_QO[1](t), J_QO[2](t), n_v1_coll(t), n_v2_coll(t)]
     return Ht, J, dagger.(J)
 end
 

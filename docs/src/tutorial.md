@@ -52,7 +52,7 @@ H = hamiltonian(G_cas)
 ```
 
 ```@example tutorial
-L = jump_operator(G_cas)[1]
+J = jump_operator(G_cas)[1]
 ```
 
 ## 2. Numerical parameters and input pulse
@@ -88,7 +88,7 @@ bv1 = FockBasis(2)
 b = bu1 ⊗ bc1 ⊗ bv1
 
 H_QO = to_numeric(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = to_numeric(L, b; parameter=dict_p, time_parameter=dict_p_t)
+J_QO = to_numeric(J, b; parameter=dict_p, time_parameter=dict_p_t)
 nothing # hide
 ```
 
@@ -99,7 +99,7 @@ We now solve the master equation. The required callback for `timeevolution.maste
 ```@example tutorial
 function input_output_1(t, ρ)
     Ht = H_QO(t)
-    J = [L_QO(t)]
+    J = [J_QO(t)]
     return Ht, J, dagger.(J)
 end
 
@@ -111,15 +111,15 @@ nothing # hide
 ## 4. Two-time correlation function
 
 To extract the dominant output mode, we compute the two-time correlation matrix
-``g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle`` and diagonalize it. To this end, we first define the desired numerical operators. 
+``g^{(1)}(t_1,t_2) = \langle J_s^\dagger(t_1) J_s(t_2) \rangle`` and diagonalize it. To this end, we first define the desired numerical operators. 
 
 ```@example tutorial
 au_qo = to_numeric(au, b)
 c_qo = to_numeric(c, b)
 av_qo = to_numeric(av, b)
 
-Ls(t) = gu_t(t) * au_qo + √(γ_) * c_qo
-g1_m = correlation_matrix(T, ρt, input_output_1, Ls)
+Js(t) = gu_t(t) * au_qo + √(γ_) * c_qo
+g1_m = correlation_matrix(T, ρt, input_output_1, Js)
 nothing # hide
 ```
 
@@ -161,11 +161,11 @@ dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 dict_p_2 = Dict([γ, Δ] .=> [γ_, Δ_])
 
 H_QO_2 = to_numeric(H, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
-L_QO_2 = to_numeric(L, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
+J_QO_2 = to_numeric(J, b; parameter=dict_p_2, time_parameter=dict_p_t_2)
 
 function input_output_2(t, ρ)
     Ht = H_QO_2(t)
-    J = [L_QO_2(t)]
+    J = [J_QO_2(t)]
     return Ht, J, dagger.(J)
 end
 nothing # hide

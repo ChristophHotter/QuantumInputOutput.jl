@@ -18,22 +18,22 @@ using Test
     # s12_r = rnumber("s12_r")
     # s21_r = rnumber("s21_r")
     # s22_r = rnumber("s22_r")
-    # l1_r = rnumber("l1_r")
-    # l2_r = rnumber("l2_r")
+    # j1_r = rnumber("j1_r")
+    # j2_r = rnumber("j2_r")
     # #
     # s11_i = rnumber("s11_i")
     # s12_i = rnumber("s12_i")
     # s21_i = rnumber("s21_i")
     # s22_i = rnumber("s22_i")
-    # l1_i = rnumber("l1_i")
-    # l2_i = rnumber("l2_i")
+    # j1_i = rnumber("j1_i")
+    # j2_i = rnumber("j2_i")
     # #
     # s11 = s11_r + 1im*s11_i
     # s12 = s12_r + 1im*s12_i
     # s21 = s21_r + 1im*s21_i
     # s22 = s22_r + 1im*s22_i
-    # l1 = l1_r + 1im*l1_i
-    # l2 = l2_r + 1im*l2_i
+    # j1 = j1_r + 1im*j1_i
+    # j2 = j2_r + 1im*j2_i
 
     # h0 = rnumber("h0")
 
@@ -41,22 +41,22 @@ using Test
     s12 = 0.3 + 1im*0.24
     s21 = 0.5 + 1im*0.23
     s22 = 0.12 + 1im*0.29
-    l1 = 0.18 + 1im*0.21
-    l2 = 0.15 + 1im*0.25
+    j1 = 0.18 + 1im*0.21
+    j2 = 0.15 + 1im*0.25
     h0 = 1.0
 
-    G = SLH([s11 s12; s21 s22], [l1, l2], h0)
+    G = SLH([s11 s12; s21 s22], [j1, j2], h0)
     G_red = feedback(G, 1, 1)
 
     loop_gain = (1 - s11)^(-1)
     expected_S = simplify(s22 + s21 * loop_gain * s12)
-    expected_L = simplify(l2 + s21 * loop_gain * l1)
-    expected_term = simplify((l1' * s11 + l2' * s21) * loop_gain * l1)
+    expected_J = simplify(j2 + s21 * loop_gain * j1)
+    expected_term = simplify((j1' * s11 + j2' * s21) * loop_gain * j1)
     expected_H = simplify(h0 + (expected_term - expected_term') / (2im))
 
     @test scattering(G_red) isa SMatrix{1,1}
     @test abs(scattering(G_red)[1, 1] - expected_S) < 1e-10
-    @test abs(jump_operator(G_red)[1] - expected_L) < 1e-10
+    @test abs(jump_operator(G_red)[1] - expected_J) < 1e-10
     @test abs(hamiltonian(G_red) - expected_H) < 1e-10
 
     @testset "coherent-feedback OPO loop" begin
@@ -118,16 +118,16 @@ using Test
         bc = FockBasis(4)
         a_op = destroy(bc)
         H_s = sparse(0.5 * dagger(a_op) * a_op)
-        L_s = sparse(sqrt(1.0) * a_op)
+        J_s = sparse(sqrt(1.0) * a_op)
         gu_f(t) = exp(-t^2) * sparse(a_op)
         gv_f(t) = exp(-(t - 2)^2) * sparse(a_op)
 
         G_cat = SLH(1, gu_f, H_s) ⊞ SLH(1, gv_f, H_s)
         G_fb = feedback(G_cat, 1, 1)
 
-        LT = eltype(jump_operator(G_fb))
-        @test LT <: FunctionWrapper
-        @test LT !== Any
+        JT = eltype(jump_operator(G_fb))
+        @test JT <: FunctionWrapper
+        @test JT !== Any
         @inferred jump_operator(G_fb)[1](0.5)
     end
 end

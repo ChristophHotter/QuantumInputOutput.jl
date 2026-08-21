@@ -61,12 +61,12 @@ nothing #hide
 
 #
 
-L_atom = [0, 0, √(γ/2)*σ(1, 2), √(γ/2)*σ(1, 2)]
-G_atom = SLH(I4, L_atom, Δ*σ(2, 2))
+J_atom = [0, 0, √(γ/2)*σ(1, 2), √(γ/2)*σ(1, 2)]
+G_atom = SLH(I4, J_atom, Δ*σ(2, 2))
 
 G_u_bs_d1_d2_atom = G_u_bs_d1_d2 ▷ G_atom
 H = hamiltonian(G_u_bs_d1_d2_atom)
-L = jump_operator(G_u_bs_d1_d2_atom)
+J = jump_operator(G_u_bs_d1_d2_atom)
 
 #
 
@@ -97,7 +97,7 @@ int_dict = Dict(a_ls .=> a_int_ls)
 
 ## substitute interaction picture operators
 H_int = simplify(substitute(H_int_, int_dict))
-L_int = [simplify(substitute(L_, int_dict)) for L_ in L]
+J_int = [simplify(substitute(J_, int_dict)) for J_ in J]
 
 ## Pulse parameters 
 n = 5#9
@@ -150,12 +150,12 @@ b = bu ⊗ bd1 ⊗ bd2 ⊗ bs
 
 dict_p_Δ(Δn) = Dict([γ, Δ, r, t] .=> [γ_, Δn, rn, tn])
 H_QO_Δ(Δn) = to_numeric(H_int, b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int)
-L_QO_Δ(Δn) = [
-    to_numeric(L_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
-    i = 1:length(L)
+J_QO_Δ(Δn) = [
+    to_numeric(J_int[i], b; parameter = dict_p_Δ(Δn), time_parameter = dict_p_t_int) for
+    i = 1:length(J)
 ]
 # H_QO_Δ(Δn) = to_numeric(H, b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t)
-# L_QO_Δ(Δn) = [to_numeric(L[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(L)]
+# J_QO_Δ(Δn) = [to_numeric(J[i], b; parameter=dict_p_Δ(Δn), time_parameter=dict_p_t) for i=1:length(J)]
 nothing # hide
 #
 
@@ -170,13 +170,13 @@ ad2_QO = to_numeric(ad2, b)
 
 Δn = 0
 H_QO = H_QO_Δ(Δn)
-L_QO = L_QO_Δ(Δn)
+J_QO = J_QO_Δ(Δn)
 
 input_output =
     (t, ρ) -> (
         H_QO(t),
-        [L_QO[i](t) for i = 1:length(L_QO)],
-        [dagger(L_QO[i](t)) for i = 1:length(L_QO)],
+        [J_QO[i](t) for i = 1:length(J_QO)],
+        [dagger(J_QO[i](t)) for i = 1:length(J_QO)],
     )
 t_, ρt = timeevolution.master_dynamic(T, ψ0_fock, input_output)
 
@@ -203,13 +203,13 @@ for (it, Δn) in enumerate(Δ_ls)
     Δn = Δ_ls[it]
 
     H_QO = H_QO_Δ(Δn)
-    L_QO = L_QO_Δ(Δn)
+    J_QO = J_QO_Δ(Δn)
 
     input_output =
         (t, ρ) -> (
             H_QO(t),
-            [L_QO[i](t) for i = 1:length(L_QO)],
-            [dagger(L_QO[i](t)) for i = 1:length(L_QO)],
+            [J_QO[i](t) for i = 1:length(J_QO)],
+            [dagger(J_QO[i](t)) for i = 1:length(J_QO)],
         )
 
     t_, ρt = timeevolution.master_dynamic([T[1], T[end]], ψ0_fock, input_output)

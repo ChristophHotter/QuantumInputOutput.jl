@@ -50,7 +50,7 @@ H = hamiltonian(G_cas)
 
 #
 
-L = jump_operator(G_cas)[1] # only one Lindblad in this example
+J = jump_operator(G_cas)[1] # only one Lindblad in this example
 
 # Next, the numerical parameters and functions of the system are defined.
 
@@ -87,10 +87,10 @@ bv1 = FockBasis(2)
 b = bu2 ⊗ bu1 ⊗ bs1 ⊗ bv1;
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
+J_QO = to_numeric(J, b; parameter = dict_p, time_parameter = dict_p_t)
 function input_output(t, ρ)
     H = H_QO(t)
-    J = [L_QO(t)]
+    J = [J_QO(t)]
     return H, J, dagger.(J)
 end
 nothing # hide
@@ -102,13 +102,13 @@ nothing # hide
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
 
-# Now we analyze the output modes with the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$. 
+# Now we analyze the output modes with the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle J_s^\dagger(t_1) J_s(t_2) \rangle$. 
 
 au1_qo = to_numeric(au1, b)
 σ_qo(i, j) = to_numeric(σ(i, j), b)
 
-Ls(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1, 2)
-g1_m = correlation_matrix(T, ρt, input_output, Ls);
+Js(t) = (gu_(t))'*au1_qo + √(γ_)*σ_qo(1, 2)
+g1_m = correlation_matrix(T, ρt, input_output, Js);
 
 p = heatmap(
     T,
@@ -184,10 +184,10 @@ nothing # hide
 # The time-dependent couplings are used to define the numeric Hamiltonian and Lindblad term, and then solve the dynamics of the system. 
 
 H_QO_2 = to_numeric(H, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
-L_QO_2 = to_numeric(L, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
+J_QO_2 = to_numeric(J, b; parameter = dict_p_out, time_parameter = dict_p_t_out)
 function input_output_2(t, ρ)
     H = H_QO_2(t)
-    J = [L_QO_2(t)]
+    J = [J_QO_2(t)]
     return H, J, dagger.(J)
 end
 

@@ -99,20 +99,20 @@ function benchmark_slh_algebra!(SUITE)
     G_t = G_R_t ⊞ G_L_t
 
     H_f = hamiltonian(G_t)
-    L_f = jump_operator(G_t)
+    J_f = jump_operator(G_t)
 
     t_mid = T[length(T)÷2]
 
     _callable(x) = x isa Union{Function,FunctionWrappers.FunctionWrapper}
     Hf = _callable(H_f) ? H_f : (t -> H_f)
-    L_callables = [_callable(Li) ? Li : (t -> Li) for Li in L_f]
+    J_callables = [_callable(Ji) ? Ji : (t -> Ji) for Ji in J_f]
 
     SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide H(t)"] =
         @benchmarkable $Hf($t_mid)
 
-    SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide L(t)"] = @benchmarkable begin
-        for Li in $L_callables
-            Li($t_mid)
+    SUITE["SLH Algebra"]["closure evaluation"]["2-QD waveguide J(t)"] = @benchmarkable begin
+        for Ji in $J_callables
+            Ji($t_mid)
         end
     end
 

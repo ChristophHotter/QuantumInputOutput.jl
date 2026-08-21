@@ -184,8 +184,8 @@ G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2) # cascade
 
 # Hamiltonian and Lindbladian
 Hcas = hamiltonian(G_cas)
-Lcas = jump_operator(G_cas)[1]
-Lcasd = adjoint(Lcas)
+Jcas = jump_operator(G_cas)[1]
+Jcasd = adjoint(Jcas)
 
 # Time-dependent couplings
 @register_symbolic gu1_t(t)
@@ -205,8 +205,8 @@ dict_gt = Dict([g_ls; conj.(g_ls)] .=> [gt_ls; gct_ls]);
 
 # Insert time-dependence
 Hcas_t = substitute(Hcas, dict_gt);
-Lcas_t = substitute(Lcas, dict_gt);
-Lcasd_t = substitute(Lcasd, dict_gt);
+Jcas_t = substitute(Jcas, dict_gt);
+Jcasd_t = substitute(Jcasd, dict_gt);
 
 # Normalized input modes
 u1(t_) = 1/(√(σ1_)*π^(1/4)) * exp(-(t_ - τ1_)^2 / (2*σ1_^2)) * exp(-1im*Δ1_*t_)
@@ -236,7 +236,7 @@ gv2_c_t(t) = conj(gv2_t(t));
 # First-order cumulant expansion
 order = 1
 ops = [au1, au2, s(2, 2), s(2, 1), av1, av2]
-eqs = meanfield(ops, Hcas_t, [Lcas_t]; Jdagger = [Lcasd_t], order = order, iv = t)
+eqs = meanfield(ops, Hcas_t, [Jcas_t]; Jdagger = [Jcasd_t], order = order, iv = t)
 
 # Classical-to-coherent amplitude relation
 α1_io = α1_ / (2*√(2)*π^(1/4)*√(σ1_*γ_)) # field 1
@@ -344,8 +344,8 @@ a_c_int_ls = [sum(conj(M(i, j))*a0_ls[j]' for j = 1:la) for i = 1:la] # # TODO
 int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=> [a_int_ls; a_c_int_ls])
 
 H_int_sym = substitute(H_int_sym_, int_dict)
-L_int_sym = simplify(substitute(Lcas, int_dict))
-Ld_int_sym = simplify(substitute(Lcasd, int_dict))
+J_int_sym = simplify(substitute(Jcas, int_dict))
+Jd_int_sym = simplify(substitute(Jcasd, int_dict))
 
 # M-matrix
 Mat = Matrix{Any}(undef, la, la)
@@ -386,14 +386,14 @@ dict_Mt = Dict([M_ls..., Mc_ls...] .=> [Mat_ls..., Mat_conls...])
 dict_gt_Mt = merge(dict_gt, dict_Mt)
 
 H_int_sym_t = substitute(H_int_sym, dict_gt_Mt)
-L_int_sym_t = substitute(L_int_sym, dict_gt_Mt)
-Ld_int_sym_t = substitute(Ld_int_sym, dict_gt_Mt)
+J_int_sym_t = substitute(J_int_sym, dict_gt_Mt)
+Jd_int_sym_t = substitute(Jd_int_sym, dict_gt_Mt)
 
 eqs_int = meanfield(
     ops,
     H_int_sym_t,
-    [L_int_sym_t];
-    Jdagger = [Ld_int_sym_t],
+    [J_int_sym_t];
+    Jdagger = [Jd_int_sym_t],
     order = order,
     iv = t,
 );
@@ -448,7 +448,7 @@ function Ham_displaced(t, ρ)
     Mall = M_t(t)
     gall = [gu2_t(t), gu1_t(t), gv1_t(t), gv2_t(t)]
 
-    # Modified coupling vectors for H and L terms
+    # Modified coupling vectors for H and J terms
     gn = [gall[1], gall[2], -gall[3], -gall[4]]
     gnc = conj.(gn)
     gl = [gall[1], gall[2], gall[3], gall[4]]
@@ -577,27 +577,27 @@ Gcon = ⊞(G_ch1, G_ch2) # concatenation
 
 # Hamiltonian and Lindblad operators (two channels)
 Hcon = hamiltonian(Gcon)
-Lch1g = jump_operator(Gcon)[1]
-Lch2g = jump_operator(Gcon)[2]
-Ldch1g = adjoint(Lch1g)
-Ldch2g = adjoint(Lch2g)
+Jch1g = jump_operator(Gcon)[1]
+Jch2g = jump_operator(Gcon)[2]
+Jdch1g = adjoint(Jch1g)
+Jdch2g = adjoint(Jch2g)
 
 # Split decay γ -> γ/2 (symmetric into two channels)
 # dict_gam = Dict(γ => γ/2); # TODO
 dict_gam = Dict(γ => γ);
 
 # Apply decay adjustment
-Lch1 = substitute(Lch1g, dict_gam) # TODO
-Lch2 = substitute(Lch2g, dict_gam)
-Ldch1 = substitute(Ldch1g, dict_gam)
-Ldch2 = substitute(Ldch2g, dict_gam)
+Jch1 = substitute(Jch1g, dict_gam) # TODO
+Jch2 = substitute(Jch2g, dict_gam)
+Jdch1 = substitute(Jdch1g, dict_gam)
+Jdch2 = substitute(Jdch2g, dict_gam)
 
 # Insert time-dependence
 Hcon_t = substitute(Hcon, dict_gt);
-Lch1_t = substitute(Lch1, dict_gt);
-Lch2_t = substitute(Lch2, dict_gt);
-Ldch1_t = substitute(Ldch1, dict_gt);
-Ldch2_t = substitute(Ldch2, dict_gt);
+Jch1_t = substitute(Jch1, dict_gt);
+Jch2_t = substitute(Jch2, dict_gt);
+Jdch1_t = substitute(Jdch1, dict_gt);
+Jdch2_t = substitute(Jdch2, dict_gt);
 
 gu2_t_ = coupling_input(u2, T)
 gu2_t(t) = gu2_t_(t)
@@ -613,8 +613,8 @@ ops = [au1, au2, s(2, 2), s(2, 1), av1, av2]
 eqs_con = meanfield(
     ops,
     Hcon_t,
-    [Lch1_t, Lch2_t];
-    Jdagger = [Ldch1_t, Ldch2_t],
+    [Jch1_t, Jch2_t];
+    Jdagger = [Jdch1_t, Jdch2_t],
     order = order,
     iv = t,
 )
@@ -734,8 +734,8 @@ G_cas_1m = ▷(G_u, G_2lvls, G_v)
 
 # Hamiltonian and Lindbladian
 Hcas_1m = hamiltonian(G_cas_1m)
-Lcas_1m = jump_operator(G_cas_1m)[1]
-Lcas_1md = adjoint(Lcas_1m)
+Jcas_1m = jump_operator(G_cas_1m)[1]
+Jcas_1md = adjoint(Jcas_1m)
 
 # Time-dependent couplings
 @register_symbolic gu_t(t)
@@ -752,8 +752,8 @@ dict_gts = Dict([gs_ls; conj.(gs_ls)] .=> [gst_ls; gsct_ls]);
 
 # Insert time-dependence
 Hcas_1m_t = substitute(Hcas_1m, dict_gts);
-Lcas_1m_t = substitute(Lcas_1m, dict_gts);
-Lcas_1md_t = substitute(Lcas_1md, dict_gts);
+Jcas_1m_t = substitute(Jcas_1m, dict_gts);
+Jcas_1md_t = substitute(Jcas_1md, dict_gts);
 
 0.5*1/(√(2π))*α1_/σ1_*exp(-(t-τ1_)^2/(2*σ1_^2))*exp(-1im*Δ1_*t)
 
@@ -780,7 +780,7 @@ ops_1m = [aun, aun'aun, aun*aun, σ(1, 2), σ(2, 2), avn, avn'avn]
 # ops_all = union(ops1,ops_all1[1:1],ops_all1[3:14], ops_all1[16:16], ops_all1[18:26], ops_all1[28:29])
 
 eqs_1m =
-    meanfield(ops_1m, Hcas_1m_t, [Lcas_1m_t]; Jdagger = [Lcas_1md_t], order = order, iv = t);
+    meanfield(ops_1m, Hcas_1m_t, [Jcas_1m_t]; Jdagger = [Jcas_1md_t], order = order, iv = t);
 complete!(eqs_1m);
 length(eqs_1m)
 
@@ -869,8 +869,8 @@ T = [dt:dt:Tend;]
 G_cas_1m0 = ▷(G_u, G_2lvls, G_v)
 
 Hcas_1m0 = hamiltonian(G_cas_1m0)
-Lcas_1m0 = jump_operator(G_cas_1m0)[1]
-Lcas_1m0d = adjoint(Lcas_1m0)
+Jcas_1m0 = jump_operator(G_cas_1m0)[1]
+Jcas_1m0d = adjoint(Jcas_1m0)
 
 # Set v-coupling to zero (collect only input-system correlations)
 gs0_ls = [gu, gv]
@@ -880,8 +880,8 @@ gsc0t_ls = [gu_c_t(t), 0.0*gv_c_t(t)]
 dict_gts0 = Dict([gs0_ls; conj.(gs0_ls)] .=> [gs0t_ls; gsc0t_ls]);
 
 Hcas_1m0_t = substitute(Hcas_1m0, dict_gts0)
-Lcas_1m0_t = substitute(Lcas_1m0, dict_gts0)
-Lcas_1m0d_t = substitute(Lcas_1m0d, dict_gts0)
+Jcas_1m0_t = substitute(Jcas_1m0, dict_gts0)
+Jcas_1m0d_t = substitute(Jcas_1m0d, dict_gts0)
 
 gu_t_ = coupling_input(u, T)
 gu_t(t) = gu_t_(t)
@@ -895,7 +895,7 @@ gv_c_t(t) = conj(gv_t(t))
 # ops1 = [aun, aun', σ(1,2), σ(2,2),σ(1,2)', avn, avn']
 # ops_all1 = unique([ops1[i]*ops1[j] for i = 1:length(ops1) for j = 1:length(ops1)]);
 # ops_all = union(ops1,ops_all1[1:1],ops_all1[3:14], ops_all1[16:16], ops_all1[18:26], ops_all1[28:29])
-# eqs_1m0 = meanfield(ops_all, Hcas_1m0_t, [Lcas_1m0_t]; Jdagger=[Lcas_1m0d_t], order=order, iv=t)
+# eqs_1m0 = meanfield(ops_all, Hcas_1m0_t, [Jcas_1m0_t]; Jdagger=[Jcas_1m0d_t], order=order, iv=t)
 
 # complete!(eqs_1m0)
 # length(eqs_1m0)
@@ -904,8 +904,8 @@ ops_1m0 = [aun, aun'aun, aun*aun, σ(1, 2), σ(2, 2)]
 eqs_1m0 = meanfield(
     ops_1m0,
     Hcas_1m0_t,
-    [Lcas_1m0_t];
-    Jdagger = [Lcas_1m0d_t],
+    [Jcas_1m0_t];
+    Jdagger = [Jcas_1m0d_t],
     order = order,
     iv = t,
 );
@@ -930,13 +930,13 @@ sol_1m0 = solve(prob_1m0, Tsit5(), saveat = va; abstol, reltol);
 ###################################################
 
 # Lindblad vector for correlation functions
-Lvec=[aun, σ(1, 2)]
+Jvec=[aun, σ(1, 2)]
 
 # Discrete time grid
 N = length(sol_1m0.t)
 
 # g^(1)(t1,t2) container for each operator pair
-Gmat_bar = zeros(ComplexF64, N, length(Lvec), length(Lvec), N)
+Gmat_bar = zeros(ComplexF64, N, length(Jvec), length(Jvec), N)
 t1 = sol_1m0.t;
 t2 = sol_1m0.t;
 τ0 = 0.0
@@ -944,12 +944,12 @@ t2 = sol_1m0.t;
 # All operator correlation combinations
 Corrmat = [
     [
-        CorrelationFunction(Lvec[k]', Lvec[l], eqs_1m0; steady_state = false, iv0 = t)
-        for l = 1:length(Lvec)
-    ] for k = 1:length(Lvec)
+        CorrelationFunction(Jvec[k]', Jvec[l], eqs_1m0; steady_state = false, iv0 = t)
+        for l = 1:length(Jvec)
+    ] for k = 1:length(Jvec)
 ]
 # Minimal set containing full dynamics
-Corrvec = [Corrmat[end][i] for i = 1:length(Lvec)]
+Corrvec = [Corrmat[end][i] for i = 1:length(Jvec)]
 
 xx = CorrelationFunction(σ(1, 2), σ(1, 2), eqs_1m0; steady_state = false, iv0 = t)
 xx.eqs.states
@@ -968,30 +968,30 @@ function same_lhs(a, b)
 end
 
 # Index mapping between Corrvec and Corrmat
-function idx_tuple(Lvec, Corrvec, Corrmat)
-    idxvec = zeros(Int8, length(Lvec), length(Lvec))
-    for l = 1:length(Lvec)
+function idx_tuple(Jvec, Corrvec, Corrmat)
+    idxvec = zeros(Int8, length(Jvec), length(Jvec))
+    for l = 1:length(Jvec)
         eqs1 = equations(Corrvec[l].de)
-        for k = 1:length(Lvec)
+        for k = 1:length(Jvec)
             target_lhs = equations(Corrmat[k][l].de)[1].lhs
             idx = findfirst(eq -> same_lhs(eq.lhs, target_lhs), eqs1)
             idxvec[k, l] = idx
         end
     end
-    idx_tuple = Tuple(ntuple(i -> c[i], length(Lvec)) for c in eachcol(idxvec))
+    idx_tuple = Tuple(ntuple(i -> c[i], length(Jvec)) for c in eachcol(idxvec))
     return idx_tuple
 end
 
 # Operators included
-oper_tup = (Lvec[1], Lvec[2])
+oper_tup = (Jvec[1], Jvec[2])
 # Index tuple for selecting correlation components
-idx_tup = idx_tuple(Lvec, Corrvec, Corrmat)
+idx_tup = idx_tuple(Jvec, Corrvec, Corrmat)
 
 # Compute full Gmat_bar on the discrete time grid
 function compute_Gmat(
     sol_1m0,
     eqs_1m0,
-    Lvec,
+    Jvec,
     Corrvec;
     p0,
     ps,
@@ -1003,7 +1003,7 @@ function compute_Gmat(
 )
 
     N = length(sol_1m0.t)
-    Gmat_bar = zeros(ComplexF64, N, length(Lvec), length(Lvec), N)
+    Gmat_bar = zeros(ComplexF64, N, length(Jvec), length(Jvec), N)
 
     padleftN(v::AbstractVector{<:Number}, N::Int) = (
         length(v) < N ? vcat(zeros(ComplexF64, N - length(v)), ComplexF64.(v)) :
@@ -1014,7 +1014,7 @@ function compute_Gmat(
         τend = sol_1m0.t[end] - sol_1m0.t[i1]
         z = i1
 
-        for l = 1:length(Lvec)
+        for l = 1:length(Jvec)
             corr = Corrvec[l]
             complete(corr.de)
 
@@ -1035,14 +1035,14 @@ function compute_Gmat(
             sol_c = solve(prob_c, alg; saveat = saveat)
 
             idx_v = extract_idxs[l]
-            u_flat = [ComplexF64.(getindex.(sol_c.u, idx_v[i])) for i = 1:length(Lvec)]
+            u_flat = [ComplexF64.(getindex.(sol_c.u, idx_v[i])) for i = 1:length(Jvec)]
 
             if i1 == 1
-                for k = 1:length(Lvec)
+                for k = 1:length(Jvec)
                     Gmat_bar[i1, k, l, :] .= u_flat[k]
                 end
             else
-                for k = 1:length(Lvec)
+                for k = 1:length(Jvec)
                     Gmat_bar[i1, k, l, :] .= padleftN(u_flat[k], N)
                 end
             end
@@ -1055,7 +1055,7 @@ end
 
 # Optionally compute and save Gmat_bar
 #Gmat_bar = compute_Gmat(
-#    sol_1m0, eqs_1m0, Lvec, Corrvec;
+#    sol_1m0, eqs_1m0, Jvec, Corrvec;
 #    p0 = p0,
 #    ps = ps,
 #    saveat = va,
@@ -1201,8 +1201,8 @@ G_cas_1m = ▷(G_u, G_2lvls, G_v)
 
 # Hamiltonian and Lindbladian
 Hcas_1m = hamiltonian(G_cas_1m)
-Lcas_1m = jump_operator(G_cas_1m)[1]
-Lcas_1md = adjoint(Lcas_1m)
+Jcas_1m = jump_operator(G_cas_1m)[1]
+Jcas_1md = adjoint(Jcas_1m)
 
 # Time-dependent couplings
 @register_symbolic gu_t(t)
@@ -1219,8 +1219,8 @@ dict_gts = Dict([gs_ls; conj.(gs_ls)] .=> [gst_ls; gsct_ls]);
 
 # Insert time-dependence
 Hcas_1m_t = substitute(Hcas_1m, dict_gts);
-Lcas_1m_t = substitute(Lcas_1m, dict_gts);
-Lcas_1md_t = substitute(Lcas_1md, dict_gts);
+Jcas_1m_t = substitute(Jcas_1m, dict_gts);
+Jcas_1md_t = substitute(Jcas_1md, dict_gts);
 
 # Pulses and composite mode
 αeff = 0.0
@@ -1259,8 +1259,8 @@ ops_all = union(
 eqs_1m = meanfield(
     ops_all,
     Hcas_1m_t,
-    [Lcas_1m_t];
-    Jdagger = [Lcas_1md_t],
+    [Jcas_1m_t];
+    Jdagger = [Jcas_1md_t],
     order = order,
     iv = t,
 )
@@ -1303,28 +1303,28 @@ sol_1m0v = solve(probs, Tsit5(), saveat = va; abstol, reltol);
 ###################################################
 
 # Lindblad vector (includes output)
-Lvec=[aun, σ(1, 2), avn]
+Jvec=[aun, σ(1, 2), avn]
 
 N = length(sol_1m0v.t)
-Gmat_bar = zeros(ComplexF64, N, length(Lvec), length(Lvec), N)
+Gmat_bar = zeros(ComplexF64, N, length(Jvec), length(Jvec), N)
 t1 = sol_1m0v.t;
 t2 = sol_1m0v.t;
 τ0 = 0.0
 
 Corrmat = [
     [
-        CorrelationFunction(Lvec[k]', Lvec[l], eqs_1m; steady_state = false) for
-        l = 1:length(Lvec)
-    ] for k = 1:length(Lvec)
+        CorrelationFunction(Jvec[k]', Jvec[l], eqs_1m; steady_state = false) for
+        l = 1:length(Jvec)
+    ] for k = 1:length(Jvec)
 ]
-Corrvec = [Corrmat[end][i] for i = 1:length(Lvec)]
+Corrvec = [Corrmat[end][i] for i = 1:length(Jvec)]
 
-oper_tup = (Lvec[1], Lvec[2], Lvec[3])
-idx_tup = idx_tuple(Lvec, Corrvec, Corrmat)
+oper_tup = (Jvec[1], Jvec[2], Jvec[3])
+idx_tup = idx_tuple(Jvec, Corrvec, Corrmat)
 
 # Optionally compute and save
 #Gmat_bar = compute_Gmat( 
-#    sol_1m0v, eqs_1m, Lvec, Corrvec;
+#    sol_1m0v, eqs_1m, Jvec, Corrvec;
 #    p0 = p0,
 #    ps = ps,
 #    saveat = va,
