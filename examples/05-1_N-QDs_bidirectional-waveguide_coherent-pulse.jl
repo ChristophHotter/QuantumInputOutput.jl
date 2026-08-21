@@ -158,6 +158,7 @@ p
 lT = length(T)
 G2 = zeros(lT, lT) # transmission
 G2_ref = zeros(lT, lT) # reflection
+nothing # hide
 
 # Materialize the lazy `TimeDependentSum` to a concrete operator at each time, so the
 # quantum-regression products below give a plain operator usable as the solver's initial state.
