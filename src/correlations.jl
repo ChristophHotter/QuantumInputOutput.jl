@@ -11,6 +11,9 @@ passed straight to the solver: a time-dependent `H` (e.g. the `TimeDependentSum`
 [`to_numeric`](@ref)) with jump operators `J`, or a constant `H` with constant `J`. The
 operator form is much faster for time-dependent problems (the integrator is built once).
 `Js` is either a constant operator or a function `Js(t)` returning the operator at `t`.
+
+The returned matrix is a `Hermitian` wrapper. To extract the dominant temporal modes,
+diagonalize it with `eigen(g1_m)`. When only the leading modes are needed, te cheaper eigenvalue-range method can be used, e.g. `eigen(g1_m, (n-4):n)` for the five dominant modes, where `n = size(g1_m, 1)`.
 """
 function correlation_matrix(T::Vector, ρt::Vector, f::Function, Js; kwargs...)
     Js_vec, Js_dag_vec = _sample_operator_and_adjoint(T, Js)
@@ -76,5 +79,6 @@ function _correlation_loop(solve_fn, T, ρt, Js_vec, Js_dag_vec)
             g1_m[it+i-1, it] = conj(val)
         end
     end
-    return g1_m
+    g1_m[l_T, l_T] = expect(Js_dag_vec[l_T], Js_vec[l_T] * ρt[l_T])
+    return Hermitian(g1_m)
 end
