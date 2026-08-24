@@ -30,7 +30,7 @@ using Test
 
     @test maximum(abs.(g1_dyn .- g1_static)) < 1e-8
 
-    F = eigen(Hermitian((g1_static + g1_static') / 2))
+    F = eigen(g1_static)
     n_modes = real.(F.values) * ΔT
 
     expected_n = 1 - exp(-γ * T_end)
