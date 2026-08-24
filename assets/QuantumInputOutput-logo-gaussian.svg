@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  width="450"
+  height="450"
+  viewBox="190 137 450 450"
+  version="1.1">
+  <title>QuantumInputOutput.jl Gaussian-pulse logo</title>
+  <desc>Editable logo symbol showing Gaussian light pulses entering and leaving a cavity.</desc>
+
+  <g inkscape:groupmode="layer" inkscape:label="Gaussian envelopes" id="gaussian-envelopes">
+    <path
+      inkscape:label="Input Gaussian envelope"
+      id="input-envelope"
+      d="M 205,362
+         C 225,362 235,292 270,292
+         C 310,292 326,362 338,362
+         C 326,362 310,432 270,432
+         C 235,432 225,362 205,362 Z"
+      fill="#9558b2"
+      fill-opacity="0.14"/>
+    <path
+      inkscape:label="Output Gaussian envelope"
+      id="output-envelope"
+      d="M 492,362
+         C 504,362 520,292 560,292
+         C 595,292 605,362 625,362
+         C 605,362 595,432 560,432
+         C 520,432 504,362 492,362 Z"
+      fill="#389826"
+      fill-opacity="0.14"/>
+  </g>
+
+  <g inkscape:groupmode="layer" inkscape:label="Optical carriers" id="optical-carriers" fill="none" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <path
+      inkscape:label="Input optical carrier"
+      id="input-carrier"
+      d="M 205,362
+         C 211,356 219,356 225,362
+         S 239,380 245,362
+         S 259,322 265,362
+         S 280,402 286,362
+         S 300,344 306,362
+         S 320,368 326,362"
+      stroke="#9558b2"/>
+    <path
+      inkscape:label="Output optical carrier"
+      id="output-carrier"
+      d="M 492,362
+         C 502,350 512,350 522,362
+         S 542,398 552,362
+         S 572,326 582,362
+         S 603,362 613,362"
+      stroke="#389826"/>
+  </g>
+
+  <g inkscape:groupmode="layer" inkscape:label="Cavity" id="cavity">
+    <g inkscape:label="Outer resonator" id="outer-resonator" fill="none" stroke="#a7a7a7" stroke-width="24" stroke-linecap="round">
+      <path id="outer-resonator-top" d="M 267,304 A 160,160 0 0 1 563,304"/>
+      <path id="outer-resonator-bottom" d="M 267,420 A 160,160 0 0 0 563,420"/>
+    </g>
+    <g inkscape:label="Interaction mode" id="interaction-mode" fill="none" stroke="#cb3c33" stroke-width="24" stroke-linecap="round">
+      <path id="interaction-mode-top" d="M 346.393,327.041 A 77,77 0 0 1 483.607,327.041" stroke-linecap="round"/>
+      <path id="interaction-mode-bottom" d="M 346.393,396.959 A 77,77 0 0 0 483.607,396.959" stroke-linecap="round"/>
+    </g>
+    <path inkscape:label="Input arrow" id="input-arrow" d="M 326,346 L 350,362 L 326,378 Z" fill="#9558b2" stroke="#9558b2" stroke-width="6" stroke-linejoin="round"/>
+    <path inkscape:label="Output arrow" id="output-arrow" d="M 611,346 L 633,362 L 611,378 Z" fill="#389826" stroke="#389826" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+</svg>

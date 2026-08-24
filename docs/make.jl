@@ -38,6 +38,7 @@ makedocs(
     modules = QuantumInputOutput,
     format = Documenter.HTML(;
         canonical = "https://qojulia.github.io/QuantumInputOutput.jl",
+        assets = [asset("assets/favicon.png", class = :ico, islocal = true)],
     ),
     pages = pages,
     clean = true,
@@ -54,4 +55,5 @@ deploydocs(
     target = "build",
     branch = "gh-pages",
     push_preview = true,
+    versions = ["stable" => "v^", "v#.#", "dev" => "dev"],
 )
