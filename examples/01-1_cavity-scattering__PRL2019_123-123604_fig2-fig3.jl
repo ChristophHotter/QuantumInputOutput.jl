@@ -129,7 +129,8 @@ p
 
 # The eigenvalues and corresponding eigenvectors are sorted in ascending order, which means the last eigenvalue corresponds to the highest populated temporal mode.
 
-F = eigen(g1_m)
+n = size(g1_m, 1)
+F = eigen(g1_m, (n-4):n)
 n_avg = round.(real.(F.values)*ΔT; digits = 3)
 modes = F.vectors
 v_mode = (modes[:, end]) / sqrt(ΔT)
