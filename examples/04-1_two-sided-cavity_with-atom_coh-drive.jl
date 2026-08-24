@@ -46,11 +46,11 @@ H1 = hamiltonian(G_cav_L_R_drive)
 
 # 
 
-L1_L = jump_operator(G_cav_L_R_drive)[1]
+J1_L = jump_operator(G_cav_L_R_drive)[1]
 
 # 
 
-L1_R = jump_operator(G_cav_L_R_drive)[2]
+J1_R = jump_operator(G_cav_L_R_drive)[2]
 
 # Here, the usual classical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ appears as a combination of Hamiltonian and Lindblad term. 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl). Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg `operators` in the function [`to_numeric`](@ref). 
@@ -73,9 +73,9 @@ a_QO = destroy(bc1)
 ops_dict = Dict([a, a'] .=> [a_QO, dagger(a_QO)])
 
 H1_QO = to_numeric(H1, bc1; parameter = dict_p1, operators = ops_dict)
-L1_L_QO = to_numeric(L1_L, bc1; parameter = dict_p1, operators = ops_dict)
-L1_R_QO = to_numeric(L1_R, bc1; parameter = dict_p1, operators = ops_dict)
-J1_QO = [L1_L_QO, L1_R_QO]
+J1_L_QO = to_numeric(J1_L, bc1; parameter = dict_p1, operators = ops_dict)
+J1_R_QO = to_numeric(J1_R, bc1; parameter = dict_p1, operators = ops_dict)
+J1_QO = [J1_L_QO, J1_R_QO]
 nothing # hide
 
 #
@@ -140,11 +140,11 @@ H2 = G_ac_drive.hamiltonian
 
 #
 
-L2_L = G_ac_drive.jump_operator[1]
+J2_L = G_ac_drive.jump_operator[1]
 
 #
 
-L2_R = G_ac_drive.jump_operator[2]
+J2_R = G_ac_drive.jump_operator[2]
 
 #
 
@@ -186,15 +186,15 @@ a_QO2 = to_numeric(a, b)
 
 ## translate to numeric Hamiltonian and Lindblad
 H_QO = to_numeric(H2, b; parameter = dict_p2, time_parameter = dict_p_t2)
-L2_L_QO = to_numeric(L2_L, b; parameter = dict_p2, time_parameter = dict_p_t2)
-L2_R_QO = to_numeric(L2_R, b; parameter = dict_p2)
+J2_L_QO = to_numeric(J2_L, b; parameter = dict_p2, time_parameter = dict_p_t2)
+J2_R_QO = to_numeric(J2_R, b; parameter = dict_p2)
 
 ## additional atomic decay into free space
 J_add = [√(γn)*σ_QO(α, 1, 2) for α = 1:Natoms]
 
 function input_output(t, ρ)
     H = H_QO(t)
-    J = [L2_L_QO(t), L2_R_QO, J_add...]
+    J = [J2_L_QO(t), J2_R_QO, J_add...]
     return H, J, dagger.(J)
 end
 nothing # hide
@@ -208,13 +208,13 @@ nothing # hide
 
 #
 
-L2_L_QO_dag(t) = dagger(L2_L_QO(t))
+J2_L_QO_dag(t) = dagger(J2_L_QO(t))
 l_t = length(t2_)
 n_trans2 = zeros(l_t)
 n_ref2 = zeros(l_t)
 for it = 1:l_t
-    n_trans2[it] = abs(expect(dagger(L2_R_QO)*L2_R_QO, ρt2[it]))
-    n_ref2[it] = abs(expect(L2_L_QO_dag(t2_[it])*L2_L_QO(t2_[it]), ρt2[it]))
+    n_trans2[it] = abs(expect(dagger(J2_R_QO)*J2_R_QO, ρt2[it]))
+    n_ref2[it] = abs(expect(J2_L_QO_dag(t2_[it])*J2_L_QO(t2_[it]), ρt2[it]))
 end
 nothing # hide
 

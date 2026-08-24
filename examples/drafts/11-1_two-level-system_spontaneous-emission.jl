@@ -36,7 +36,7 @@ G_v = SLH(1, g_v' * av, 0)
 G = cascade(G_s, G_v)
 
 H = hamiltonian(G)
-L = jump_operator(G)[1]
+J = jump_operator(G)[1]
 nothing # hide
 
 # We use the spontaneous-emission rate as the frequency unit. At
@@ -67,18 +67,18 @@ nothing # hide
 #
 # ```math
 # g^{(1)}(t_1,t_2) =
-# \langle L_s^\dagger(t_1)L_s(t_2)\rangle,
-# \qquad L_s = \sqrt{\gamma}\,\sigma_-.
+# \langle J_s^\dagger(t_1)J_s(t_2)\rangle,
+# \qquad J_s = \sqrt{\gamma}\,\sigma_-.
 # ```
 
 dict_p_1 = Dict(γ => γ_, g_v => 0.0)
 H_QO_1 = to_numeric(H, b; parameter = dict_p_1)
-L_QO_1 = to_numeric(L, b; parameter = dict_p_1)
+J_QO_1 = to_numeric(J, b; parameter = dict_p_1)
 
-t_1, ρt_1 = timeevolution.master(T, ψ0, H_QO_1, [L_QO_1])
+t_1, ρt_1 = timeevolution.master(T, ψ0, H_QO_1, [J_QO_1])
 
-Ls = √(γ_) * σm_qo
-g1 = correlation_matrix(T, ρt_1, H_QO_1, [L_QO_1], Ls)
+Js = √(γ_) * σm_qo
+g1 = correlation_matrix(T, ρt_1, H_QO_1, [J_QO_1], Js)
 
 # We diagonalize the quadrature-weighted integral kernel. Its eigenvalues are
 # the mean photon numbers in the corresponding temporal modes. `Hermitian`
@@ -116,11 +116,11 @@ gv_t = coupling_output(v_mode_interpolation, T_2)
 dict_p_2 = Dict(γ => γ_)
 dict_p_t_2 = Dict(g_v => gv_t)
 H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+J_QO_2 = to_numeric(J, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 
 function input_output_2(t, ρ)
     Ht = H_QO_2(t)
-    J = [L_QO_2(t)]
+    J = [J_QO_2(t)]
     return Ht, J, dagger.(J)
 end
 

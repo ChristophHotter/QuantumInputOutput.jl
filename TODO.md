@@ -86,7 +86,7 @@
   - [x] feedback reduction
   - [x] interaction picture 
     - [x] general expression for A(t)
-  - [x] two_time_corr_matrix for Ls const (see example 02-2)
+  - [x] two_time_corr_matrix for Js const (see example 02-2)
 
 - [x] Formatter/SpellCheck
 - [x] JET

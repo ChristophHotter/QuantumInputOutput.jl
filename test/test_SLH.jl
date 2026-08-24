@@ -25,16 +25,16 @@ using Test
     G_v = SLH(1, gv'*av, 0) # output cavity
 
     G_c_S = scattering(G_c)
-    G_c_L = jump_operator(G_c)
+    G_c_J = jump_operator(G_c)
     G_c_H = hamiltonian(G_c)
 
     @test G_c_S == G_c.scattering
-    @test G_c_L == G_c.jump_operator
+    @test G_c_J == G_c.jump_operator
     @test G_c_H == G_c.hamiltonian
     @test_deprecated lindblad(G_c)
 
     @test G_c_S isa SMatrix{1,1}
-    @test G_c_L isa SVector{1}
+    @test G_c_J isa SVector{1}
 
     SLH(1, [√(γ)*c], Δ*c'c)
     @test isequal(G_c, SLH(1, [√(γ)*c], Δ*c'c))
@@ -116,13 +116,13 @@ using Test
         bc = FockBasis(4)
         a_op = destroy(bc)
         H_s = sparse(0.5 * dagger(a_op) * a_op)
-        L_s = sparse(sqrt(1.0) * a_op)
+        J_s = sparse(sqrt(1.0) * a_op)
         gu_f(t) = exp(-t^2) * sparse(a_op)
         gv_f(t) = exp(-(t - 2)^2) * sparse(a_op)
 
         @testset "static SLH concreteness" begin
-            G = SLH(1, L_s, H_s)
-            @test eltype(jump_operator(G)) === typeof(L_s)
+            G = SLH(1, J_s, H_s)
+            @test eltype(jump_operator(G)) === typeof(J_s)
             @test typeof(hamiltonian(G)) === typeof(H_s)
         end
 
@@ -142,30 +142,30 @@ using Test
         end
 
         @testset "cascade mixed static/time-dep wraps uniformly" begin
-            G_cas = SLH(1, L_s, H_s) ▷ SLH(1, gu_f, H_s)
+            G_cas = SLH(1, J_s, H_s) ▷ SLH(1, gu_f, H_s)
             @test eltype(jump_operator(G_cas)) <: FunctionWrapper
             @test eltype(jump_operator(G_cas)) !== Any
         end
 
         @testset "concatenation mixed static/time-dep wraps uniformly" begin
-            G_cat = SLH(1, L_s, H_s) ⊞ SLH(1, gu_f, H_s)
-            LT = eltype(jump_operator(G_cat))
-            @test LT <: FunctionWrapper
-            @test LT !== Any
+            G_cat = SLH(1, J_s, H_s) ⊞ SLH(1, gu_f, H_s)
+            JT = eltype(jump_operator(G_cat))
+            @test JT <: FunctionWrapper
+            @test JT !== Any
             @inferred jump_operator(G_cat)[1](0.5)
             @inferred jump_operator(G_cat)[2](0.5)
         end
 
         @testset "concatenation static stays static" begin
-            G_cat = SLH(1, L_s, H_s) ⊞ SLH(1, L_s, H_s)
-            @test eltype(jump_operator(G_cat)) === typeof(L_s)
+            G_cat = SLH(1, J_s, H_s) ⊞ SLH(1, J_s, H_s)
+            @test eltype(jump_operator(G_cat)) === typeof(J_s)
             @test !(eltype(jump_operator(G_cat)) <: FunctionWrapper)
         end
 
         @testset "FunctionWrapper call is inferred" begin
             G_td = SLH(1, gu_f, H_s)
-            l = jump_operator(G_td)[1]
-            @inferred l(0.5)
+            j = jump_operator(G_td)[1]
+            @inferred j(0.5)
         end
 
         @testset "_op_type extracts type from FunctionWrapper SLH" begin
@@ -174,7 +174,7 @@ using Test
         end
 
         @testset "_op_type returns nothing for static SLH" begin
-            G_s = SLH(1, L_s, H_s)
+            G_s = SLH(1, J_s, H_s)
             @test QuantumInputOutput._op_type(G_s) === nothing
         end
 

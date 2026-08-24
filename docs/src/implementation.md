@@ -19,7 +19,7 @@ av = Destroy(h, :a_v, 3)
 @variables γ::Real g_u::Complex g_v::Complex
 ```
 
-An SLH component is represented as `(S, L, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.
+An SLH component is represented as `(S, J, H)` by the [`SLH`](@ref) type. The cascade [`▷`](@ref), concatenation [`⊞`](@ref), and feedback reduction [`feedback`](@ref) rules implement the standard network composition from the SLH framework.
 
 The resulting effective operators are accessed by [`hamiltonian`](@ref) and [`jump_operator`](@ref) and remain symbolic until translation. This is especially useful when you want to further manipulate the expressions, e.g. to transform into the interaction picture.
 
@@ -27,12 +27,12 @@ The resulting effective operators are accessed by [`hamiltonian`](@ref) and [`ju
 G_cas = ▷(G_u, G_s, G_v)
 
 H = hamiltonian(G_cas)
-L = jump_operator(G_cas)
+J = jump_operator(G_cas)
 ```
 
 For networks with internal loops, the symbolic model can be reduced directly with [`feedback`](@ref), which applies the SLH feedback reduction rule before translation. This keeps the symbolic workflow consistent: build a network from cascades and concatenations, eliminate internal connections symbolically, and only then translate the reduced Hamiltonian and Lindblad operators to numerics.
 
-If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, you can pass numeric operators and callables directly to [`SLH`](@ref), which supports both symbolic and numeric operator types as well as time-dependent `L` or `H` while still using the same cascade, concatenate, and feedback rules. This can be much faster. 
+If you directly want to use [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators and functions, you can pass numeric operators and callables directly to [`SLH`](@ref), which supports both symbolic and numeric operator types as well as time-dependent `J` or `H` while still using the same cascade, concatenate, and feedback rules. This can be much faster. 
 
 ## Translate to numerics
 
@@ -55,7 +55,7 @@ gu_t = coupling_input(t -> exp(-t^2), 0:0.01:5)
 dict_p_t = Dict(g_u => gu_t)
 
 H_QO = to_numeric(H, b; parameter=dict_p, time_parameter=dict_p_t)
-L_QO = to_numeric(L, b; parameter=dict_p, time_parameter=dict_p_t)
+J_QO = to_numeric(J, b; parameter=dict_p, time_parameter=dict_p_t)
 ```
 
 In some cases it can be useful to define your own set of numeric operators which should replace the symbolic expressions, e.g. to reduce the Hilbert space if the output cavities are not analyzed but they are already included in the symbolic derivation. Such a list of operators can be provide with the dictionary `operators`.
@@ -105,16 +105,16 @@ gv2_eff = coupling_output(v2_eff, T)
 The dominant output modes are extracted by computing the two-time correlation matrix
 
 ```math
-g^{(1)}(t_1, t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle
+g^{(1)}(t_1, t_2) = \langle J_s^\dagger(t_1) J_s(t_2) \rangle
 ```
 
-and diagonalizing it. In this package, [`correlation_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $L_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $L_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
+and diagonalizing it. In this package, [`correlation_matrix`](@ref) builds that matrix from a previously computed trajectory $\rho(t)$ and a chosen output operator $J_s(t)$, using the quantum regression theorem. This means, for each time point $t_1$ we calculate $J_s(t_1) \rho(t_1)$ and use this as the initial "state" for the propagation of $t_2$, with the same Hamiltonian and Lindblad terms. 
 
 The eigenvectors of the matrix $g^{(1)}(t_1, t_2)$ correspond to temporal modes and the eigenvalues to their mean photon-number weights. The full procedure is illustrated in the [Tutorial](@ref). 
 
 ```julia
-Ls(t) = gu_t(t) * au_qo + √(1.0) * c_qo
-g1 = correlation_matrix(T, ρt, input_output_1, Ls)
+Js(t) = gu_t(t) * au_qo + √(1.0) * c_qo
+g1 = correlation_matrix(T, ρt, input_output_1, Js)
 F = eigen(g1)
 v_mode = F.vectors[:, end] / sqrt(T[2] - T[1])
 ```

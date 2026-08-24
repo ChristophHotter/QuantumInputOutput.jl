@@ -45,16 +45,16 @@ H1 = hamiltonian(G_cav_L_R_drive)
 
 # 
 
-L1_L = jump_operator(G_cav_L_R_drive)[1]
+J1_L = jump_operator(G_cav_L_R_drive)[1]
 
 # 
 
-L1_R = jump_operator(G_cav_L_R_drive)[2]
+J1_R = jump_operator(G_cav_L_R_drive)[2]
 
 # The typical cavity drive-term $\sqrt{\kappa_L} E (a^\dagger + a)$ is a combination of Hamiltonian term and Lindblad. 
 # We use the function `meanfield` to obtain the equation for the intra-cavity field, which leads to a closed set of equations in this particular case.  
 
-eqs_a = meanfield([a], H1, [L1_L, L1_R])
+eqs_a = meanfield([a], H1, [J1_L, J1_R])
 complete!(eqs_a)
 nothing # hide
 
@@ -153,16 +153,16 @@ H2 = G_ac_drive.hamiltonian
 
 #
 
-L2_L = G_ac_drive.jump_operator[1]
+J2_L = G_ac_drive.jump_operator[1]
 
 #
 
-L2_R = G_ac_drive.jump_operator[2]
+J2_R = G_ac_drive.jump_operator[2]
 
 # We derive the equations of motion for system with a second-order mean-field approximation. 
 
 J_add = [√(γ)*σ(α, 1, 2) for α = 1:Natoms]
-eqs2 = meanfield([a'a, σ(1, 2, 2)], H2, [L2_L, L2_R, J_add...]; order = 2)
+eqs2 = meanfield([a'a, σ(1, 2, 2)], H2, [J2_L, J2_R, J_add...]; order = 2)
 nothing # hide
 
 # ```math

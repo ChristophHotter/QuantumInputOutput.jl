@@ -50,8 +50,8 @@ nothing # hide
 
 ## Hamiltonian and Lindbladian
 Hcas = hamiltonian(G_cas)
-Lcas = jump_operator(G_cas)[1]
-Lcasd = adjoint(Lcas)
+Jcas = jump_operator(G_cas)[1]
+Jcasd = adjoint(Jcas)
 nothing # hide 
 
 # To deal with time-dependent functions in QuantumCumulants, we need to register them. Furthermore, due to a problem for the conjugate of registered functions (conj is ignored), we first need to create the adjoint of the jump operators and then substitute the time-dependent functions. 
@@ -68,8 +68,8 @@ dict_gt = Dict(g_ls .=> gt_ls)
 
 ## Insert time-dependence
 Hcas_t = substitute(Hcas, dict_gt)
-Lcas_t = substitute(Lcas, dict_gt)
-Lcasd_t = substitute(Lcasd, dict_gt)
+Jcas_t = substitute(Jcas, dict_gt)
+Jcasd_t = substitute(Jcasd, dict_gt)
 nothing # hide
 
 # We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function [`effective_input_mode`](@ref) and [`effective_output_mode`](@ref), respectively. Due to the fast oscillations, the tolerance of the numeric solver needs to be improved. The parameters are taken from [T. K. Bracht et al., PRX Quantum 2, 040354 (2021)](https://doi.org/10.1103/PRXQuantum.2.040354).
@@ -119,7 +119,7 @@ nothing # hide
 ## First-order cumulant expansion
 order = 1
 ops = [au1, au2, s(2, 2), s(2, 1), av1, av2]
-eqs = meanfield(ops, Hcas_t, [Lcas_t]; Jdagger = [Lcasd_t], order = order, iv = t)
+eqs = meanfield(ops, Hcas_t, [Jcas_t]; Jdagger = [Jcasd_t], order = order, iv = t)
 
 ## Coherent-state amplitudes
 α1 = Α1_ / (2*√(2)*π^(1/4)*√(σ1_*γ_)) # field 1
@@ -211,8 +211,8 @@ a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
 int_dict = Dict(a0_ls .=> a_int_ls)
 
 H_int = substitute(H_int_, int_dict)
-L_int = simplify(substitute(Lcas, int_dict))
-Ld_int = simplify(substitute(Lcasd, int_dict))
+J_int = simplify(substitute(Jcas, int_dict))
+Jd_int = simplify(substitute(Jcasd, int_dict))
 nothing # hide
 
 ## Coefficient matrix M
@@ -240,10 +240,10 @@ dict_Mt = Dict(M_ls .=> Mat_ls)
 dict_gt_Mt = merge(dict_gt, dict_Mt)
 
 H_int_t = substitute(H_int, dict_gt_Mt)
-L_int_t = substitute(L_int, dict_gt_Mt)
-Ld_int_t = substitute(Ld_int, dict_gt_Mt)
+J_int_t = substitute(J_int, dict_gt_Mt)
+Jd_int_t = substitute(Jd_int, dict_gt_Mt)
 
-eqs_int = meanfield(ops, H_int_t, [L_int_t]; Jdagger = [Ld_int_t], order = order, iv = t);
+eqs_int = meanfield(ops, H_int_t, [J_int_t]; Jdagger = [Jd_int_t], order = order, iv = t);
 
 ## Solve ODE system in interaction picture
 sys_int = mtkcompile(System(eqs_int; name = :sysI))
@@ -301,13 +301,13 @@ M_t_ls = [t -> M_t(t)[i, j] for i = 1:la for j = 1:la]
 dict_fock = Dict([g_ls; M_ls] .=> [g_t_ls; M_t_ls])
 
 H_int_fock = to_numeric(H_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
-L_int_fock = to_numeric(L_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
+J_int_fock = to_numeric(J_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 
 ## To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
 
 function input_output(t, ρ)
     Ht = H_int_fock(t)
-    J = [L_int_fock(t)]
+    J = [J_int_fock(t)]
     return Ht, J, QuantumOptics.dagger.(J)
 end
 
