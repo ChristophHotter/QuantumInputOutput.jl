@@ -36,11 +36,11 @@ av2 = Destroy(h, :a_v2, 5)
 @independent_variables t # Symbolic time variable
 
 ## SLH triplets
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_2lvl = SLH(1, √(γ)*s(1, 2), 0) # 2-level system
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
-G_v2 = SLH(1, gv2*av2, 0) # output cavity 2
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
+G_v2 = SLH(1, gv2'*av2, 0) # output cavity 2
 
 ## cascade SLH triplets 
 G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2)

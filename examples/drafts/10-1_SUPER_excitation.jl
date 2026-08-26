@@ -173,11 +173,11 @@ PyPlot.plot(t_, s22_eff)
 ###################################################
 
 # SLH triplets
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_2lvl = SLH(1, √(γ)*s(1, 2), 0) # 2-level system
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
-G_v2 = SLH(1, gv2*av2, 0) # output cavity 2
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
+G_v2 = SLH(1, gv2'*av2, 0) # output cavity 2
 
 # 2I-2O cascade SLH triplet
 G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2) # cascade
@@ -564,11 +564,11 @@ display(pl4)
 # TODO: No substitution with γ/2! - interpretation: decay rate twice
 
 # SLH triplets
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_2lvl = SLH(1, √(γ)*s(1, 2), 0) # 2-level system # TODO
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
-G_v2 = SLH(1, gv2*av2, 0) # output cavity 2
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
+G_v2 = SLH(1, gv2'*av2, 0) # output cavity 2
 
 # Channel-wise cascades
 G_ch1 = ▷(G_u2, G_2lvl, G_v2) # pulse 1
@@ -725,9 +725,9 @@ avn = Destroy(hs, :a_v, 3)
 ###################################################
 
 # SLH triplets
-G_u = SLH(1, gu*aun, 0) # input cavity
+G_u = SLH(1, gu'*aun, 0) # input cavity
 G_2lvls = SLH(1, √(γ)*σ(1, 2), 0) # 2-level system 
-G_v = SLH(1, gv*avn, 0) # output cavity 
+G_v = SLH(1, gv'*avn, 0) # output cavity 
 
 # I-O cascade
 G_cas_1m = ▷(G_u, G_2lvls, G_v)
@@ -1192,9 +1192,9 @@ gu, gv = cnumbers("g_{u} g_{v}")
 ###################################################
 
 # SLH triplets
-G_u = SLH(1, gu*aun, 0) # input cavity
+G_u = SLH(1, gu'*aun, 0) # input cavity
 G_2lvls = SLH(1, √(γ)*σ(1, 2), 0) # 2-level system 
-G_v = SLH(1, gv*avn, 0) # output cavity 
+G_v = SLH(1, gv'*avn, 0) # output cavity 
 
 # I-O cascade
 G_cas_1m = ▷(G_u, G_2lvls, G_v)
