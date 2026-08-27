@@ -144,12 +144,7 @@ nothing # hide
 
 #
 
-common = (;
-    xlims = (t_cas[1]-0.01, t_cas[end]),
-    tickfontsize = 18,
-    guidefontsize = 18,
-    legendfontsize = 18,
-)
+common = (; xlims = (t_cas[1]-0.01, t_cas[end]))
 p1 = plot(
     t_cas,
     real.(s22_cas);
@@ -200,7 +195,7 @@ p3 = plot(
     common...,
 )
 plot!(p3, t_cas, nu2_cas .+ nv2_cas .- nu2_cas[1]; color = :red, label = L"\mathrm{mode~2}")
-plot(p1, p2, p3; layout = (3, 1), size = (800, 800))
+plot(p1, p2, p3; layout = (3, 1), size = (600, 700))
 
 # ## Interaction picture 
 
@@ -279,10 +274,7 @@ pl4 = plot(
     xlims = (t_int[1]-0.01, t_int[end]),
     yticks = ([-2, -1, 0, 1], latexstring.([-2, -1, 0, 1])),
     legend = :right,
-    tickfontsize = 18,
-    guidefontsize = 18,
-    legendfontsize = 18,
-    size = (800, 400),
+    size = (500, 350),
 )
 plot!(pl4, t_int, nu2_int .- nu2_int[1]; color = :red, label = L"\mathrm{mode~2~(int.)}")
 
@@ -341,12 +333,7 @@ nu2_fock = real.(expect(au2'au2, ρt_fock))
 nv1_fock = real.(expect(av1'av1, ρt_fock))
 nv2_fock = real.(expect(av2'av2, ρt_fock))
 
-common = (;
-    xlims = (t_fock[1]-0.01, t_fock[end]),
-    tickfontsize = 18,
-    guidefontsize = 18,
-    legendfontsize = 18,
-)
+common = (; xlims = (t_fock[1]-0.01, t_fock[end]))
 p3_1 = plot(
     t_int,
     s22_int;
@@ -389,7 +376,7 @@ plot!(
     color = :red,
     label = L"\mathrm{Coherent: mode~2}",
 )
-pl3 = plot(p3_1, p3_2; layout = (2, 1), size = (800, 600))
+pl3 = plot(p3_1, p3_2; layout = (2, 1), size = (600, 500))
 
 # Due to the vanishing relative phase of the Fock states, the oscillations disappear.
 
