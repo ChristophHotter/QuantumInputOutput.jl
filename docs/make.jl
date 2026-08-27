@@ -30,6 +30,7 @@ pages = [
         "examples/07-2_hong-ou-mandel__quantum-pulse.md",
         "examples/08-1_pulse-delay__simple.md",
         "examples/09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009.md",
+        "examples/10-1_SUPER_excitation.md",
     ],
 ]
 
