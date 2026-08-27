@@ -150,7 +150,14 @@ common = (;
     guidefontsize = 18,
     legendfontsize = 18,
 )
-p1 = plot(t_cas, real.(s22_cas); color = :red, label = L"\mathrm{cascade}")
+p1 = plot(
+    t_cas,
+    real.(s22_cas);
+    color = :red,
+    label = false,
+    ylabel = L"\langle\hat\sigma^{ee}\rangle",
+    common...,
+)
 p2 = plot(
     t_cas,
     nu1_cas;
@@ -340,7 +347,14 @@ common = (;
     guidefontsize = 18,
     legendfontsize = 18,
 )
-p3_1 = plot(t_int, s22_int; color = :blue, label = L"\mathrm{coherent state}")
+p3_1 = plot(
+    t_int,
+    s22_int;
+    color = :blue,
+    label = L"\mathrm{coherent state}",
+    ylabel = L"\langle\hat\sigma^{ee}\rangle",
+    common...,
+)
 plot!(p3_1, t_fock, s22_fock; color = :red, label = L"\mathrm{Fock state}")
 p3_2 = plot(
     t_fock,
