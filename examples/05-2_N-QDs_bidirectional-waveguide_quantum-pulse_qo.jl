@@ -65,18 +65,18 @@ G_L_t = G_L(2) ▷ G_ϕ(1, 2) ▷ G_L(1)
 G_t = G_R_t ⊞ G_L_t
 nothing # hide
 
-# The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $J$ will also be time-dependent. 
+# The full Hamiltonian and Lindblad terms are extracted from the final SLH element. Note that as soon as one time-dependent function is involved in a cascade or concatenate, the returned $H$ and $L$ will also be time-dependent. 
 
 H = hamiltonian(G_t)
-J = jump_operator(G_t)
-J_R = J[1]
-J_L = J[2]
+L = jump_operator(G_t)
+L_R = L[1]
+L_L = L[2]
 
 J_add = [√(γ_add[i]) * σ(i, 1, 2) for i = 1:N]
 
 function input_output(t, ρ)
     Ht = H(t)
-    J = [J_R(t), J_L(t), J_add...]
+    J = [L_R(t), L_L(t), J_add...]
     return Ht, J, dagger.(J)
 end
 nothing # hide
@@ -95,10 +95,10 @@ nothing # hide
 I_R = zeros(length(t))
 I_L = zeros(length(t))
 for (i, ti) in enumerate(t)
-    JR = J_R(ti)
-    JL = J_L(ti)
-    I_R[i] = real(expect(JR' * JR, ρt[i]))
-    I_L[i] = real(expect(JL' * JL, ρt[i]))
+    LR = L_R(ti)
+    LL = L_L(ti)
+    I_R[i] = real(expect(LR' * LR, ρt[i]))
+    I_L[i] = real(expect(LL' * LL, ρt[i]))
 end
 nothing # hide
 

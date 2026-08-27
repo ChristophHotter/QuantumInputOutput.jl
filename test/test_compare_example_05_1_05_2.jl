@@ -39,9 +39,9 @@ using Test
     G_t = G_R_t ⊞ G_L_t
 
     H = hamiltonian(G_t)
-    Jop = jump_operator(G_t)
-    J_R = Jop[1]
-    J_L = Jop[2]
+    L = jump_operator(G_t)
+    L_R = L[1]
+    L_L = L[2]
 
     γ_ = 1.0
     β = 0.9
@@ -59,23 +59,23 @@ using Test
     ba = NLevelBasis(2)
     b = tensor([ba for _ = 1:N]...)
     H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-    J_R_QO = to_numeric(J_R, b; parameter = dict_p, time_parameter = dict_p_t)
-    J_L_QO = to_numeric(J_L, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_R_QO = to_numeric(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_L_QO = to_numeric(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
     σ_qo(α, i, j) = to_numeric(σ(α, i, j), b)
     J_add = [√(γ_add[i]) * σ_qo(i, 1, 2) for i = 1:N]
 
     function input_output_1(t, ρ)
         Ht = H_QO(t)
-        J = [J_R_QO(t), J_L_QO(t), J_add...]
+        J = [L_R_QO(t), L_L_QO(t), J_add...]
         return Ht, J, dagger.(J)
     end
 
     ψ0 = tensor([nlevelstate(ba, 1) for _ = 1:N]...)
     t1, ρt1 = timeevolution.master_dynamic(T, ψ0, input_output_1)
 
-    I_R_1 = [real(expect(J_R_QO(ti)' * J_R_QO(ti), ρt1[i])) for (i, ti) in enumerate(t1)]
-    I_L_1 = [real(expect(J_L_QO(ti)' * J_L_QO(ti), ρt1[i])) for (i, ti) in enumerate(t1)]
+    I_R_1 = [real(expect(L_R_QO(ti)' * L_R_QO(ti), ρt1[i])) for (i, ti) in enumerate(t1)]
+    I_L_1 = [real(expect(L_L_QO(ti)' * L_L_QO(ti), ρt1[i])) for (i, ti) in enumerate(t1)]
 
     # -------- Example 05-2 style (numeric SLH, quantum pulse) --------
     bu = FockBasis(4)
@@ -96,29 +96,29 @@ using Test
     G_t_qo = G_R_t_qo ⊞ G_L_t_qo
 
     H_qo = hamiltonian(G_t_qo)
-    J_qo = jump_operator(G_t_qo)
-    J_R_qo = J_qo[1]
-    J_L_qo = J_qo[2]
+    L_qo = jump_operator(G_t_qo)
+    L_R_qo = L_qo[1]
+    L_L_qo = L_qo[2]
 
     # FunctionWrapper is callable but not <: Function
     _callable(x) = x isa Union{Function,FunctionWrapper}
     Hf = _callable(H_qo) ? H_qo : (t -> H_qo)
-    J_R_f = _callable(J_R_qo) ? J_R_qo : (t -> J_R_qo)
-    J_L_f = _callable(J_L_qo) ? J_L_qo : (t -> J_L_qo)
+    L_R_f = _callable(L_R_qo) ? L_R_qo : (t -> L_R_qo)
+    L_L_f = _callable(L_L_qo) ? L_L_qo : (t -> L_L_qo)
 
     J_add_qo = [√(γ_add[i]) * σ_qds(i, 1, 2) for i = 1:N]
 
     function input_output_2(t, ρ)
         Ht = Hf(t)
-        J = [J_R_f(t), J_L_f(t), J_add_qo...]
+        J = [L_R_f(t), L_L_f(t), J_add_qo...]
         return Ht, J, dagger.(J)
     end
 
     ψ0_qo = coherentstate(bu, α0) ⊗ tensor([nlevelstate(ba, 1) for _ = 1:N]...)
     t2, ρt2 = timeevolution.master_dynamic(T, ψ0_qo, input_output_2)
 
-    I_R_2 = [real(expect(J_R_f(ti)' * J_R_f(ti), ρt2[i])) for (i, ti) in enumerate(t2)]
-    I_L_2 = [real(expect(J_L_f(ti)' * J_L_f(ti), ρt2[i])) for (i, ti) in enumerate(t2)]
+    I_R_2 = [real(expect(L_R_f(ti)' * L_R_f(ti), ρt2[i])) for (i, ti) in enumerate(t2)]
+    I_L_2 = [real(expect(L_L_f(ti)' * L_L_f(ti), ρt2[i])) for (i, ti) in enumerate(t2)]
 
     @test maximum(abs.(I_R_1 .- I_R_2)) < 5e-5
     @test maximum(abs.(I_L_1 .- I_L_2)) < 5e-5

@@ -43,7 +43,7 @@ H = G_cas.hamiltonian
 
 #
 
-J = G_cas.jump_operator[1] # only one Lindblad in this example
+L = G_cas.jump_operator[1] # only one Lindblad in this example
 
 #
 
@@ -71,11 +71,11 @@ bv1 = FockBasis(2)
 b = bu1 ⊗ ba1 ⊗ bv1
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-J_QO = to_numeric(J, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     H = H_QO(t)
-    J = [J_QO(t)]
+    J = [L_QO(t)]
     return H, J, dagger.(J)
 end;
 
@@ -99,8 +99,8 @@ popu_e = real.(expect(σ_qo(2, 2), ρt))
 popu_v_n1 = real.(expect(proj_v(1), ρt))
 popu_v_n2 = real.(expect(proj_v(2), ρt))
 
-J0(t) = √(γ_)*σ_qo(1, 2) + √(Γ_)*au_qo + gv_(t)*av_qo
-I_out = [real(expect(dagger(J0(t_[i]))*J0(t_[i]), ρt[i])) for i = 1:length(t_)]
+L0(t) = √(γ_)*σ_qo(1, 2) + √(Γ_)*au_qo + gv_(t)*av_qo
+I_out = [real(expect(dagger(L0(t_[i]))*L0(t_[i]), ρt[i])) for i = 1:length(t_)]
 I_out_int = [0.0]
 for i = 2:length(I_out)
     push!(I_out_int, I_out_int[end]+I_out[i]*ΔT)

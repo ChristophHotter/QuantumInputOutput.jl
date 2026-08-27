@@ -23,7 +23,7 @@ function benchmark_correlations!(SUITE)
     G_cas = ▷(G_u, G_c, G_v)
 
     H_sym = hamiltonian(G_cas)
-    J_sym = jump_operator(G_cas)[1]
+    L_sym = jump_operator(G_cas)[1]
 
     γ_ = 1.0
     σ_pulse = 1 / γ_
@@ -40,17 +40,17 @@ function benchmark_correlations!(SUITE)
     dict_p_t = Dict(g_u => gu_t)
 
     H_QO = to_numeric(H_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-    J_QO = to_numeric(J_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = to_numeric(L_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
     ψ0 = fockstate(bu1, 1) ⊗ fockstate(bc1, 0) ⊗ fockstate(bv1, 0)
-    _, ρt = timeevolution.master_dynamic(T, ψ0, H_QO, [J_QO])
+    _, ρt = timeevolution.master_dynamic(T, ψ0, H_QO, [L_QO])
 
     au_qo = to_numeric(au, b)
     c_qo = to_numeric(c, b)
-    Js(t) = gu_t(t) * au_qo + √(γ_) * c_qo
+    Ls(t) = gu_t(t) * au_qo + √(γ_) * c_qo
 
     ## --- Two-time correlation ---
-    # Pass the time-dependent operators (`H_QO`, `[J_QO]`) directly to the solver rather
+    # Pass the time-dependent operators (`H_QO`, `[L_QO]`) directly to the solver rather
     # than wrapping them in a `(t, ρ)` closure: since v0.10 `to_numeric` returns a lazy
     # `TimeDependentSum`, the direct path lets the solver build its integrator once and is
     # markedly faster than re-reading the operator from a function at every step.
@@ -58,6 +58,6 @@ function benchmark_correlations!(SUITE)
     SUITE["Correlations"]["two-time"] = BenchmarkGroup()
 
     SUITE["Correlations"]["two-time"]["single photon cavity"] =
-        @benchmarkable correlation_matrix($T, $ρt, $H_QO, [$J_QO], $Js)
+        @benchmarkable correlation_matrix($T, $ρt, $H_QO, [$L_QO], $Ls)
     return nothing
 end

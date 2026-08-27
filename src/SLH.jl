@@ -40,23 +40,23 @@ _mul(x, y) = _isunit(x) ? y : _isunit(y) ? x : x * y
 # ──────────────────────────────────────────────
 
 """
-    _detect_operator_type(J, H)
+    _detect_operator_type(L, H)
 
 Determine the concrete return type for FunctionWrapper by inspecting
-the elements of J and H. Checks FunctionWrapper type parameters first
+the elements of L and H. Checks FunctionWrapper type parameters first
 (no evaluation needed), then static element types.
 Errors if only plain closures are present (the caller should thread
 the type through from input SLH objects instead).
 """
-function _detect_operator_type(J, H)
+function _detect_operator_type(L, H)
     # Check FunctionWrapper elements (carry explicit type info)
-    for j in J
-        j isa FunctionWrapper && return _fw_return_type(typeof(j))
+    for l in L
+        l isa FunctionWrapper && return _fw_return_type(typeof(l))
     end
     H isa FunctionWrapper && return _fw_return_type(typeof(H))
     # Check static (non-time-dep) elements
-    for j in J
-        _is_time_dep(j) || return typeof(j)
+    for l in L
+        _is_time_dep(l) || return typeof(l)
     end
     _is_time_dep(H) || return typeof(H)
     # No type information available
@@ -68,12 +68,12 @@ end
 
 _fw_return_type(::Type{FunctionWrapper{R,A}}) where {R,A} = R
 
-function _maybe_wrap_jump_operators(J::SVector{N}, ::Type{OpType}) where {N,OpType}
-    if any(_is_time_dep, J)
+function _maybe_wrap_jump_operators(L::SVector{N}, ::Type{OpType}) where {N,OpType}
+    if any(_is_time_dep, L)
         fw_type = FunctionWrapper{OpType,Tuple{Float64}}
-        return SVector{N,fw_type}(ntuple(i -> fw_type(_to_func(J[i])), Val(N)))
+        return SVector{N,fw_type}(ntuple(i -> fw_type(_to_func(L[i])), Val(N)))
     end
-    return J
+    return L
 end
 
 function _maybe_wrap_hamiltonian(H, has_td::Bool, ::Type{OpType}) where {OpType}
@@ -88,23 +88,23 @@ end
 # ──────────────────────────────────────────────
 
 """
-    SLH{N, ST, JT, HT}
+    SLH{N, ST, LT, HT}
 
-SLH triple with scattering matrix `S`, jump-operator vector `J`, and Hamiltonian `H`.
-`S` and `J` can also be vectors of scattering matrices and jump operators.
+SLH triple with scattering matrix `S`, jump-operator vector `L`, and Hamiltonian `H`.
+`S` and `L` can also be vectors of scattering matrices and jump operators.
 
 See also [`▷`](@ref), [`⊞`](@ref), [`feedback`](@ref)
 """
-struct SLH{N,ST,JT,HT,L}
+struct SLH{N,ST,LT,HT,L}
     scattering::SMatrix{N,N,ST,L}
-    jump_operator::SVector{N,JT}
+    jump_operator::SVector{N,LT}
     hamiltonian::HT
-    function SLH{N,ST,JT,HT}(
+    function SLH{N,ST,LT,HT}(
         S::SMatrix{N,N,ST,L},
-        jump_operator::SVector{N,JT},
+        jump_operator::SVector{N,LT},
         H::HT,
-    ) where {N,ST,JT,HT,L}
-        return new{N,ST,JT,HT,L}(S, jump_operator, H)
+    ) where {N,ST,LT,HT,L}
+        return new{N,ST,LT,HT,L}(S, jump_operator, H)
     end
 end
 
@@ -114,8 +114,8 @@ end
 Extract the operator return type from an SLH with FunctionWrapper elements.
 Returns `nothing` if no FunctionWrapper type info is available.
 """
-function _op_type(::SLH{N,ST,JT,HT}) where {N,ST,JT,HT}
-    JT <: FunctionWrapper && return _fw_return_type(JT)
+function _op_type(::SLH{N,ST,LT,HT}) where {N,ST,LT,HT}
+    LT <: FunctionWrapper && return _fw_return_type(LT)
     HT <: FunctionWrapper && return _fw_return_type(HT)
     return nothing
 end
@@ -125,55 +125,55 @@ end
 # ──────────────────────────────────────────────
 
 # Canonical: from SMatrix + SVector (handles FunctionWrapper wrapping)
-function _build_slh(S::SMatrix{N,N}, J::SVector{N}, H) where {N}
-    has_td = any(_is_time_dep, J) || _is_time_dep(H)
+function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H) where {N}
+    has_td = any(_is_time_dep, L) || _is_time_dep(H)
     if has_td
-        OpType = _detect_operator_type(J, H)
-        return _build_slh(S, J, H, OpType)
+        OpType = _detect_operator_type(L, H)
+        return _build_slh(S, L, H, OpType)
     end
-    return SLH{N,eltype(S),eltype(J),typeof(H)}(S, J, H)
+    return SLH{N,eltype(S),eltype(L),typeof(H)}(S, L, H)
 end
 
 # With explicit operator type (skips detection — used by composition operations)
-function _build_slh(S::SMatrix{N,N}, J::SVector{N}, H, ::Type{OpType}) where {N,OpType}
-    has_td = any(_is_time_dep, J) || _is_time_dep(H)
+function _build_slh(S::SMatrix{N,N}, L::SVector{N}, H, ::Type{OpType}) where {N,OpType}
+    has_td = any(_is_time_dep, L) || _is_time_dep(H)
     if has_td
-        J_w = _maybe_wrap_jump_operators(J, OpType)
+        L_w = _maybe_wrap_jump_operators(L, OpType)
         H_w = _maybe_wrap_hamiltonian(H, true, OpType)
-        return SLH{N,eltype(S),eltype(J_w),typeof(H_w)}(S, J_w, H_w)
+        return SLH{N,eltype(S),eltype(L_w),typeof(H_w)}(S, L_w, H_w)
     end
-    return SLH{N,eltype(S),eltype(J),typeof(H)}(S, J, H)
+    return SLH{N,eltype(S),eltype(L),typeof(H)}(S, L, H)
 end
 
 # Nothing hint falls through to detection
-_build_slh(S::SMatrix{N,N}, J::SVector{N}, H, ::Nothing) where {N} = _build_slh(S, J, H)
+_build_slh(S::SMatrix{N,N}, L::SVector{N}, H, ::Nothing) where {N} = _build_slh(S, L, H)
 
 # From AbstractMatrix + AbstractVector (includes SMatrix + SVector)
-function SLH(S::AbstractMatrix, J::AbstractVector, H)
-    N = length(J)
+function SLH(S::AbstractMatrix, L::AbstractVector, H)
+    N = length(L)
     @assert size(S, 1) == N && size(S, 2) == N
-    return _build_slh(SMatrix{N,N}(S), SVector{N}(J...), H)
+    return _build_slh(SMatrix{N,N}(S), SVector{N}(L...), H)
 end
 
-# Numeric scalar S + vector J → S * I_{NxN}
-function SLH(S::Number, J::AbstractVector, H)
-    N = length(J)
+# Numeric scalar S + vector L → S * I_{NxN}
+function SLH(S::Number, L::AbstractVector, H)
+    N = length(L)
     S_mat = SMatrix{N,N}(S * LinearAlgebra.I)
-    return _build_slh(S_mat, SVector{N}(J...), H)
+    return _build_slh(S_mat, SVector{N}(L...), H)
 end
 
-# Scalar S + scalar J → SLH{1}
-function SLH(S, J, H)
+# Scalar S + scalar L → SLH{1}
+function SLH(S, L, H)
     S_mat = SMatrix{1,1}(S)
-    J_vec = SVector{1}(J)
-    return _build_slh(S_mat, J_vec, H)
+    L_vec = SVector{1}(L)
+    return _build_slh(S_mat, L_vec, H)
 end
 
-# Symbolic/general scalar S + vector J → S * I
-function SLH(S, J::AbstractVector, H)
-    N = length(J)
+# Symbolic/general scalar S + vector L → S * I
+function SLH(S, L::AbstractVector, H)
+    N = length(L)
     S_mat = SMatrix{N,N}([i == j ? S : 0 for i = 1:N, j = 1:N])
-    return _build_slh(S_mat, SVector{N}(J...), H)
+    return _build_slh(S_mat, SVector{N}(L...), H)
 end
 
 # ──────────────────────────────────────────────
@@ -190,7 +190,7 @@ scattering(G::SLH) = G.scattering
 """
     jump_operator(G::SLH)
 
-Return the jump-operator vector `J` of an SLH object.
+Return the jump-operator vector `L` of an SLH object.
 """
 jump_operator(G::SLH) = G.jump_operator
 
@@ -226,18 +226,18 @@ end
 # Matrix-vector helpers
 # ──────────────────────────────────────────────
 
-@generated function _slh_matvec(S::SMatrix{N,N}, J::SVector{N}) where {N}
+@generated function _slh_matvec(S::SMatrix{N,N}, L::SVector{N}) where {N}
     if N == 1
-        return :(SVector{1}(_mul(S[1, 1], J[1])))
+        return :(SVector{1}(_mul(S[1, 1], L[1])))
     end
     exprs = []
     for i = 1:N
         first_name = Symbol("tmp_$(i)_1")
-        terms = [:($first_name = _mul(S[$i, 1], J[1]))]
+        terms = [:($first_name = _mul(S[$i, 1], L[1]))]
         acc = first_name
         for j = 2:N
             tname = Symbol("tmp_$(i)_$(j)")
-            push!(terms, :($tname = _add($acc, _mul(S[$i, $j], J[$j]))))
+            push!(terms, :($tname = _add($acc, _mul(S[$i, $j], L[$j]))))
             acc = tname
         end
         push!(exprs, Expr(:block, terms..., acc))
@@ -245,13 +245,13 @@ end
     return :(SVector($(exprs...)))
 end
 
-@generated function _slh_dot(J1::SVector{N}, J2::SVector{N}) where {N}
+@generated function _slh_dot(L1::SVector{N}, L2::SVector{N}) where {N}
     if N == 1
-        return :(_mul(J1[1], J2[1]))
+        return :(_mul(L1[1], L2[1]))
     end
-    expr = :(_mul(J1[1], J2[1]))
+    expr = :(_mul(L1[1], L2[1]))
     for i = 2:N
-        expr = :(_add($expr, _mul(J1[$i], J2[$i])))
+        expr = :(_add($expr, _mul(L1[$i], L2[$i])))
     end
     return expr
 end
@@ -265,27 +265,27 @@ end
 
 Cascade two SLH triples:
 
-``G_1 \\triangleright G_2 = (S_2 S_1,\\; J_2 + S_2 J_1,\\; H_1 + H_2 - \\tfrac{i}{2}(J_2^\\dagger S_2 J_1 - J_1^\\dagger S_2^\\dagger J_2))``
+``G_1 \\triangleright G_2 = (S_2 S_1,\\; L_2 + S_2 L_1,\\; H_1 + H_2 - \\tfrac{i}{2}(L_2^\\dagger S_2 L_1 - L_1^\\dagger S_2^\\dagger L_2))``
 
 Unicode `\\triangleright<tab>`. See also [`cascade`](@ref).
 """
 function ▷(G1::SLH{N}, G2::SLH{N}) where {N}
-    S1, J1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
-    S2, J2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
+    S1, L1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
+    S2, L2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
 
     S_t = _post.(S2 * S1)
-    S2J1 = _slh_matvec(S2, J1)
-    J_t = SVector{N}(ntuple(i -> _post(_add(J2[i], S2J1[i])), Val(N)))
+    S2L1 = _slh_matvec(S2, L1)
+    L_t = SVector{N}(ntuple(i -> _post(_add(L2[i], S2L1[i])), Val(N)))
 
-    J2_adj = SVector{N}(ntuple(i -> _adj(J2[i]), Val(N)))
-    cross1 = _slh_dot(J2_adj, S2J1)
+    L2_adj = SVector{N}(ntuple(i -> _adj(L2[i]), Val(N)))
+    cross1 = _slh_dot(L2_adj, S2L1)
     X = _mul(-1im / 2, cross1)
 
     H_t = _post(_add(_add(H1, H2), _add(X, _adj(X))))
 
     op_hint = _op_type(G1)
     op_hint === nothing && (op_hint = _op_type(G2))
-    return _build_slh(S_t, J_t, H_t, op_hint)
+    return _build_slh(S_t, L_t, H_t, op_hint)
 end
 
 function ▷(::SLH{N1}, ::SLH{N2}) where {N1,N2}
@@ -315,7 +315,7 @@ cascade(args...) = ▷(args...)
 Concatenate (parallel composition) of two SLH triples:
 
 ``G_1 \\boxplus G_2 = \\left(\\begin{pmatrix} S_1 & 0 \\\\ 0 & S_2 \\end{pmatrix},\\;
-\\begin{pmatrix} J_1 \\\\ J_2 \\end{pmatrix},\\; H_1 + H_2\\right)``
+\\begin{pmatrix} L_1 \\\\ L_2 \\end{pmatrix},\\; H_1 + H_2\\right)``
 
 Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
 """
@@ -333,14 +333,14 @@ Unicode `\\boxplus<tab>`. See also [`concatenate`](@ref).
     end
 
     quote
-        S1, J1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
-        S2, J2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
+        S1, L1, H1 = scattering(G1), jump_operator(G1), hamiltonian(G1)
+        S2, L2, H2 = scattering(G2), jump_operator(G2), hamiltonian(G2)
         S_t = SMatrix{$N,$N}($(s_exprs...))
-        J_t = vcat(J1, J2)
+        L_t = vcat(L1, L2)
         H_t = _add(H1, H2)
         op_hint = _op_type(G1)
         op_hint === nothing && (op_hint = _op_type(G2))
-        return _build_slh(S_t, J_t, H_t, op_hint)
+        return _build_slh(S_t, L_t, H_t, op_hint)
     end
 end
 
@@ -368,8 +368,8 @@ function _drop_row_col(S::SMatrix{N,N}, row::Int, col::Int, ::Val{M}) where {N,M
     end)
 end
 
-function _drop_index(J::SVector{N}, idx::Int, ::Val{M}) where {N,M}
-    SVector{M}(ntuple(i -> J[i >= idx ? i + 1 : i], Val(M)))
+function _drop_index(L::SVector{N}, idx::Int, ::Val{M}) where {N,M}
+    SVector{M}(ntuple(i -> L[i >= idx ? i + 1 : i], Val(M)))
 end
 
 function _get_col_dropped_row(
@@ -404,7 +404,7 @@ end
 
 function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N,M}
     S = scattering(G)
-    J = jump_operator(G)
+    L = jump_operator(G)
     H = hamiltonian(G)
 
     @assert 1 <= x <= N && 1 <= y <= N
@@ -426,18 +426,18 @@ function _feedback_impl(G::SLH{N}, x::Int, y::Int, ::Val{M}) where {N,M}
         _post(_add(S_bar[i, j], S_update[i, j]))
     end)
 
-    J_bar = _drop_index(J, x, valM)
-    J_x = J[x]
-    J_update =
-        SVector{M}(ntuple(i -> _post(_mul(_mul(S_col_y_no_x[i], loop_gain), J_x)), valM))
-    J_red = SVector{M}(ntuple(i -> _post(_add(J_bar[i], J_update[i])), valM))
+    L_bar = _drop_index(L, x, valM)
+    L_x = L[x]
+    L_update =
+        SVector{M}(ntuple(i -> _post(_mul(_mul(S_col_y_no_x[i], loop_gain), L_x)), valM))
+    L_red = SVector{M}(ntuple(i -> _post(_add(L_bar[i], L_update[i])), valM))
 
     S_col_y_full = SVector{N}(ntuple(i -> S[i, y], Val(N)))
-    J_adj = SVector{N}(ntuple(i -> _adj(J[i]), Val(N)))
-    term = _mul(_slh_dot(J_adj, S_col_y_full), _mul(loop_gain, J_x))
+    L_adj = SVector{N}(ntuple(i -> _adj(L[i]), Val(N)))
+    term = _mul(_slh_dot(L_adj, S_col_y_full), _mul(loop_gain, L_x))
     H_red = _post(_add(H, _mul(1 / (2im), _add(term, _mul(-1, _adj(term))))))
 
-    return _build_slh(S_red, J_red, H_red, _op_type(G))
+    return _build_slh(S_red, L_red, H_red, _op_type(G))
 end
 
 feedback(G::SLH, connection::Pair{Int,Int}) =
@@ -480,13 +480,13 @@ end
 
 Translate the Hamiltonian and Lindblad operators of an SLH object `G` into numeric
 [QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl) operators on the basis `b`.
-Returns the tuple `(H_QO, J_QO)`, where `J_QO` is a vector holding one translated operator
+Returns the tuple `(H_QO, L_QO)`, where `L_QO` is a vector holding one translated operator
 per jump operator in `jump_operator(G)`. All keyword arguments (`parameter`, `time_parameter`,
 `operators`, `adjoint_ops`, `op_type`) are forwarded to
 [`SecondQuantizedAlgebra.to_numeric`](@ref).
 """
 function SQA.to_numeric(G::SLH, b::QuantumOpticsBase.Basis; kwargs...)
     H_QO = SQA.to_numeric(hamiltonian(G), b; kwargs...)
-    J_QO = [SQA.to_numeric(J_, b; kwargs...) for J_ in jump_operator(G)]
-    return H_QO, J_QO
+    L_QO = [SQA.to_numeric(L_, b; kwargs...) for L_ in jump_operator(G)]
+    return H_QO, L_QO
 end

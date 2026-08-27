@@ -67,7 +67,7 @@ function benchmark_interaction_picture!(SUITE)
     G_cas = ▷(G_u, G_s, G_v)
 
     H = hamiltonian(G_cas)
-    J = jump_operator(G_cas)[1]
+    L = jump_operator(G_cas)[1]
     H_uv = hamiltonian(▷(G_u, G_v))
     H_int_ = simplify(H - H_uv)
 
@@ -82,7 +82,7 @@ function benchmark_interaction_picture!(SUITE)
     SUITE["Interaction Picture"]["operator substitution"]["TLS cascade"] =
         @benchmarkable begin
             simplify(substitute($H_int_, $int_dict))
-            simplify(substitute($J, $int_dict))
+            simplify(substitute($L, $int_dict))
         end
 
     return nothing

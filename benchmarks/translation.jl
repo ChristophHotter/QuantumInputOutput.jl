@@ -15,7 +15,7 @@ function benchmark_translation!(SUITE)
     a = Destroy(h, :a, 1)
     σ(i, j) = Transition(h, Symbol("σ"), i, j, 2)
 
-    ## Derive H and J from cascade
+    ## Derive H and L from cascade
     @variables gu_sym::Real γ_sym::Real gv_sym::Real
     hu_ = FockSpace(:u)
     hc_ = FockSpace(:c)
@@ -30,7 +30,7 @@ function benchmark_translation!(SUITE)
     G_v = SLH(1, gv_sym * av_, 0)
     G_cas = ▷(G_u, G_c, G_v)
     H_sym = hamiltonian(G_cas)
-    J_sym = jump_operator(G_cas)[1]
+    L_sym = jump_operator(G_cas)[1]
 
     ## --- Static translation (no time dependence) ---
 
@@ -63,7 +63,7 @@ function benchmark_translation!(SUITE)
         time_parameter = $dict_p_t,
     )
 
-    # Full cascade H and J translation
+    # Full cascade H and L translation
     γ_ = 1.0
     σ_pulse = 1 / γ_
     T = [0:0.002:1;] * 12σ_pulse
@@ -79,9 +79,9 @@ function benchmark_translation!(SUITE)
     dict_p_cav = Dict([γ_sym, Δ_sym, gv_sym] .=> [γ_, 0.0, 0])
     dict_p_t_cav = Dict([gu_sym, gv_sym] .=> [gu_t, gv_t])
 
-    SUITE["Translation"]["time-dependent"]["3-cavity H+J"] = @benchmarkable begin
+    SUITE["Translation"]["time-dependent"]["3-cavity H+L"] = @benchmarkable begin
         to_numeric($H_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
-        to_numeric($J_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
+        to_numeric($L_sym, $b_cav; parameter = $dict_p_cav, time_parameter = $dict_p_t_cav)
     end
 
     ## --- Closure evaluation (the ODE hot loop) ---
@@ -89,15 +89,15 @@ function benchmark_translation!(SUITE)
     SUITE["Translation"]["closure evaluation"] = BenchmarkGroup()
 
     H_QO = to_numeric(H_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
-    J_QO = to_numeric(J_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
+    L_QO = to_numeric(L_sym, b_cav; parameter = dict_p_cav, time_parameter = dict_p_t_cav)
 
     t_mid = T[length(T)÷2]
 
     SUITE["Translation"]["closure evaluation"]["3-cavity H(t)"] =
         @benchmarkable $H_QO($t_mid)
 
-    SUITE["Translation"]["closure evaluation"]["3-cavity J(t)"] =
-        @benchmarkable $J_QO($t_mid)
+    SUITE["Translation"]["closure evaluation"]["3-cavity L(t)"] =
+        @benchmarkable $L_QO($t_mid)
 
     return nothing
 end

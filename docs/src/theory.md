@@ -86,10 +86,10 @@ This is the multi-mode extension used by [`effective_input_mode`](@ref) and
 
 ## SLH Networks for Cascaded Pulses
 
-In the SLH formalism, each component is specified by a triple `(S, J, H)`:
+In the SLH formalism, each component is specified by a triple `(S, L, H)`:
 
 - `S`cattering matrix
-- `J`ump (Lindblad) operators
+- `L`indblad operators
 - `H`amiltonian
 
 Networks are built using composition rules:
@@ -99,8 +99,8 @@ Networks are built using composition rules:
 ```math
 G_1 \triangleright G_2 = \left(
 S_2 S_1,\;
-J_2 + S_2 J_1,\;
-H_1 + H_2 + \frac{1}{2i}\left(J_2^\dagger S_2 J_1 - J_1^\dagger S_2^\dagger J_2\right)
+L_2 + S_2 L_1,\;
+H_1 + H_2 + \frac{1}{2i}\left(L_2^\dagger S_2 L_1 - L_1^\dagger S_2^\dagger L_2\right)
 \right).
 ```
 
@@ -113,27 +113,27 @@ S_1 & 0 \\
 0 & S_2
 \end{bmatrix},\;
 \begin{bmatrix}
-J_1 \\
-J_2
+L_1 \\
+L_2
 \end{bmatrix},\;
 H_1 + H_2
 \right).
 ```
 
 3. **Feedback reduction**: connecting output port $x$ back into input port $y$ of an $n$-port component
-$G = (S, J, H)$ yields a reduced $(n-1)$-port model $[(G)]_{x \to y} = (\tilde S, \tilde J, \tilde H)$ with
+$G = (S, L, H)$ yields a reduced $(n-1)$-port model $[(G)]_{x \to y} = (\tilde S, \tilde L, \tilde H)$ with
 
 ```math
 \tilde S = S_{\bar x,\bar y} + S_{\bar x,y}(1 - S_{x,y})^{-1}S_{x,\bar y},
 ```
 
 ```math
-\tilde J = J_{\bar x} + S_{\bar x,y}(1 - S_{x,y})^{-1}J_x,
+\tilde L = L_{\bar x} + S_{\bar x,y}(1 - S_{x,y})^{-1}L_x,
 ```
 
 ```math
 \tilde H = H + \frac{1}{2i}\left[
-\left(\sum_{j=1}^n J_j^\dagger S_{j,y}\right)(1 - S_{x,y})^{-1}J_x - \mathrm{h.c.}
+\left(\sum_{j=1}^n L_j^\dagger S_{j,y}\right)(1 - S_{x,y})^{-1}L_x - \mathrm{h.c.}
 \right].
 ```
 
@@ -144,7 +144,7 @@ obtain an effective SLH triple for the full problem. This describes a master equ
 
 ## Common SLH Elements
 
-Appendix 1 of [Combes et al. (2017)](https://doi.org/10.1080/23746149.2017.1343097) lists SLH triples for commonly used components. The most frequently used elements in this package are summarized below using the standard ``(S, J, H)`` ordering.
+Appendix 1 of [Combes et al. (2017)](https://doi.org/10.1080/23746149.2017.1343097) lists SLH triples for commonly used components. The most frequently used elements in this package are summarized below using the standard ``(S, L, H)`` ordering.
 
 Phase shifter (single input/output):
 
@@ -210,10 +210,10 @@ The output field is generally multimode. To determine a proper **basis of tempor
 occupations, we compute the first-order correlation function
 
 ```math
-g^{(1)}(t_1, t_2) = \langle \hat J_s^\dagger(t_1)\, \hat J_s(t_2) \rangle,
+g^{(1)}(t_1, t_2) = \langle \hat L_s^\dagger(t_1)\, \hat L_s(t_2) \rangle,
 ```
 
-where $\hat J_s$ is the output operator (e.g., $\hat J_s = g_u(t) \hat{a}_u + \sqrt{\kappa} \hat c$ for a single sided cavity interacting with a pulse$u(t)$).
+where $\hat L_s$ is the output operator (e.g., $\hat L_s = g_u(t) \hat{a}_u + \sqrt{\kappa} \hat c$ for a single sided cavity interacting with a pulse$u(t)$).
 The eigen-decomposition
 
 ```math

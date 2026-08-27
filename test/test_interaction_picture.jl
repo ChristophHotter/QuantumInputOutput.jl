@@ -39,7 +39,7 @@ using Test
     G_cas = ▷(G_u, G_s, G_v)
 
     H = hamiltonian(G_cas)
-    Jop = jump_operator(G_cas)[1]
+    L = jump_operator(G_cas)[1]
     H_uv = hamiltonian(▷(G_u, G_v))
     H_int_sym_ = simplify(H - H_uv)
 
@@ -51,7 +51,7 @@ using Test
     int_dict = Dict(a0_ls .=> a_int_ls)
 
     H_int_sym = simplify(substitute(H_int_sym_, int_dict))
-    J_int_sym = simplify(substitute(Jop, int_dict))
+    L_int_sym = simplify(substitute(L, int_dict))
 
     # Virtual-cavity couplings
     gu_t = coupling_input(u, T)
@@ -116,11 +116,11 @@ using Test
     dict_p_t = Dict(p_t_sym .=> p_t_num)
 
     H_int_QO = to_numeric(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-    J_QO = to_numeric(J_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+    L_QO = to_numeric(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
     function input_output_I(t, ρ)
         Ht = H_int_QO(t)
-        J = [J_QO(t)]
+        J = [L_QO(t)]
         return Ht, J, dagger.(J)
     end
 
@@ -140,11 +140,11 @@ using Test
     dict_p_t_s = Dict(gu_sym => gu_t, gv_sym => gv_t)
 
     H_QO = to_numeric(H, b; parameter = dict_p_s, time_parameter = dict_p_t_s)
-    J_QO_S = to_numeric(Jop, b; parameter = dict_p_s, time_parameter = dict_p_t_s)
+    L_QO_S = to_numeric(L, b; parameter = dict_p_s, time_parameter = dict_p_t_s)
 
     function input_output_S(t, ρ)
         Ht = H_QO(t)
-        J = [J_QO_S(t)]
+        J = [L_QO_S(t)]
         return Ht, J, dagger.(J)
     end
 
@@ -158,12 +158,12 @@ using Test
     dict_p_small = Dict(γ_sym => γ_small)
     H_int_QO_small =
         to_numeric(H_int_sym, b; parameter = dict_p_small, time_parameter = dict_p_t)
-    J_QO_small =
-        to_numeric(J_int_sym, b; parameter = dict_p_small, time_parameter = dict_p_t)
+    L_QO_small =
+        to_numeric(L_int_sym, b; parameter = dict_p_small, time_parameter = dict_p_t)
 
     function input_output_I_small(t, ρ)
         Ht = H_int_QO_small(t)
-        J = [J_QO_small(t)]
+        J = [L_QO_small(t)]
         return Ht, J, dagger.(J)
     end
 

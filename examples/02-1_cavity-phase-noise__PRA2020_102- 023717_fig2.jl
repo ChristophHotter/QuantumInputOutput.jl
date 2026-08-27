@@ -41,7 +41,7 @@ H = hamiltonian(G_cas)
 
 #
 
-J = jump_operator(G_cas)[1] # only one jump operator in this example
+L = jump_operator(G_cas)[1] # only one jump operator in this example
 
 #
 
@@ -75,13 +75,13 @@ cdc_qo = c_qo'c_qo
 
 ## translate to numeric Hamiltonian and Lindblad
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-J_QO = to_numeric(J, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 
 # We additionally include a cavity dephasing term and solve the dynamics.
 function input_output(t, ρ)
     H = H_QO(t)
-    J = [J_QO(t), √(γ_p_)*cdc_qo]
+    J = [L_QO(t), √(γ_p_)*cdc_qo]
     return H, J, dagger.(J)
 end;
 
@@ -90,10 +90,10 @@ end;
 t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
 nothing # hide
 
-# We calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle J_s^\dagger(t_1) J_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.  
+# We calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.  
 
-Js(t) = (gu_(t))'*au_qo + √(γ_)*c_qo
-g1_m = correlation_matrix(T, ρt, input_output, Js);
+Ls(t) = (gu_(t))'*au_qo + √(γ_)*c_qo
+g1_m = correlation_matrix(T, ρt, input_output, Ls);
 nothing # hide
 
 #

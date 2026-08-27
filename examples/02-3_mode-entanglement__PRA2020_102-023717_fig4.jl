@@ -48,7 +48,7 @@ G_v2 = SLH(1, g_v2' * av2, 0)
 G = cascade(G_s, G_v1, G_v2)
 
 H = hamiltonian(G)
-J = jump_operator(G)[1]
+L = jump_operator(G)[1]
 nothing # hide
 
 # We use the parameters quoted in the paper and initialize the emitter in the excited state.
@@ -81,10 +81,10 @@ nothing # hide
 # correlation matrix g⁽¹⁾(t₁, t₂).
 
 H_QO_1 = to_numeric(H, b; parameter = dict_p_1)
-J_QO_1 = to_numeric(J, b; parameter = dict_p_1)
+L_QO_1 = to_numeric(L, b; parameter = dict_p_1)
 
 function input_output_1(t, ρ)
-    J = [J_QO_1]
+    J = [L_QO_1]
     return H_QO_1, J, dagger.(J)
 end
 
@@ -92,8 +92,8 @@ end
 t_1, ρt_1 = timeevolution.master_dynamic(T, ψ0, input_output_1)
 nothing # hide
 
-Js = √(γ_) * a_qo
-g1_m = correlation_matrix(T, ρt_1, input_output_1, Js)
+Ls = √(γ_) * a_qo
+g1_m = correlation_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
@@ -116,10 +116,10 @@ dict_p_2 = Dict([γ, g, ω12] .=> [γ_, g_, ω12_])
 dict_p_t_2 = Dict(g_v1 => gv1_t, g_v2 => gv2_t)
 
 H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-J_QO_2 = to_numeric(J, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 
 function input_output_2(t, ρ)
-    J = [J_QO_2(t)]
+    J = [L_QO_2(t)]
     return H_QO_2(t), J, dagger.(J)
 end
 
