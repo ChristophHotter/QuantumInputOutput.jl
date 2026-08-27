@@ -44,7 +44,7 @@ H = hamiltonian(G_cas)
 
 #
 
-J = jump_operator(G_cas)[1] # only one Lindblad term in this example
+L = jump_operator(G_cas)[1] # only one Lindblad term in this example
 
 # To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of QuantumOptics.jl. To do so, we define the numerical parameters and operator basis.
 
@@ -77,7 +77,7 @@ nothing # hide
 # We now use the function [`to_numeric`](@ref) to create the numeric operators. If the kwarg `time_parameter` is provided the created operator is a time-dependent function.
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-J_QO = to_numeric(J, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b; parameter = dict_p, time_parameter = dict_p_t)
 nothing # hide
 
 
@@ -86,7 +86,7 @@ nothing # hide
 ## time-dependent function for timeevolution.master_dynamic that returns H(t), J(t) and Jd(t)
 function input_output_1(t, ρ)
     H = H_QO(t)
-    J = [J_QO(t)]
+    J = [L_QO(t)]
     return H, J, dagger.(J)
 end;
 
@@ -107,10 +107,10 @@ n_c_t = real.(expect(c_qo'*c_qo, ρt))
 n_u1_t = real.(expect(au_qo'*au_qo, ρt))
 nothing # hide
 
-# In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle J_s^\dagger(t_1) J_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.
+# In order to determine suitable temporal output modes we calculate the two-time autocorrelation function $g^{(1)}(t_1,t_2) = \langle L_s^\dagger(t_1) L_s(t_2) \rangle$ and diagonalize the matrix to obtain the eigenvalues with the corresponding eigenvectors. The eigenvalues correspond to the mean photon number $n_i$ in the corresponding temporal eigenvector mode $v_i$.
 
-Js(t) = gu_t(t)*au_qo + √(γ_)*c_qo
-g1_m = correlation_matrix(T, ρt, H_QO, [J_QO], Js)
+Ls(t) = gu_t(t)*au_qo + √(γ_)*c_qo
+g1_m = correlation_matrix(T, ρt, H_QO, [L_QO], Ls)
 nothing # hide
 
 #
@@ -149,10 +149,10 @@ gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict([g_u, g_v] .=> [gu_t, gv_t])
 
 H_QO_2 = to_numeric(H, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
-J_QO_2 = to_numeric(J, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L, b; parameter = dict_p_2, time_parameter = dict_p_t_2)
 function input_output_2(t, ρ)
     H = H_QO_2(t)
-    J = [J_QO_2(t)]
+    J = [L_QO_2(t)]
     return H, J, dagger.(J)
 end;
 
@@ -215,10 +215,10 @@ cdc_3 = c_3'c_3
 
 ## we use the same Hamiltonian as before but add a depasing term to the dissipation
 H_QO_3 = to_numeric(H, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
-J_QO_3 = to_numeric(J, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
+L_QO_3 = to_numeric(L, b_3; parameter = dict_p_2, time_parameter = dict_p_t_2)
 function input_output_3(t, ρ)
     H = H_QO_3(t)
-    J = [J_QO_3(t), √(γ_)*cdc_3]
+    J = [L_QO_3(t), √(γ_)*cdc_3]
     return H, J, dagger.(J)
 end;
 
@@ -232,8 +232,8 @@ nothing # hide
 
 #
 
-J0(t) = √(γ_)*c_3 + gu_t(t)*au_3 + gv_t(t)*av_3
-I_out = [real(expect(dagger(J0(t_3[i]))*J0(t_3[i]), ρt_3[i])) for i = 1:length(t_3)]
+L0(t) = √(γ_)*c_3 + gu_t(t)*au_3 + gv_t(t)*av_3
+I_out = [real(expect(dagger(L0(t_3[i]))*L0(t_3[i]), ρt_3[i])) for i = 1:length(t_3)]
 
 n_u1_t_3 = real.(expect(au'*au, ρt_3))
 n_v1_t_3 = real.(expect(av'*av, ρt_3))

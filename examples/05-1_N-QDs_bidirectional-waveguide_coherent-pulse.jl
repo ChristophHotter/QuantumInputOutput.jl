@@ -55,12 +55,12 @@ H = hamiltonian(G_t)
 
 #
 
-J = jump_operator(G_t)
-J_R = J[1]
+L = jump_operator(G_t)
+L_R = L[1]
 
 #
 
-J_L = J[2]
+L_L = L[2]
 
 # Note that this Hamiltonian and Lindblad terms (without the drive) describe the collective decay of the quantum dots. 
 
@@ -100,15 +100,15 @@ ba = NLevelBasis(2)
 b = tensor([ba for i = 1:N]...)
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-J_R_QO = to_numeric(J_R, b; parameter = dict_p, time_parameter = dict_p_t)
-J_L_QO = to_numeric(J_L, b; parameter = dict_p, time_parameter = dict_p_t)
+L_R_QO = to_numeric(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+L_L_QO = to_numeric(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
 σ_qo(α, i, j) = to_numeric(σ(α, i, j), b)
 J_add = [√(γ_add[i])*σ_qo(i, 1, 2) for i = 1:N]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
-    J = [J_R_QO(t), J_L_QO(t), J_add...]
+    J = [L_R_QO(t), L_L_QO(t), J_add...]
     return Ht, J, dagger.(J)
 end
 nothing # hide
@@ -128,10 +128,10 @@ I_R = zeros(length(t))
 I_L = zeros(length(t))
 
 for (i, ti) in enumerate(t)
-    JR = J_R_QO(ti)
-    JL = J_L_QO(ti)
-    I_R[i] = real(expect(JR'JR, ρt[i]))
-    I_L[i] = real(expect(JL'JL, ρt[i]))
+    LR = L_R_QO(ti)
+    LL = L_L_QO(ti)
+    I_R[i] = real(expect(LR'LR, ρt[i]))
+    I_L[i] = real(expect(LL'LL, ρt[i]))
 end
 nothing # hide
 
@@ -162,34 +162,34 @@ nothing # hide
 
 # Materialize the lazy `TimeDependentSum` to a concrete operator at each time, so the
 # quantum-regression products below give a plain operator usable as the solver's initial state.
-J0(t) = dense(static_operator(J_R_QO(t)))
-J0_dag(t) = dagger(J0(t))
-J0_ref(t) = dense(static_operator(J_L_QO(t)))
-J0_ref_dag(t) = dagger(J0_ref(t))
+L0(t) = dense(static_operator(L_R_QO(t)))
+L0_dag(t) = dagger(L0(t))
+L0_ref(t) = dense(static_operator(L_L_QO(t)))
+L0_ref_dag(t) = dagger(L0_ref(t))
 
 for it1 = 1:(lT-1)
     ρ_t1 = ρt[it1]
 
     t_2, ρ_2 = timeevolution.master_dynamic(
         T[it1:end],
-        J0(T[it1]) * ρ_t1 * J0_dag(T[it1]),
+        L0(T[it1]) * ρ_t1 * L0_dag(T[it1]),
         input_output,
     )
 
     ## transmission
-    G2_ls = real.([expect(J0_dag(t_2[j]) * J0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
+    G2_ls = real.([expect(L0_dag(t_2[j]) * L0(t_2[j]), ρ_2[j]) for j = 1:length(t_2)])
     G2[it1, it1:end] = G2_ls
     G2[it1:end, it1] = G2_ls
 
     t_2_r, ρ_2_r = timeevolution.master_dynamic(
         T[it1:end],
-        J0_ref(T[it1]) * ρ_t1 * J0_ref_dag(T[it1]),
+        L0_ref(T[it1]) * ρ_t1 * L0_ref_dag(T[it1]),
         input_output,
     )
 
     ## reflection
     G2_ls_r = real.([
-        expect(J0_ref_dag(t_2_r[j]) * J0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)
+        expect(L0_ref_dag(t_2_r[j]) * L0_ref(t_2_r[j]), ρ_2_r[j]) for j = 1:length(t_2_r)
     ])
     G2_ref[it1, it1:end] = G2_ls_r
     G2_ref[it1:end, it1] = G2_ls_r

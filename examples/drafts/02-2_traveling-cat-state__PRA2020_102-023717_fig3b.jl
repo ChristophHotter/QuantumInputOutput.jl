@@ -38,7 +38,7 @@ H_s = p / 2 * (a'^2 + a^2) - K / 2 * (a'^2) * (a^2) + Δ * a' * a
 G_s = SLH(1, √(γ) * a, H_s)
 
 H = hamiltonian(G_s)
-J = jump_operator(G_s)[1]
+L = jump_operator(G_s)[1]
 nothing # hide
 
 # Next, we define the numerical parameters from Sec. II.D. The classical pump
@@ -89,11 +89,11 @@ dict_p = Dict([γ, K, Δ] .=> [γ_, K_, Δ_])
 dict_p_t = Dict(p => p_t)
 
 H_QO = to_numeric(H, b1; parameter = dict_p, time_parameter = dict_p_t)
-J_QO = to_numeric(J, b1; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L, b1; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output_1(t, ρ)
     Ht = H_QO(t)
-    J = [J_QO(t)]
+    J = [L_QO(t)]
     return Ht, J, dagger.(J)
 end
 
@@ -102,8 +102,8 @@ t_1, ρt_1 = timeevolution.master_dynamic(T, ψ0, input_output_1)
 nothing # hide
 
 a_qo = destroy(bc)
-Js(t) = √(γ_) * a_qo
-g1_m = correlation_matrix(T, ρt_1, input_output_1, Js)
+Ls(t) = √(γ_) * a_qo
+g1_m = correlation_matrix(T, ρt_1, input_output_1, Ls)
 
 F = eigen(g1_m)
 n_avg = real.(F.values) * ΔT
@@ -127,7 +127,7 @@ G_v = SLH(1, g_v * av, 0)
 G = G_s2 ▷ G_v
 
 H_2 = hamiltonian(G)
-J_2 = jump_operator(G)[1]
+L_2 = jump_operator(G)[1]
 
 gv_t = coupling_output(v_mode, T)
 dict_p_t_2 = Dict(p => p_t, g_v => gv_t)
@@ -136,11 +136,11 @@ bv = FockBasis(n_cut)
 b2 = bc ⊗ bv
 
 H_QO_2 = to_numeric(H_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
-J_QO_2 = to_numeric(J_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
+L_QO_2 = to_numeric(L_2, b2; parameter = dict_p, time_parameter = dict_p_t_2)
 
 function input_output_2(t, ρ)
     Ht = H_QO_2(t)
-    J = [J_QO_2(t)]
+    J = [L_QO_2(t)]
     return Ht, J, dagger.(J)
 end
 

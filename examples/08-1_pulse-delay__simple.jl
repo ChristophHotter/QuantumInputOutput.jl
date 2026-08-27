@@ -49,7 +49,7 @@ G_v2 = concatenate(SLH(1, 0, 0), G_v)
 
 G_cas = cascade(G_u2, G_d, G_v2)
 H = hamiltonian(G_cas)
-J = jump_operator(G_cas)
+L = jump_operator(G_cas)
 nothing # hide
 
 #
@@ -83,11 +83,11 @@ bv = FockBasis(n)
 b = bu ⊗ bd ⊗ bv
 
 H_QO = to_numeric(H, b; time_parameter = dict_p_t)
-J_QO = [to_numeric(J[i], b; time_parameter = dict_p_t) for i = 1:length(J)]
+L_QO = [to_numeric(L[i], b; time_parameter = dict_p_t) for i = 1:length(L)]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
-    Jt = [J_QO[i](t) for i = 1:length(J_QO)]
+    Jt = [L_QO[i](t) for i = 1:length(L_QO)]
     return Ht, Jt, dagger.(Jt)
 end
 nothing # hide
@@ -150,12 +150,12 @@ H_int_sym = simplify(substitute(H_int_sym_, int_dict))
 
 #
 
-J_int_sym = simplify.(substitute.(J, Ref(int_dict)))
-J_int_sym[1]
+L_int_sym = simplify.(substitute.(L, Ref(int_dict)))
+L_int_sym[1]
 
 #
 
-J_int_sym[2]
+L_int_sym[2]
 
 #
 
@@ -203,19 +203,19 @@ operators = Dict(
 )
 
 H_int_QO = to_numeric(H_int_sym, b_int; time_parameter = dict_p_t_int, operators)
-J_int_QO = [
-    to_numeric(J_int_sym[i], b_int; time_parameter = dict_p_t_int, operators) for
-    i = 1:length(J_int_sym)
+L_int_QO = [
+    to_numeric(L_int_sym[i], b_int; time_parameter = dict_p_t_int, operators) for
+    i = 1:length(L_int_sym)
 ]
 ## H_int_QO = to_numeric(H_int_sym, b_int; time_parameter=dict_p_t_int) # hide
-## J_int_QO = [to_numeric(J_int_sym[i], b_int; time_parameter=dict_p_t_int) for i=1:length(J_int_sym)] # hide
+## L_int_QO = [to_numeric(L_int_sym[i], b_int; time_parameter=dict_p_t_int) for i=1:length(L_int_sym)] # hide
 nothing # hide
 
 #
 
 function input_output_int(t, ρ)
     Ht = H_int_QO(t)
-    Jt = [J_int_QO[i](t) for i = 1:length(J_int_QO)]
+    Jt = [L_int_QO[i](t) for i = 1:length(L_int_QO)]
     return Ht, Jt, dagger.(Jt)
 end
 

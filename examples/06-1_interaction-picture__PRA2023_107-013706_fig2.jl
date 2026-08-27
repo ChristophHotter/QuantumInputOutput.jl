@@ -42,7 +42,7 @@ H = hamiltonian(G_cas)
 
 #
 
-J = jump_operator(G_cas)[1]
+L = jump_operator(G_cas)[1]
 
 # Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian $H_{uv}$. 
 
@@ -68,7 +68,7 @@ H_int_sym = simplify(substitute(H_int_sym_, int_dict))
 
 #
 
-J_int_sym = simplify(substitute(J, int_dict))
+L_int_sym = simplify(substitute(L, int_dict))
 
 # The above Hamiltonian and Lindblad operator are the ones in the interaction picture of the virtual cavity interaction. 
 # We define the numerical parameters of the system, calculate the solution for the coefficient matrix $M(t)$ and solve the time evolution of the system. 
@@ -110,11 +110,11 @@ bv = FockBasis(5)
 b = bu ⊗ ba ⊗ bv
 
 H_int_QO = to_numeric(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
-J_QO = to_numeric(J_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+L_QO = to_numeric(L_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
 
 function input_output(t, ρ)
     Ht = H_int_QO(t)
-    J = [J_QO(t)]
+    J = [L_QO(t)]
     return Ht, J, dagger.(J)
 end
 nothing # hide

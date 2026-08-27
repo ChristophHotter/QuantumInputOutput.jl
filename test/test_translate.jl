@@ -169,7 +169,7 @@ mat(F, t) = dense(static_operator(F(t)))
 
     @testset "to_numeric SLH overload" begin
         G_sym = SLH(1, [sqrt(κ_R) * a * E], Δ * a' * a)
-        H_QO, J_QO = to_numeric(
+        H_QO, L_QO = to_numeric(
             G_sym,
             bc1;
             parameter = dict_p1,
@@ -178,10 +178,10 @@ mat(F, t) = dense(static_operator(F(t)))
         )
 
         @test H_QO isa TimeDependentSum
-        @test length(J_QO) == 1
-        @test J_QO[1] isa TimeDependentSum
+        @test length(L_QO) == 1
+        @test L_QO[1] isa TimeDependentSum
         @test sum(abs.((mat(H_QO, 0.4) - dense(Δn * dagger(a_QO) * a_QO)).data)) < 1e-8
-        @test sum(abs.((mat(J_QO[1], 0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) <
+        @test sum(abs.((mat(L_QO[1], 0.4) - dense(sqrt(κ_Rn) * a_QO * E_t(0.4))).data)) <
               1e-8
     end
 

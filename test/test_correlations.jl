@@ -12,7 +12,7 @@ using Test
 
     H = 0.0 * one(ba)
     J = [sqrt(γ) * σm]
-    Js = J[1]
+    Ls = J[1]
 
     T_end = 10 / γ
     T = collect(0.0:0.01:T_end)
@@ -23,10 +23,10 @@ using Test
     end
 
     _, ρt_dyn = timeevolution.master_dynamic(T, ψ0, f_const)
-    g1_dyn = correlation_matrix(T, ρt_dyn, f_const, Js)
+    g1_dyn = correlation_matrix(T, ρt_dyn, f_const, Ls)
 
     _, ρt_static = timeevolution.master(T, ψ0, H, J)
-    g1_static = correlation_matrix(T, ρt_static, H, J, Js)
+    g1_static = correlation_matrix(T, ρt_static, H, J, Ls)
 
     @test maximum(abs.(g1_dyn .- g1_static)) < 1e-8
 
@@ -46,16 +46,16 @@ using Test
     overlap_aligned = abs(sum(conj.(mode_exp) .* mode_num_aligned) * ΔT)
     @test overlap_aligned > 0.99
 
-    @testset "time-dependent Js rejected" begin
-        td_Js = TimeDependentSum([t -> 1.0 + 0im], J)
-        @test_throws ArgumentError correlation_matrix(T, ρt_static, H, J, td_Js)
+    @testset "time-dependent Ls rejected" begin
+        td_Ls = TimeDependentSum([t -> 1.0 + 0im], J)
+        @test_throws ArgumentError correlation_matrix(T, ρt_static, H, J, td_Ls)
     end
 
     @testset "time-dependent operator path matches static" begin
         H_td = TimeDependentSum([t -> 0.0 + 0im], [one(ba)])
         J_td = [TimeDependentSum([t -> sqrt(γ) + 0im], [σm])]
         _, ρt_td = timeevolution.master_dynamic(T, ψ0, H_td, J_td)
-        g1_td = correlation_matrix(T, ρt_td, H_td, J_td, Js)
+        g1_td = correlation_matrix(T, ρt_td, H_td, J_td, Ls)
         @test maximum(abs.(g1_td .- g1_static)) < 1e-8
     end
 end

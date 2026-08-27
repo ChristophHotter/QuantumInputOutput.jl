@@ -51,9 +51,9 @@ nothing # hide
 # second one to the transmitted right-moving output.
 
 H = hamiltonian(G_t)
-J = jump_operator(G_t)
-J_L = J[1]
-J_R = J[2]
+L = jump_operator(G_t)
+L_L = L[1]
+L_R = L[2]
 nothing # hide
 
 #
@@ -90,15 +90,15 @@ ba = NLevelBasis(2)
 b = tensor([ba for _ = 1:N]...)
 
 H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
-J_R_QO = to_numeric(J_R, b; parameter = dict_p, time_parameter = dict_p_t)
-J_L_QO = to_numeric(J_L, b; parameter = dict_p, time_parameter = dict_p_t)
+L_R_QO = to_numeric(L_R, b; parameter = dict_p, time_parameter = dict_p_t)
+L_L_QO = to_numeric(L_L, b; parameter = dict_p, time_parameter = dict_p_t)
 
 σ_qo(α, i, j) = to_numeric(σ(α, i, j), b)
 J_add = [√(γ_add[i]) * σ_qo(i, 1, 2) for i = 1:N]
 
 function input_output(t, ρ)
     Ht = H_QO(t)
-    J = [J_R_QO(t), J_L_QO(t), J_add...]
+    J = [L_R_QO(t), L_L_QO(t), J_add...]
     return Ht, J, dagger.(J)
 end
 nothing # hide
@@ -116,10 +116,10 @@ I_R = zeros(length(t))
 I_L = zeros(length(t))
 
 for (i, ti) in enumerate(t)
-    JR = J_R_QO(ti)
-    JL = J_L_QO(ti)
-    I_R[i] = real(expect(JR' * JR, ρt[i]))
-    I_L[i] = real(expect(JL' * JL, ρt[i]))
+    LR = L_R_QO(ti)
+    LL = L_L_QO(ti)
+    I_R[i] = real(expect(LR' * LR, ρt[i]))
+    I_L[i] = real(expect(LL' * LL, ρt[i]))
 end
 nothing # hide
 
