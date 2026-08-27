@@ -1,6 +1,6 @@
 # # Input-Output Analysis of Quantum Dot SUPER Excitation
 #
-# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., TODO](https://arxiv.org/). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
+# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism. Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
 
 # In the first part we describe the dynamics within a cumulant expansion approach for coherent light. We then transform into the interaction-picture of the input and output cavities, which allows us to describe the interaction with large Fock states. 
 
@@ -36,11 +36,11 @@ av2 = Destroy(h, :a_v2, 5)
 @independent_variables t # Symbolic time variable
 
 ## SLH triplets
-G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
-G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_u2 = SLH(1, gu2'*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1'*au1, 0) # input cavity 1
 G_2lvl = SLH(1, √(γ)*s(1, 2), 0) # 2-level system
-G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
-G_v2 = SLH(1, gv2*av2, 0) # output cavity 2
+G_v1 = SLH(1, gv1'*av1, 0) # output cavity 1
+G_v2 = SLH(1, gv2'*av2, 0) # output cavity 2
 
 ## cascade SLH triplets 
 G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2)
@@ -193,8 +193,7 @@ p3 = plot(
     common...,
 )
 plot!(p3, t_cas, nu2_cas .+ nv2_cas .- nu2_cas[1]; color = :red, label = L"\mathrm{mode~2}")
-pl1 = plot(p1, p2, p3; layout = (3, 1), size = (800, 800))
-display(pl1)
+plot(p1, p2, p3; layout = (3, 1), size = (800, 800))
 
 # ## Interaction picture 
 
@@ -259,6 +258,7 @@ nu1_int = abs2.(sol_values(sol_int, au1, eqs_int))
 nu2_int = abs2.(sol_values(sol_int, au2, eqs_int))
 nv1_int = abs2.(sol_values(sol_int, av1, eqs_int))
 nv2_int = abs2.(sol_values(sol_int, av2, eqs_int))
+nothing # hide
 
 #
 
@@ -278,7 +278,6 @@ pl4 = plot(
     size = (800, 400),
 )
 plot!(pl4, t_int, nu2_int .- nu2_int[1]; color = :red, label = L"\mathrm{mode~2~(int.)}")
-display(pl4)
 
 # ## Fock state input 
 
@@ -311,7 +310,7 @@ function input_output(t, ρ)
     return Ht, J, QuantumOptics.dagger.(J)
 end
 
-# initial state
+## initial state
 ψu2 = fockstate(bu2, n2_fock)
 ψu1 = fockstate(bu1, n1_fock)
 ψs1 = nlevelstate(bs1, 1)
@@ -320,10 +319,11 @@ end
 ψ0 = tensor(ψu2, ψu1, ψs1, ψv1, ψv2)
 
 T_fock = [0:0.001:1;]*T[end]
-# t_fock, ρt_fock = timeevolution.master_dynamic(T_fock, ψ0, input_output; abstol, reltol)
+## t_fock, ρt_fock = timeevolution.master_dynamic(T_fock, ψ0, input_output; abstol, reltol)
 using Random
 Random.seed!(1) # hide
 t_fock, ρt_fock = timeevolution.mcwf_dynamic(T_fock, ψ0, input_output; abstol, reltol)
+nothing # hide
 
 # Due to the relatively long computation time of timeevolution.master_dynamic, we simulate a single trajectory with timeevolution.mcwf_dynamic.
 
@@ -376,7 +376,6 @@ plot!(
     label = L"\mathrm{Coherent: mode~2}",
 )
 pl3 = plot(p3_1, p3_2; layout = (2, 1), size = (800, 600))
-display(pl3)
 
 # Due to the vanishing relative phase of the Fock states, the oscillations disappear.
 
