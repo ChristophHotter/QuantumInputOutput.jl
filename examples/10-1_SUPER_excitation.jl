@@ -1,6 +1,6 @@
 # # Input-Output Analysis of Quantum Dot SUPER Excitation
 #
-# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism. Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
+# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., arXiv (2026)](https://doi.org/10.48550/arXiv.2608.28470). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
 
 # In the first part we describe the dynamics within a cumulant expansion approach for coherent light. We then transform into the interaction-picture of the input and output cavities, which allows us to describe the interaction with large Fock states. 
 
@@ -48,13 +48,13 @@ nothing # hide
 
 #
 
-## Hamiltonian and Lindbladian
+## Hamiltonian and jump operator
 Hcas = hamiltonian(G_cas)
 Lcas = jump_operator(G_cas)[1]
 Lcasd = adjoint(Lcas)
 nothing # hide 
 
-# To deal with time-dependent functions in QuantumCumulants, we need to register them. Furthermore, due to a problem for the conjugate of registered functions (conj is ignored), we first need to create the adjoint of the jump operators and then substitute the time-dependent functions. 
+# To deal with time-dependent functions in [QuantumCumulants.jl](https://github.com/qojulia/QuantumCumulants.jl), we need to register them. 
 
 ## Time-dependent couplings
 @register_symbolic gu1_t(t)
@@ -197,9 +197,11 @@ p3 = plot(
 plot!(p3, t_cas, nu2_cas .+ nv2_cas .- nu2_cas[1]; color = :red, label = L"\mathrm{mode~2}")
 plot(p1, p2, p3; layout = (3, 1), size = (600, 700))
 
+# We can see the net photon-number change of −2 in one mode and +1 in the other. 
+
 # ## Interaction picture 
 
-## In the following, we will transform into the interaction picture of the virtual cavities. 
+# In the following, we will transform into the interaction picture of the virtual cavities and solve the dynamics. 
 
 ## Interaction picture: cavity dynamics
 H_uv = hamiltonian(▷(G_u2, G_u1, G_v1, G_v2))
@@ -278,6 +280,8 @@ pl4 = plot(
 )
 plot!(pl4, t_int, nu2_int .- nu2_int[1]; color = :red, label = L"\mathrm{mode~2~(int.)}")
 
+# In the interaction picture we can directly observe the photon number change of -2 in one mode and +1 in the other.
+
 # ## Fock state input 
 
 # Let us now compare the dynamics for coherent input pulses with the case of incident non-classical photon number eigenstates (Fock states), where we choose states with the same mean photon numbers as for the coherent pulses. Since in the atom-field interaction only a few photons are exchanged, the quantum states of the excitation pulses are only changed by a couple of photons, we only need to keep a couple of nearby Fock states in the computational basis.
@@ -301,7 +305,7 @@ dict_fock = Dict([g_ls; M_ls] .=> [g_t_ls; M_t_ls])
 H_int_fock = to_numeric(H_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 L_int_fock = to_numeric(L_int, b; parameter = Dict(γ=>γ_), time_parameter = dict_fock)
 
-## To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
+# To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
 
 function input_output(t, ρ)
     Ht = H_int_fock(t)
@@ -324,7 +328,7 @@ Random.seed!(1) # hide
 t_fock, ρt_fock = timeevolution.mcwf_dynamic(T_fock, ψ0, input_output; abstol, reltol)
 nothing # hide
 
-# Due to the relatively long computation time of timeevolution.master_dynamic, we simulate a single trajectory with timeevolution.mcwf_dynamic.
+# Due to the relatively long computation time of `timeevolution.master_dynamic`, we simulate a single trajectory with `timeevolution.mcwf_dynamic`.
 
 ## Expectation values
 s22_fock = real.(expect(s(2, 2), ρt_fock))

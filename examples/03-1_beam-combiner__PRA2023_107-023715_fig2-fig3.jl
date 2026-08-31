@@ -77,7 +77,7 @@ nothing # hide
 # To obtain the output modes we do not use the second input mode and the output mode cavity. 
 # However, to keep the example short we include them already from the beginning since they are needed later. 
 # To perform time consuming parameter scans one should merely use the necessary Hilbert spaces. In this case, this would correspond to one input cavity and the two-level system. 
-# The kwarg `operators` of the function [to_numeric](@ref) provides a convenient way to use predefined numerical operators, see the example `Two-sided Cavity with Atom`. 
+# The kwarg `operators` of the function [`to_numeric`](@ref) provides a convenient way to use predefined numerical operators, see the example `Two-sided Cavity with Atom`.
 
 ## numeric bases 
 bu2 = FockBasis(2)
