@@ -1,6 +1,6 @@
 # # Input-Output Analysis of Quantum Dot SUPER Excitation
 #
-# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., arXiv: (2026)](https://doi.org/). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
+# This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism [J. Kerber et al., arXiv (2026)](https://doi.org/10.48550/arXiv.2608.28470). Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other. 
 
 # In the first part we describe the dynamics within a cumulant expansion approach for coherent light. We then transform into the interaction-picture of the input and output cavities, which allows us to describe the interaction with large Fock states. 
 
