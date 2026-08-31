@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Two-sided Cavity with Atoms · QuantumInputOutput.jl</title><meta name="title" content="Two-sided Cavity with Atoms · QuantumInputOutput.jl"/><meta property="og:title" content="Two-sided Cavity with Atoms · QuantumInputOutput.jl"/><meta property="twitter:title" content="Two-sided Cavity with Atoms · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/04-1_two-sided-cavity_with-atom_coh-drive/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/04-1_two-sided-cavity_with-atom_coh-drive/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/04-1_two-sided-cavity_with-atom_coh-drive/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li class="is-active"><a class="tocitem" href>Two-sided Cavity with Atoms</a><ul class="internal"><li><a class="tocitem" href="#Empty-two-sided-cavity"><span>Empty two-sided cavity</span></a></li><li><a class="tocitem" href="#Two-sided-cavity-with-atoms"><span>Two-sided cavity with atoms</span></a></li><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Two-sided Cavity with Atoms</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Two-sided Cavity with Atoms</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/04-1_two-sided-cavity_with-atom_coh-drive.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Two-sided-Cavity-with-Atoms"><a class="docs-heading-anchor" href="#Two-sided-Cavity-with-Atoms">Two-sided Cavity with Atoms</a><a id="Two-sided-Cavity-with-Atoms-1"></a><a class="docs-heading-anchor-permalink" href="#Two-sided-Cavity-with-Atoms" title="Permalink"></a></h1><p>In this example, we first simulate a continuously coherently driven empty two-sided cavity where we see the transmission and reflection spectrum. Afterwards, we couple <span>$N=2$</span> two-level system resonantly to the cavity to investigate the transmission and reflection of a weak coherent pulse.</p><p>As usual, we start by loading the packages and specifying the system. We already include the Hilbert space for <span>$N$</span> atoms here. However, for the numerical simulation of the empty cavity we provide a dictionary of the actual QuantumOptics.jl operators we want to use.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumOptics
+using Plots</code></pre><pre><code class="language-julia hljs">@rnumbers E κ_L κ_R Δ g γ
+Natoms = 2
+
+hc = FockSpace(:cavity)
+ha(i) = NLevelSpace(&quot;a_$i&quot;, 2)
+h = hc ⊗ tensor([ha(i) for i = 1:Natoms]...);
+
+a = Destroy(h, :a, 1) # cavity
+σ(α, i, j) = Transition(h, &quot;σ_$(α)&quot;, i, j, 1+α) # two-level atom α
+∑σ(i, j) = sum(σ(α, i, j) for α = 1:Natoms) # collective atomic operator</code></pre><h2 id="Empty-two-sided-cavity"><a class="docs-heading-anchor" href="#Empty-two-sided-cavity">Empty two-sided cavity</a><a id="Empty-two-sided-cavity-1"></a><a class="docs-heading-anchor-permalink" href="#Empty-two-sided-cavity" title="Permalink"></a></h2><p>We couple a classical drive into the cavity through the left mirror <span>$(\kappa_L)$</span>. The decay through the right mirror can be added in several ways: with the <code>concatenate</code> rule, including it already in the initial cavity SLH triple with a second Lindblad term or by simply including the decay term to the Lindblad by hand. In this example, we use the first option.</p><pre><code class="language-julia hljs">G_d = SLH(1, E, 0) # classical drive
+H_cavity = -Δ*a&#39;a
+G_c_L = SLH(1, [√(κ_L)*a], H_cavity)
+
+G_cav_L_drive = G_d ▷ G_c_L
+G_c_R = SLH(1, [√(κ_R)*a], 0)
+
+G_cav_L_R_drive = G_cav_L_drive ⊞ G_c_R</code></pre><p>Note that one needs to be careful to not double-count the Hamiltonian terms with the concatenation rule.</p><pre><code class="language-julia hljs">H1 = hamiltonian(G_cav_L_R_drive)</code></pre><p class="math-container">\[-0.5 i \sqrt{\kappa_{L}} E a^\dagger + 0.5 i \sqrt{\kappa_{L}} E a -1 \Delta a^\dagger a\]</p><pre><code class="language-julia hljs">L1_L = lindblad(G_cav_L_R_drive)[1]</code></pre><p class="math-container">\[\sqrt{\kappa_{L}} a + E\]</p><pre><code class="language-julia hljs">L1_R = lindblad(G_cav_L_R_drive)[2]</code></pre><p class="math-container">\[\sqrt{\kappa_{R}} a\]</p><p>Here, the usual classical cavity drive-term <span>$\sqrt{\kappa_L} E (a^\dagger + a)$</span> appears as a combination of Hamiltonian and Lindblad term. To solve the dynamics of the system we translate the symbolic expressions into numeric operators (matrices) of <a href="https://github.com/qojulia/QuantumOptics.jl">QuantumOptics.jl</a>. Since we do not want to include the basis of the atoms, we provide a dictionary of operators with the kwarg <code>operators</code> in the function <a href="../../api/#QuantumInputOutput.translate_qo"><code>translate_qo</code></a>.</p><pre><code class="language-julia hljs"># numerical parameters
+En = 0.5
+κ_Rn = 1.0
+κ_Ln = 1.0
+Δn = 0.0
+Δn_ls = [-5.0:0.1:5.0;];
+lΔ=length(Δn_ls)
+
+p_sym = [E, κ_R, κ_L, Δ]
+p_num = [En, κ_Rn, κ_Ln, Δn]
+dict_p1 = Dict(p_sym .=&gt; p_num)
+
+# cavity-only operators
+bc1 = FockBasis(4)
+a_QO = destroy(bc1)
+ops_dict = Dict([a, a&#39;] .=&gt; [a_QO, dagger(a_QO)])
+
+H1_QO = translate_qo(H1, bc1; parameter = dict_p1, operators = ops_dict)
+L1_L_QO = translate_qo(L1_L, bc1; parameter = dict_p1, operators = ops_dict)
+L1_R_QO = translate_qo(L1_R, bc1; parameter = dict_p1, operators = ops_dict)
+J1_QO = [L1_L_QO, L1_R_QO]</code></pre><pre><code class="language-julia hljs"># time evolution
+T = [0:0.01:1;]*20
+ψ0 = fockstate(bc1, 0)
+t_, ρt = timeevolution.master(T, ψ0, H1_QO, J1_QO)</code></pre><pre><code class="language-julia hljs">n_cavity = real(expect(a_QO&#39;a_QO, ρt))
+n_ref = real(expect(dagger(J1_QO[1])*J1_QO[1], ρt))
+n_trans = real(expect(dagger(J1_QO[2])*J1_QO[2], ρt))</code></pre><pre><code class="language-julia hljs">p1 = plot(t_, n_cavity; label = &quot;&quot;, xlabel = &quot;t&quot;, ylabel = &quot;cavity photons&quot;, grid = true)
+p2 = plot(t_, n_ref; label = &quot;reflection&quot;)
+plot!(p2, t_, n_trans; label = &quot;transmission&quot;, ls = :dash)
+plot!(p2; xlabel = &quot;t&quot;, ylabel = &quot;intensity rate&quot;, grid = true, legend = :best)
+plot(p1, p2; layout = (2, 1), size = (600, 500))</code></pre><img src="9e95dc08.svg" alt="Example block output"/><p>Now we scan the laser-cavity detuning <span>$\Delta$</span> to plot the transmission and reflection spectrum.</p><pre><code class="language-julia hljs">dict_p_Δ(Δn) = Dict(p_sym .=&gt; [En, κ_Rn, κ_Ln, Δn])
+H1_QO_Δ_(Δn) = translate_qo(H1, bc1; parameter = dict_p_Δ(Δn), operators = ops_dict)
+
+n_ref_Δ = zeros(lΔ)
+n_trans_Δ = zeros(lΔ)
+
+for it = 1:lΔ
+    Δn_ = Δn_ls[it]
+    t_it, ρt_it = timeevolution.master(T, ψ0, H1_QO_Δ_(Δn_), J1_QO)
+
+    n_ref_Δ[it] = real(expect(dagger(J1_QO[1])*J1_QO[1], ρt_it[end]))
+    n_trans_Δ[it] = real(expect(dagger(J1_QO[2])*J1_QO[2], ρt_it[end]))
+end</code></pre><pre><code class="language-julia hljs">p = plot(Δn_ls, n_ref_Δ; label = &quot;reflection&quot;)
+plot!(p, Δn_ls, n_trans_Δ; label = &quot;transmission&quot;, ls = :dash)
+plot!(p; xlabel = &quot;Δ&quot;, grid = true, legend = :best, size = (600, 350))
+p</code></pre><img src="7638645c.svg" alt="Example block output"/><h2 id="Two-sided-cavity-with-atoms"><a class="docs-heading-anchor" href="#Two-sided-cavity-with-atoms">Two-sided cavity with atoms</a><a id="Two-sided-cavity-with-atoms-1"></a><a class="docs-heading-anchor-permalink" href="#Two-sided-cavity-with-atoms" title="Permalink"></a></h2><p>In the following, we include <span>$N=2$</span> two-level atoms in the cavity and simulate the transmission and reflection of a coherent Gaussian pulse with a mean photon number of <span>$|\alpha|^2 = 1/10$</span>. We assume that the atoms are on resonance with the cavity, i.e. <span>$\Delta = \Delta_c = \Delta_a$</span>.</p><pre><code class="language-julia hljs">H_ac = -Δ*(a&#39;a + ∑σ(2, 2)) + g*(a&#39;∑σ(1, 2) + a*∑σ(2, 1))
+G_ac = SLH(1, √κ_L*a, H_ac)
+G_ac_drive = (G_d ▷ G_ac) ⊞ SLH(1, √κ_R*a, 0)</code></pre><pre><code class="language-julia hljs">H2 = G_ac_drive.hamiltonian</code></pre><p class="math-container">\[-1 \Delta {\sigma_1}^{{22}} -1 \Delta {\sigma_2}^{{22}} -1 \Delta a^\dagger a + g a^\dagger {\sigma_1}^{{12}} + g a^\dagger {\sigma_2}^{{12}} + g a {\sigma_1}^{{21}} + g a {\sigma_2}^{{21}} -0.5 i \sqrt{\kappa_{L}} E a^\dagger + 0.5 i \sqrt{\kappa_{L}} E a\]</p><pre><code class="language-julia hljs">L2_L = G_ac_drive.lindblad[1]</code></pre><p class="math-container">\[\sqrt{\kappa_{L}} a + E\]</p><pre><code class="language-julia hljs">L2_R = G_ac_drive.lindblad[2]</code></pre><p class="math-container">\[\sqrt{\kappa_{R}} a\]</p><pre><code class="language-julia hljs"># numerical parameter
+κ_Rn2 = κ_Ln2 = 2π*1
+gn2 = 2π*0.4
+Δn2 = 0.0
+γn = 2π*0.1
+
+p_sym2 = [κ_R, κ_L, Δ, g]
+p_num2 = [κ_Rn2, κ_Ln2, Δn2, gn2]
+
+σp = 10/κ_Ln2 # pulse width
+Tp = 4σp # pulse peak
+Tend = 3Tp
+α0 = √(0.1) # √ of total photon number
+Ω0 = α0*2*√(κ_Ln2)/(π^(1/4)*√(σp))
+Ω1(t) = Ω0/2*exp(-(t-Tp)^2 / (2*σp^2))
+E_t(t) = Ω1(t)/√(κ_Ln2)
+
+T = [0:0.001:1;]*Tend
+ΔT = T[2] - T[1]
+n_pulse = round(sum(abs2.(E_t.(T)))*ΔT, digits = 7)
+@show n_pulse
+
+dict_p2 = Dict(p_sym2 .=&gt; p_num2)
+dict_p_t2 = Dict([E, conj(E)] .=&gt; [E_t, E_t])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">n_pulse = 0.1</code></pre><pre><code class="language-julia hljs"># numeric bases
+bc1 = FockBasis(4)
+ba = NLevelBasis(2)
+b = bc1 ⊗ tensor([ba for i = 1:Natoms]...)
+
+a_QO2 = to_numeric(a, b)
+σ_QO(α, i, j) = to_numeric(σ(α, i, j), b)
+
+# translate to numeric Hamiltonian and Lindblad
+H_QO = translate_qo(H2, b; parameter = dict_p2, time_parameter = dict_p_t2)
+L2_L_QO = translate_qo(L2_L, b; parameter = dict_p2, time_parameter = dict_p_t2)
+L2_R_QO = translate_qo(L2_R, b; parameter = dict_p2)
+
+# additional atomic decay into free space
+J_add = [√(γn)*σ_QO(α, 1, 2) for α = 1:Natoms]
+
+function input_output(t, ρ)
+    H = H_QO(t)
+    J = [L2_L_QO(t), L2_R_QO, J_add...]
+    return H, J, dagger.(J)
+end</code></pre><pre><code class="language-julia hljs"># time evolution
+ψ0 = fockstate(bc1, 0) ⊗ tensor([nlevelstate(ba, 1) for i = 1:Natoms]...)
+t2_, ρt2 = timeevolution.master_dynamic(T, ψ0, input_output)</code></pre><pre><code class="language-julia hljs">L2_L_QO_dag(t) = dagger(L2_L_QO(t))
+l_t = length(t2_)
+n_trans2 = zeros(l_t)
+n_ref2 = zeros(l_t)
+for it = 1:l_t
+    n_trans2[it] = abs(expect(dagger(L2_R_QO)*L2_R_QO, ρt2[it]))
+    n_ref2[it] = abs(expect(L2_L_QO_dag(t2_[it])*L2_L_QO(t2_[it]), ρt2[it]))
+end
+
+p = plot(
+    t2_,
+    n_trans2;
+    label = &quot;transmission = $(round(sum(n_trans2) * ΔT / n_pulse * 100))%&quot;,
+)
+plot!(
+    p,
+    t2_,
+    n_ref2;
+    ls = :dash,
+    label = &quot;reflection = $(round(sum(n_ref2) * ΔT / n_pulse * 100))%&quot;,
+)
+plot!(p; xlabel = &quot;t&quot;, legend = :best, grid = true, size = (600, 350))
+p</code></pre><img src="d0151639.svg" alt="Example block output"/><p>We can see that only about 5% is transmitted and 71% are reflected. The rest is scattered into free space by the atoms.</p><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><p>These results were obtained using the following versions:</p><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [
+        &quot;QuantumInputOutput&quot;,
+        &quot;SecondQuantizedAlgebra&quot;,
+        &quot;QuantumOptics&quot;,
+        &quot;QuantumCumulants&quot;,
+        &quot;Plots&quot;,
+    ],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.6
+Commit 15346901f00 (2026-04-09 19:20 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 9V74 80-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver4)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.6
+<span class="sgr33">⌅</span> <span class="sgr90">[35bcea6d] </span>QuantumCumulants v0.4.3
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.1.0 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.6
+<span class="sgr33">⌅</span> <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.4.5
+<span class="sgr36"><span class="sgr1">Info</span></span> Packages marked with <span class="sgr33">⌅</span> have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">« Perfect Splitting and Combining of a Two-photon Pulse</a><a class="docs-footer-nextpage" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 25 June 2026 13:03">Thursday 25 June 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

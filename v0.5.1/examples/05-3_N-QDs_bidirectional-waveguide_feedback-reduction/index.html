@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Bi-Directional Waveguide via Feedback Reduction · QuantumInputOutput.jl</title><meta name="title" content="Bi-Directional Waveguide via Feedback Reduction · QuantumInputOutput.jl"/><meta property="og:title" content="Bi-Directional Waveguide via Feedback Reduction · QuantumInputOutput.jl"/><meta property="twitter:title" content="Bi-Directional Waveguide via Feedback Reduction · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/05-3_N-QDs_bidirectional-waveguide_feedback-reduction/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/05-3_N-QDs_bidirectional-waveguide_feedback-reduction/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/05-3_N-QDs_bidirectional-waveguide_feedback-reduction/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li class="is-active"><a class="tocitem" href>Bi-Directional Waveguide via Feedback Reduction</a><ul class="internal"><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Bi-Directional Waveguide via Feedback Reduction</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Bi-Directional Waveguide via Feedback Reduction</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/05-3_N-QDs_bidirectional-waveguide_feedback-reduction.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Bi-Directional-Waveguide-via-Feedback-Reduction"><a class="docs-heading-anchor" href="#Bi-Directional-Waveguide-via-Feedback-Reduction">Bi-Directional Waveguide via Feedback Reduction</a><a id="Bi-Directional-Waveguide-via-Feedback-Reduction-1"></a><a class="docs-heading-anchor-permalink" href="#Bi-Directional-Waveguide-via-Feedback-Reduction" title="Permalink"></a></h1><p>This example reconstructs the <code>N=2</code> bidirectional-waveguide model using the SLH feedback reduction rule. The resulting Hamiltonian and Lindblad operators are then used to simulate the transmitted and reflected intensities for a coherent input pulse.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using Symbolics: Symbolics
+using QuantumOptics
+using QuantumOpticsBase: dagger
+using Plots
+using LinearAlgebra</code></pre><pre><code class="language-julia hljs">N = 2
+
+# symbolic Hilbert space
+ha(i) = NLevelSpace(Symbol(&quot;a$(i)&quot;), 2)
+h = tensor([ha(i) for i = 1:N]...)
+
+# symbolic operators
+σ(α, i, j) = Transition(h, Symbol(&quot;σ_$(α)&quot;), i, j, α)
+
+# symbolic parameters
+γR(i) = Symbolics.variable(Symbol(&quot;γ^{($(i))}_R&quot;); T = Real)
+γL(i) = Symbolics.variable(Symbol(&quot;γ^{($(i))}_L&quot;); T = Real)
+Δ(i) = Symbolics.variable(Symbol(&quot;Δ_{$(i)}&quot;); T = Real)
+ϕ(i, j) = Symbolics.variable(Symbol(&quot;ϕ_{$(i)$(j)}&quot;); T = Real)
+Ein = Symbolics.variable(Symbol(&quot;E_{in}&quot;); T = Real)</code></pre><p>Each quantum dot is treated as a two-port component: port 1 couples to the right-moving field and port 2 couples to the left-moving field. We concatenate the source, the two dots, and the phase shifter, and then eliminate the internal waveguide links with six feedback reductions.</p><pre><code class="language-julia hljs">I2 = Matrix{Int}(I, 2, 2)
+G_in = SLH(I2, [Ein, 0], 0)
+G_qd(i) = SLH(I2, [√(γR(i)) * σ(i, 1, 2), √(γL(i)) * σ(i, 1, 2)], -Δ(i) * σ(i, 2, 2))
+G_phase(i, j) = SLH([exp(1im * ϕ(i, j)) 0; 0 exp(1im * ϕ(i, j))], [0, 0], 0)
+
+G_unc = G_in ⊞ G_qd(1) ⊞ G_phase(1, 2) ⊞ G_qd(2)
+G_t = feedback(G_unc, 1 =&gt; 3, 3 =&gt; 5, 5 =&gt; 7, 8 =&gt; 6, 6 =&gt; 4, 4 =&gt; 2)</code></pre><p>The reduced model has two external ports. In the remaining port order, the first Lindblad operator corresponds to the reflected left-moving output and the second one to the transmitted right-moving output.</p><pre><code class="language-julia hljs">H = hamiltonian(G_t)
+J = jump_operator(G_t)
+J_L = J[1]
+J_R = J[2]</code></pre><pre><code class="language-julia hljs">γ_ = 1.0
+β = 0.9
+γRn = fill(γ_ * β / 2, N)
+γLn = fill(γ_ * β / 2, N)
+γ_add = fill(γ_ * (1 - β), N)
+Δn = fill(0.0, N)
+ϕn = fill(π / 10, max(N - 1, 0))
+
+σt = 0.8
+α0 = √(0.1)
+t0 = 4σt
+Tend = 3t0
+u1(t) = 1 / (sqrt(σt) * π^(1 / 4)) * exp(-(t - t0)^2 / (2 * σt^2))
+Ein_t(t) = α0 * u1(t)
+
+p_sym = [
+    [γR(i) for i = 1:N];
+    [γL(i) for i = 1:N];
+    [Δ(i) for i = 1:N];
+    [ϕ(i, i + 1) for i = 1:(N-1)]
+]
+p_num = [γRn; γLn; Δn; ϕn]
+dict_p = Dict(p_sym .=&gt; p_num)
+dict_p_t = Dict(Ein =&gt; Ein_t)</code></pre><pre><code class="language-julia hljs">ba = NLevelBasis(2)
+b = tensor([ba for _ = 1:N]...)
+
+H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+J_R_QO = to_numeric(J_R, b; parameter = dict_p, time_parameter = dict_p_t)
+J_L_QO = to_numeric(J_L, b; parameter = dict_p, time_parameter = dict_p_t)
+
+σ_qo(α, i, j) = to_numeric(σ(α, i, j), b)
+J_add = [√(γ_add[i]) * σ_qo(i, 1, 2) for i = 1:N]
+
+function input_output(t, ρ)
+    Ht = H_QO(t)
+    J = [J_R_QO(t), J_L_QO(t), J_add...]
+    return Ht, J, dagger.(J)
+end</code></pre><pre><code class="language-julia hljs">T = collect(0.0:0.005:1.0) .* Tend
+ψ0 = tensor([nlevelstate(ba, 1) for _ = 1:N]...)
+t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)</code></pre><pre><code class="language-julia hljs">I_R = zeros(length(t))
+I_L = zeros(length(t))
+
+for (i, ti) in enumerate(t)
+    JR = J_R_QO(ti)
+    JL = J_L_QO(ti)
+    I_R[i] = real(expect(JR&#39; * JR, ρt[i]))
+    I_L[i] = real(expect(JL&#39; * JL, ρt[i]))
+end</code></pre><pre><code class="language-julia hljs">p = plot(t, I_R; label = &quot;Transmission&quot;)
+plot!(p, t, I_L; label = &quot;Reflection&quot;)
+plot!(p, t, abs2.(Ein_t.(t)); color = :grey, ls = :dash, label = &quot;Input&quot;)
+plot!(
+    p;
+    xlabel = &quot;time&quot;,
+    ylabel = &quot;intensity&quot;,
+    legend = :best,
+    grid = true,
+    size = (500, 320),
+)
+p</code></pre><img src="c33dcb1c.svg" alt="Example block output"/><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><p>These results were obtained using the following versions:</p><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [&quot;QuantumInputOutput&quot;, &quot;SecondQuantizedAlgebra&quot;, &quot;QuantumOptics&quot;, &quot;Plots&quot;],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.7
+Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 9V74 80-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver4)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.7
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.5.1 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.8
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.10.0</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">« Quantum Pulse Bi-Directional Waveguide</a><a class="docs-footer-nextpage" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 24 August 2026 21:05">Monday 24 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

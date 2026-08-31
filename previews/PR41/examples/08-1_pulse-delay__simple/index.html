@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Simple Pulse Delay with a Virtual Cavity · QuantumInputOutput.jl</title><meta name="title" content="Simple Pulse Delay with a Virtual Cavity · QuantumInputOutput.jl"/><meta property="og:title" content="Simple Pulse Delay with a Virtual Cavity · QuantumInputOutput.jl"/><meta property="twitter:title" content="Simple Pulse Delay with a Virtual Cavity · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/08-1_pulse-delay__simple/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/08-1_pulse-delay__simple/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/08-1_pulse-delay__simple/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li class="is-active"><a class="tocitem" href>Simple Pulse Delay with a Virtual Cavity</a><ul class="internal"><li><a class="tocitem" href="#Interaction-picture-for-the-input-and-delay-cavities"><span>Interaction picture for the input and delay cavities</span></a></li><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Simple Pulse Delay with a Virtual Cavity</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Simple Pulse Delay with a Virtual Cavity</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/08-1_pulse-delay__simple.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Simple-Pulse-Delay-with-a-Virtual-Cavity"><a class="docs-heading-anchor" href="#Simple-Pulse-Delay-with-a-Virtual-Cavity">Simple Pulse Delay with a Virtual Cavity</a><a id="Simple-Pulse-Delay-with-a-Virtual-Cavity-1"></a><a class="docs-heading-anchor-permalink" href="#Simple-Pulse-Delay-with-a-Virtual-Cavity" title="Permalink"></a></h1><p>In this example, a single-photon pulse is emitted from an input cavity, delayed by a virtual delay cavity, and finally captured by an output cavity. The delay cavity is driven by an incoming pulse <code>u(t)</code> and simultaneously emits a delayed pulse <code>u(t-τ)</code> using the pulse-shaping couplings introduced in <a href="https://journals.aps.org/pra/abstract/10.1103/3f3w-jmj8">V. R. Christiansen and K. Mølmer, Phys. Rev. A 113, 013730 (2026)</a>.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using Symbolics: Symbolics
+using QuantumOptics
+using QuantumOpticsBase: dagger
+using SymbolicUtils
+using LinearAlgebra
+using Plots
+using LaTeXStrings</code></pre><pre><code class="language-julia hljs"># symbolic Hilbert space
+hu = FockSpace(:u)
+hd = FockSpace(:d)
+hv = FockSpace(:v)
+h = hu ⊗ hd ⊗ hv
+
+# symbolic operators
+au = Destroy(h, :a_u, 1)
+ad = Destroy(h, :a_d, 2)
+av = Destroy(h, :a_v, 3)
+
+# symbolic parameters
+@variables g_u::Number g_in::Number g_out::Number g_v::Number</code></pre><p>The input cavity couples (<span>$g_u(t)&#39;*a_u$</span>) into the input port of the delay cavity (<span>$g_{in}(t)*a_d$</span>) and the delay cavity couples the photons via the output port (<span>$g_{out}(t)*a_d$</span>) into the the output cavity (<span>$g_v(t)&#39;*a_v$</span>). This leads to the following cascade of SLH elements.</p><pre><code class="language-julia hljs">G_u = SLH(1, g_u&#39;*au, 0)
+G_u2 = concatenate(G_u, SLH(1, 0, 0))
+
+S2 = Matrix(I, 2, 2)
+G_d = SLH(S2, [g_in*ad, g_out*ad], 0)
+
+G_v = SLH(1, g_v&#39;*av, 0)
+G_v2 = concatenate(SLH(1, 0, 0), G_v)
+
+G_cas = cascade(G_u2, G_d, G_v2)
+H = hamiltonian(G_cas)
+L = lindblad(G_cas)</code></pre><pre><code class="language-julia hljs"># short pulse delay
+σ = 1.0
+tp = 6*σ
+τ = 0.5σ # pulse delay
+u(t) = 1/(√(σ)*π^(1/4)) * exp(-(t - tp)^2 / (2*σ^2))
+u_del(t_) = u(t_ - τ)
+
+Tend = 2tp + τ
+dt = Tend/5e2
+T = [0:dt:Tend;]
+
+gu_ = coupling_input(u, T)
+gout_ = coupling_delay_out(u_del, u, T)
+gin_ = coupling_delay_in(u_del, u, T)
+gv_ = coupling_output(u_del, T)
+
+dict_p_t = Dict([g_u, g_out, g_in, g_v] .=&gt; [gu_, gout_, gin_, gv_])</code></pre><pre><code class="language-julia hljs"># numeric bases
+n = 3
+bu = FockBasis(n)
+bd = FockBasis(n)
+bv = FockBasis(n)
+b = bu ⊗ bd ⊗ bv
+
+H_QO = to_numeric(H, b; time_parameter = dict_p_t)
+L_QO = [to_numeric(L[i], b; time_parameter = dict_p_t) for i = 1:length(L)]
+
+function input_output(t, ρ)
+    Ht = H_QO(t)
+    Jt = [L_QO[i](t) for i = 1:length(L_QO)]
+    return Ht, Jt, dagger.(Jt)
+end</code></pre><pre><code class="language-julia hljs"># time evolution
+ψ0 = fockstate(bu, n) ⊗ fockstate(bd, 0) ⊗ fockstate(bv, 0)
+t_, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+
+au_qo = to_numeric(au, b)
+ad_qo = to_numeric(ad, b)
+av_qo = to_numeric(av, b)
+
+nu = real.(expect(dagger(au_qo)*au_qo, ρt))
+nd = real.(expect(dagger(ad_qo)*ad_qo, ρt))
+nv = real.(expect(dagger(av_qo)*av_qo, ρt))</code></pre><pre><code class="language-julia hljs">p = plot(T, nu; label = L&quot;\langle a_u^\dagger a_u \rangle&quot;)
+plot!(p, T, nd; label = L&quot;\langle a_d^\dagger a_d \rangle&quot;)
+plot!(p, T, nv; label = L&quot;\langle a_v^\dagger a_v \rangle&quot;)
+plot!(
+    p;
+    xlabel = &quot;time&quot;,
+    ylabel = &quot;mean photon number&quot;,
+    grid = true,
+    legend = :best,
+    size = (500, 300),
+)
+p</code></pre><img src="43d26b7e.svg" alt="Example block output"/><p>We can see that the pulse is perfectly absorbed by the delayed output mode <span>$v(t) = u(t-\tau)$</span></p><h2 id="Interaction-picture-for-the-input-and-delay-cavities"><a class="docs-heading-anchor" href="#Interaction-picture-for-the-input-and-delay-cavities">Interaction picture for the input and delay cavities</a><a id="Interaction-picture-for-the-input-and-delay-cavities-1"></a><a class="docs-heading-anchor-permalink" href="#Interaction-picture-for-the-input-and-delay-cavities" title="Permalink"></a></h2><p>Introducing a separate cavity to delay the pulse can be a big disadvantage if one has multiple modes. To eliminate the delay cavity, we can transform into the interaction picture of the output and delay cavity coupling. This is, however, only possible if the delay is larger than the pulse, because only then we have <span>$g_{in}(t) \approx g_{v=u}(t)$</span>. Nevertheless, since in most cases only the relative delay between different modes is crucial, e.g. for two arms of an interferometer, we can simply add a constant delay <span>$T_c \gg \sigma$</span> to all modes.</p><pre><code class="language-julia hljs">G_d_in = SLH(S2, [g_in*ad, 0], 0)
+H_ud = hamiltonian(cascade(G_u2, G_d_in))
+H_int_sym_ = simplify(H - H_ud)
+
+M(i, j) = Symbolics.variable(Symbol(&quot;M_{$(i)$(j)}&quot;); T = Complex{Real})
+a0_ls = [au, ad]
+la = length(a0_ls)
+a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
+
+int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=&gt; [a_int_ls; adjoint.(a_int_ls)])</code></pre><pre><code class="language-julia hljs">H_int_sym = simplify(substitute(H_int_sym_, int_dict))</code></pre><p class="math-container">\[0.5 ~ \mathtt{g_{out}} ~ \mathtt{g_{v}} ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) - 0.5 ~ \mathtt{g_{out}} ~ \mathtt{g_{v}} ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) ~ \mathit{i} a_{\mathrm{u}}a_{\mathrm{v}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{g_{out}} \right) ~ \mathrm{conj}\left( \mathtt{g_{v}} \right) ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) + 0.5 ~ \mathrm{conj}\left( \mathtt{g_{out}} \right) ~ \mathrm{conj}\left( \mathtt{g_{v}} \right) ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) ~ \mathit{i} a_{\mathrm{u}}^{\dagger}a_{\mathrm{v}} + 0.5 ~ \mathtt{g_{out}} ~ \mathtt{g_{v}} ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) - 0.5 ~ \mathtt{g_{out}} ~ \mathtt{g_{v}} ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) ~ \mathit{i} a_{\mathrm{d}}a_{\mathrm{v}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{g_{out}} \right) ~ \mathrm{conj}\left( \mathtt{g_{v}} \right) ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) + 0.5 ~ \mathrm{conj}\left( \mathtt{g_{out}} \right) ~ \mathrm{conj}\left( \mathtt{g_{v}} \right) ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) ~ \mathit{i} a_{\mathrm{d}}^{\dagger}a_{\mathrm{v}}\]</p><pre><code class="language-julia hljs">L_int_sym = simplify.(substitute.(L, Ref(int_dict)))
+L_int_sym[1]</code></pre><p class="math-container">\[\mathrm{conj}\left( \mathtt{g_{u}} \right) ~ \mathrm{real}\left( \mathtt{M_{{11}}} \right) + \mathtt{g_{in}} ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) + \left( \mathrm{conj}\left( \mathtt{g_{u}} \right) ~ \mathrm{imag}\left( \mathtt{M_{{11}}} \right) + \mathtt{g_{in}} ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) \right) ~ \mathit{i} a_{\mathrm{u}} + \mathrm{conj}\left( \mathtt{g_{u}} \right) ~ \mathrm{real}\left( \mathtt{M_{{12}}} \right) + \mathtt{g_{in}} ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) + \left( \mathrm{conj}\left( \mathtt{g_{u}} \right) ~ \mathrm{imag}\left( \mathtt{M_{{12}}} \right) + \mathtt{g_{in}} ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) \right) ~ \mathit{i} a_{\mathrm{d}}\]</p><pre><code class="language-julia hljs">L_int_sym[2]</code></pre><p class="math-container">\[\mathtt{g_{out}} ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) + \mathtt{g_{out}} ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) ~ \mathit{i} a_{\mathrm{u}} + \mathtt{g_{out}} ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) + \mathtt{g_{out}} ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) ~ \mathit{i} a_{\mathrm{d}} + \mathrm{conj}\left( \mathtt{g_{v}} \right) a_{\mathrm{v}}\]</p><pre><code class="language-julia hljs"># long pulse delay
+σ = 1.0
+tp = 6*σ
+τ = 6σ # pulse delay
+u(t) = 1/(√(σ)*π^(1/4)) * exp(-(t - tp)^2 / (2*σ^2))
+u_del(t_) = u(t_ - τ)
+
+Tend = 2tp + τ
+dt = Tend/5e2
+T = [0:dt:Tend;]
+
+gu_ = coupling_input(u, T)
+gout_ = coupling_delay_out(u_del, u, T)
+gin_ = coupling_delay_in(u_del, u, T)
+gv_ = coupling_output(u_del, T)</code></pre><pre><code class="language-julia hljs"># interaction-picture coefficient matrix M(t) for u ↔ d
+A_ud = coupling_matrix((gu_, gin_))
+M_t = solve_mode_evolution(A_ud, T)
+
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+M_t_ls = [t -&gt; M_t(t)[i, j] for i = 1:la for j = 1:la]
+
+p_t_sym = [g_u, g_in, g_out, g_v, M_ls...]
+p_t_num = [gu_, gin_, gout_, gv_, M_t_ls...]
+dict_p_t_int = Dict(p_t_sym .=&gt; p_t_num)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Any, Any} with 8 entries:
+  var&quot;M_{22}&quot; =&gt; #24
+  g_in        =&gt; PulseCoupling{LinearInterpolation{Vector{ComplexF64}, Vector{F…
+  var&quot;M_{12}&quot; =&gt; #24
+  g_out       =&gt; PulseCoupling{LinearInterpolation{Vector{ComplexF64}, Vector{F…
+  var&quot;M_{21}&quot; =&gt; #24
+  g_v         =&gt; PulseCoupling{LinearInterpolation{Vector{ComplexF64}, Vector{F…
+  g_u         =&gt; PulseCoupling{LinearInterpolation{Vector{ComplexF64}, Vector{F…
+  var&quot;M_{11}&quot; =&gt; #24</code></pre><p>The interaction picture eliminates the delay cavity <code>d</code>, so the numeric operators live on the two-mode basis <code>bu ⊗ bv</code> (with <code>ad</code> mapped to the identity). Build on that basis.</p><pre><code class="language-julia hljs">b_int = bu ⊗ bv
+au_int = destroy(bu) ⊗ one(bv)
+ad_int = one(bu ⊗ bv)
+av_int = one(bu) ⊗ destroy(bv)
+operators = Dict(
+    [au, au&#39;, ad, ad&#39;, av, av&#39;] .=&gt; [au_int, au_int&#39;, ad_int, ad_int&#39;, av_int, av_int&#39;],
+)
+
+H_int_QO = to_numeric(H_int_sym, b_int; time_parameter = dict_p_t_int, operators)
+L_int_QO = [
+    to_numeric(L_int_sym[i], b_int; time_parameter = dict_p_t_int, operators) for
+    i = 1:length(L_int_sym)
+]</code></pre><pre><code class="language-julia hljs">function input_output_int(t, ρ)
+    Ht = H_int_QO(t)
+    Jt = [L_int_QO[i](t) for i = 1:length(L_int_QO)]
+    return Ht, Jt, dagger.(Jt)
+end
+
+ψ0_int = fockstate(bu, 3) ⊗ fockstate(bv, 0)
+t_int, ρt_int = timeevolution.master_dynamic(T, ψ0_int, input_output_int)
+
+nu_int = real.(expect(dagger(au_int)*au_int, ρt_int))
+nv_int = real.(expect(dagger(av_int)*av_int, ρt_int))</code></pre><p>Above we introduced the unity matrix for the delay cavity operators which guarantees that it does not have an effect. We can see that the delayed pulse is perfectly absorbed.</p><pre><code class="language-julia hljs">p = plot(T, nu_int; label = L&quot;\langle a_u^\dagger a_u \rangle_{IP}&quot;)
+plot!(p, T, nv_int; label = L&quot;\langle a_v^\dagger a_v \rangle_{IP}&quot;)
+plot!(
+    p;
+    xlabel = &quot;time&quot;,
+    ylabel = &quot;mean photon number&quot;,
+    grid = true,
+    legend = :best,
+    size = (500, 300),
+)
+p</code></pre><img src="5e8d4dbc.svg" alt="Example block output"/><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [
+        &quot;QuantumInputOutput&quot;,
+        &quot;SecondQuantizedAlgebra&quot;,
+        &quot;QuantumOptics&quot;,
+        &quot;Plots&quot;,
+        &quot;LaTeXStrings&quot;,
+    ],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.6
+Commit 15346901f00 (2026-04-09 19:20 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 9V45 96-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver5)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[b964fa9f] </span>LaTeXStrings v1.4.0
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.6
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.4.1 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.6
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.10.0</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../07-2_hong-ou-mandel__quantum-pulse/">« Hong-Ou-Mandel Effect</a><a class="docs-footer-nextpage" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Thursday 6 August 2026 13:32">Thursday 6 August 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

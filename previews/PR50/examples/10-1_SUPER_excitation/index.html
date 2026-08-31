@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Input-Output Analysis of Quantum Dot SUPER Excitation · QuantumInputOutput.jl</title><meta name="title" content="Input-Output Analysis of Quantum Dot SUPER Excitation · QuantumInputOutput.jl"/><meta property="og:title" content="Input-Output Analysis of Quantum Dot SUPER Excitation · QuantumInputOutput.jl"/><meta property="twitter:title" content="Input-Output Analysis of Quantum Dot SUPER Excitation · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_SUPER_excitation/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_SUPER_excitation/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_SUPER_excitation/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Input-Output Analysis of Quantum Dot SUPER Excitation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Input-Output Analysis of Quantum Dot SUPER Excitation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/10-1_SUPER_excitation.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Input-Output-Analysis-of-Quantum-Dot-SUPER-Excitation"><a class="docs-heading-anchor" href="#Input-Output-Analysis-of-Quantum-Dot-SUPER-Excitation">Input-Output Analysis of Quantum Dot SUPER Excitation</a><a id="Input-Output-Analysis-of-Quantum-Dot-SUPER-Excitation-1"></a><a class="docs-heading-anchor-permalink" href="#Input-Output-Analysis-of-Quantum-Dot-SUPER-Excitation" title="Permalink"></a></h1><p>This example analyzes the SUPER excitation scheme for quantum dots with the input-output formalism <a href="https://arxiv.org/">J. Kerber et al., TODO</a>. Two red-detuned pulses allow for a close to 100% excitation of a two-level quantum emitter. At the microscopic level, the SUPER mechanism exhibits its nonlinear three-photon Raman-type character, leading to a net photon-number change of −2 in one mode and +1 in the other.</p><p>In the first part we describe the dynamics within a cumulant expansion approach for coherent light. We then transform into the interaction-picture of the input and output cavities, which allows us to describe the interaction with large Fock states.</p><p>We start by loading the needed packages and specifying the model.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumCumulants
+using ModelingToolkitBase
+using OrdinaryDiffEq
+using QuantumOptics
+using Plots
+using LaTeXStrings
+sol_values(sol, op, eqs) = get_solution(sol, op, eqs).(sol.t)
+
+# Hilbert spaces
+hu2 = FockSpace(:u2) # virtual input cavity (u2)
+hu1 = FockSpace(:u1) # virtual input cavity (u1)
+hs1 = NLevelSpace(:atom, 2) # TLS
+hv1 = FockSpace(:v1) # virtual output cavity (v1)
+hv2 = FockSpace(:v2) # virtual output cavity (v2)
+h = tensor(hu2, hu1, hs1, hv1, hv2)
+
+# Operators
+au2 = Destroy(h, :a_u2, 1)
+au1 = Destroy(h, :a_u1, 2)
+s(i, j) = Transition(h, :s, i, j)
+av1 = Destroy(h, :a_v1, 4)
+av2 = Destroy(h, :a_v2, 5)
+
+# Symbolic parameters: decay rate and virtual cavity couplings
+@variables γ::Real gu1::Number gu2::Number gv1::Number gv2::Number
+@independent_variables t # Symbolic time variable
+
+# SLH triplets
+G_u2 = SLH(1, gu2*au2, 0) # input cavity 2
+G_u1 = SLH(1, gu1*au1, 0) # input cavity 1
+G_2lvl = SLH(1, √(γ)*s(1, 2), 0) # 2-level system
+G_v1 = SLH(1, gv1*av1, 0) # output cavity 1
+G_v2 = SLH(1, gv2*av2, 0) # output cavity 2
+
+# cascade SLH triplets
+G_cas = ▷(G_u2, G_u1, G_2lvl, G_v1, G_v2)</code></pre><pre><code class="language-julia hljs"># Hamiltonian and Lindbladian
+Hcas = hamiltonian(G_cas)
+Jcas = jump_operator(G_cas)[1]
+Jcasd = adjoint(Jcas)</code></pre><p>To deal with time-dependent functions in QuantumCumulants, we need to register them. Furthermore, due to a problem for the conjugate of registered functions (conj is ignored), we first need to create the adjoint of the jump operators and then substitute the time-dependent functions.</p><pre><code class="language-julia hljs"># Time-dependent couplings
+@register_symbolic gu1_t(t)
+@register_symbolic gu2_t(t)
+@register_symbolic gv1_t(t)
+@register_symbolic gv2_t(t)
+
+g_ls = [gu2, gu1, gv1, gv2]
+gt_ls = [gu2_t(t), gu1_t(t), gv1_t(t), gv2_t(t)]
+dict_gt = Dict(g_ls .=&gt; gt_ls)
+
+# Insert time-dependence
+Hcas_t = substitute(Hcas, dict_gt)
+Jcas_t = substitute(Jcas, dict_gt)
+Jcasd_t = substitute(Jcasd, dict_gt)</code></pre><p>We calculate the coupling for the input and output cavities. The modified couplings of the second input and output modes are obtained with the function <a href="../../api/#QuantumInputOutput.effective_input_mode"><code>effective_input_mode</code></a> and <a href="../../api/#QuantumInputOutput.effective_output_mode"><code>effective_output_mode</code></a>, respectively. Due to the fast oscillations, the tolerance of the numeric solver needs to be improved. The parameters are taken from <a href="https://doi.org/10.1103/PRXQuantum.2.040354">T. K. Bracht et al., PRX Quantum 2, 040354 (2021)</a>.</p><pre><code class="language-julia hljs"># Time grid
+dt = 1e-4
+Tend = 12*2
+T = [dt:dt:Tend;]
+
+# Numerical pulse parameters in THz and ps
+γ_ = 1e-2 # TLS decay rate
+Δ1_ = -2π*1.934 # detuning pulse 1
+Δ2_ = -2π*4.634 # detuning pulse 2
+Α1_ = 22.65π # pulse area 1
+Α2_ = 19.29π # pulse area 2
+σ1_ = 2.4 # temporal FWHM pulse 1
+σ2_ = 3.04 # temporal FWHM pulse 2
+τ1_ = 0.0 + 12 # time shift pulse 1
+τ2_ = -0.73 + 12 # time shift pulse 2
+
+# Normalized input modes
+u1(t_) = 1/(√(σ1_)*π^(1/4)) * exp(-(t_ - τ1_)^2 / (2*σ1_^2)) * exp(-1im*Δ1_*t_)
+u2(t_) = 1/(√(σ2_)*π^(1/4)) * exp(-(t_ - τ2_)^2 / (2*σ2_^2)) * exp(-1im*Δ2_*t_)
+
+# Coupling functions
+gu1_t_ = coupling_input(u1, T)
+gu1_t(t) = gu1_t_(t)
+gv1_t_ = coupling_output(u1, T)
+gv1_t(t) = gv1_t_(t)
+
+# Cascade-modified couplings (effective modes)
+abstol = 1e-10
+reltol = 1e-10
+u_fcts = [u1, u2]
+u2_eff = effective_input_mode(u_fcts, T, 2; abstol, reltol)
+gu2_t_ = coupling_input(u2_eff, T)
+gu2_t(t) = gu2_t_(t)
+
+v_fcts = [u1, u2] # output modes = input modes
+v2_eff = effective_output_mode(v_fcts, T, 2; abstol, reltol)
+gv2_t_ = coupling_output(v2_eff, T)
+gv2_t(t) = gv2_t_(t)</code></pre><p>After deriving the mean-field equations we define the initial state, create the ODE problem and solve the dynamics.</p><pre><code class="language-julia hljs"># First-order cumulant expansion
+order = 1
+ops = [au1, au2, s(2, 2), s(2, 1), av1, av2]
+eqs = meanfield(ops, Hcas_t, [Jcas_t]; Jdagger = [Jcasd_t], order = order, iv = t)
+
+# Coherent-state amplitudes
+α1 = Α1_ / (2*√(2)*π^(1/4)*√(σ1_*γ_)) # field 1
+α2 = Α2_ / (2*√(2)*π^(1/4)*√(σ2_*γ_)) # field 2
+u0 = [α1, α2, 0, 0, 0, 0.0im]
+
+# Solve ODE system
+sys = mtkcompile(System(eqs; name = :sys))
+u0_p_map_cas = Dict([unknowns(sys); γ] .=&gt; [u0; γ_])
+prob_cas = ODEProblem(sys, u0_p_map_cas, (dt, Tend))
+sol = solve(prob_cas, Tsit5(); abstol, reltol)
+
+# Expectation values
+t_cas = sol.t # time vector
+s22_cas = sol_values(sol, s(2, 2), eqs)
+nu1_cas = abs2.(sol_values(sol, au1, eqs))
+nu2_cas = abs2.(sol_values(sol, au2, eqs))
+nv1_cas = abs2.(sol_values(sol, av1, eqs))
+nv2_cas = abs2.(sol_values(sol, av2, eqs))</code></pre><pre><code class="language-julia hljs">common = (;
+    xlims = (t_cas[1]-0.01, t_cas[end]),
+    tickfontsize = 18,
+    guidefontsize = 18,
+    legendfontsize = 18,
+)
+p1 = plot(t_cas, real.(s22_cas); color = :red, label = L&quot;\mathrm{cascade}&quot;)
+p2 = plot(
+    t_cas,
+    nu1_cas;
+    color = :blue,
+    label = L&quot;\langle \hat{n}_{u_1} \rangle&quot;,
+    ylabel = L&quot;\langle\hat{n}_i\rangle&quot;,
+    xticks = ([0, 10, 20], [&quot;&quot;, &quot;&quot;, &quot;&quot;]),
+    yticks = ([0, 5e3, 10e3, 15e3], [L&quot;0&quot;, L&quot;5\cdot10^3&quot;, L&quot;10\cdot10^3&quot;, L&quot;15\cdot10^3&quot;]),
+    ylims = (nv1_cas[1]-0.5e3, nu1_cas[1]+0.5e3),
+    legend = :left,
+    common...,
+)
+plot!(p2, t_cas, nv1_cas; color = :red, label = L&quot;\langle \hat{n}_{v_1} \rangle&quot;)
+plot!(
+    p2,
+    t_cas,
+    nu2_cas;
+    color = :blue,
+    ls = :dash,
+    label = L&quot;\langle \hat{n}_{u_2} \rangle&quot;,
+)
+plot!(
+    p2,
+    t_cas,
+    nv2_cas;
+    color = :red,
+    ls = :dash,
+    label = L&quot;\langle \hat{n}_{v_2} \rangle&quot;,
+)
+p3 = plot(
+    t_cas,
+    nu1_cas .+ nv1_cas .- nu1_cas[1];
+    color = :blue,
+    label = L&quot;\mathrm{mode~1}&quot;,
+    ylabel = L&quot;\langle\Delta\hat{n}_i\rangle&quot;,
+    xlabel = L&quot;\gamma t&quot;,
+    xticks = ([0, 10, 20], latexstring.([0, 10, 20])),
+    yticks = ([-4, -2, 0, 2, 4], latexstring.([-4, -2, 0, 2, 4])),
+    legend = :topleft,
+    common...,
+)
+plot!(p3, t_cas, nu2_cas .+ nv2_cas .- nu2_cas[1]; color = :red, label = L&quot;\mathrm{mode~2}&quot;)
+pl1 = plot(p1, p2, p3; layout = (3, 1), size = (800, 800))
+display(pl1)</code></pre><h2 id="Interaction-picture"><a class="docs-heading-anchor" href="#Interaction-picture">Interaction picture</a><a id="Interaction-picture-1"></a><a class="docs-heading-anchor-permalink" href="#Interaction-picture" title="Permalink"></a></h2><pre><code class="language-julia hljs"># In the following, we will transform into the interaction picture of the virtual cavities.
+
+# Interaction picture: cavity dynamics
+H_uv = hamiltonian(▷(G_u2, G_u1, G_v1, G_v2))
+H_int_ = simplify(Hcas - H_uv)
+
+M(i, j) = Symbolics.variable(Symbol(&quot;M_{$(i)$(j)}&quot;); T = Number)
+a0_ls = [au2, au1, av1, av2]
+la = length(a0_ls)
+a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
+int_dict = Dict(a0_ls .=&gt; a_int_ls)
+
+H_int = substitute(H_int_, int_dict)
+J_int = simplify(substitute(Jcas, int_dict))
+Jd_int = simplify(substitute(Jcasd, int_dict))
+
+# Coefficient matrix M
+Mat = Matrix{Any}(undef, la, la)
+for i = 1:la, j = 1:la
+    name = Symbol(&quot;Ma_$(i)$(j)&quot;)
+    @eval @register_symbolic $name(t)
+    Mat[i, j] = getfield(mod, name)(t)
+end
+Mat_ls = [Mat[i, j] for i = 1:la for j = 1:la]
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+
+# Time-evolution of the matrix M(t)
+A_uv = coupling_matrix((gu2_t_, gu1_t_, gv1_t_, gv2_t_))
+M_t = solve_mode_evolution(A_uv, T)
+
+for i = 1:la, j = 1:la
+    fname = Symbol(&quot;Ma_$(i)$(j)&quot;)
+    @eval begin
+        $fname(t) = M_t(t)[$i, $j]
+    end
+end
+dict_Mt = Dict(M_ls .=&gt; Mat_ls)
+dict_gt_Mt = merge(dict_gt, dict_Mt)
+
+H_int_t = substitute(H_int, dict_gt_Mt)
+J_int_t = substitute(J_int, dict_gt_Mt)
+Jd_int_t = substitute(Jd_int, dict_gt_Mt)
+
+eqs_int = meanfield(ops, H_int_t, [J_int_t]; Jdagger = [Jd_int_t], order = order, iv = t);
+
+# Solve ODE system in interaction picture
+sys_int = mtkcompile(System(eqs_int; name = :sysI))
+u0_p_map_int = Dict([unknowns(sys_int); γ] .=&gt; [u0; γ_])
+prob_int = ODEProblem(sys_int, u0_p_map_int, (dt, Tend))
+sol_int = solve(prob_int, Tsit5(); abstol, reltol)
+
+# Expectation values
+t_int = sol_int.t
+s22_int = real.(sol_values(sol_int, s(2, 2), eqs_int))
+nu1_int = abs2.(sol_values(sol_int, au1, eqs_int))
+nu2_int = abs2.(sol_values(sol_int, au2, eqs_int))
+nv1_int = abs2.(sol_values(sol_int, av1, eqs_int))
+nv2_int = abs2.(sol_values(sol_int, av2, eqs_int))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">42669-element Vector{Float64}:
+ 0.0
+ 3.7235885152699778e-9
+ 9.767399118197223e-9
+ 1.4908649147072946e-8
+ 2.5177407435435576e-8
+ 3.063665384624782e-8
+ 4.8335216256765225e-8
+ 5.628978447281471e-8
+ 6.705779865769277e-8
+ 8.584573661939092e-8
+ ⋮
+ 0.0008840697486561873
+ 0.0008853309874146001
+ 0.000886142443201236
+ 0.0008865084419633981
+ 0.0008864586261721646
+ 0.0008860828671156857
+ 0.0008855518075721778
+ 0.0008849731816728329
+ 0.0008845465600310502</code></pre><pre><code class="language-julia hljs">pl4 = plot(
+    t_int,
+    nu1_int .- nu1_int[1];
+    color = :blue,
+    label = L&quot;\mathrm{mode~1~(int.)}&quot;,
+    ylabel = L&quot;\langle\Delta\hat{n}_i\rangle&quot;,
+    xlabel = L&quot;\gamma t&quot;,
+    xlims = (t_int[1]-0.01, t_int[end]),
+    yticks = ([-2, -1, 0, 1], latexstring.([-2, -1, 0, 1])),
+    legend = :right,
+    tickfontsize = 18,
+    guidefontsize = 18,
+    legendfontsize = 18,
+    size = (800, 400),
+)
+plot!(pl4, t_int, nu2_int .- nu2_int[1]; color = :red, label = L&quot;\mathrm{mode~2~(int.)}&quot;)
+display(pl4)</code></pre><h2 id="Fock-state-input"><a class="docs-heading-anchor" href="#Fock-state-input">Fock state input</a><a id="Fock-state-input-1"></a><a class="docs-heading-anchor-permalink" href="#Fock-state-input" title="Permalink"></a></h2><p>Let us now compare the dynamics for coherent input pulses with the case of incident non-classical photon number eigenstates (Fock states), where we choose states with the same mean photon numbers as for the coherent pulses. Since in the atom-field interaction only a few photons are exchanged, the quantum states of the excitation pulses are only changed by a couple of photons, we only need to keep a couple of nearby Fock states in the computational basis.</p><p>We define the basis of the system and create the dictionary for the time-dependent variables to translate the Hamiltonian and Lindblad operator to a QuantumOptics.jl operator.</p><pre><code class="language-julia hljs">n1_fock = round(Int, abs2(α1))
+n2_fock = round(Int, abs2(α2))
+
+bu1 = FockBasis(n1_fock+2, n1_fock-6)
+bu2 = FockBasis(n2_fock+3, n2_fock-3)
+bs1 = NLevelBasis(2)
+bv1 = FockBasis(1)
+bv2 = FockBasis(1)
+b = tensor([bu2, bu1, bs1, bv1, bv2]...)
+
+g_t_ls = [gu2_t_, gu1_t_, gv1_t_, gv2_t_]
+M_t_ls = [t -&gt; M_t(t)[i, j] for i = 1:la for j = 1:la]
+dict_fock = Dict([g_ls; M_ls] .=&gt; [g_t_ls; M_t_ls])
+
+H_int_fock = to_numeric(H_int, b; parameter = Dict(γ=&gt;γ_), time_parameter = dict_fock)
+J_int_fock = to_numeric(J_int, b; parameter = Dict(γ=&gt;γ_), time_parameter = dict_fock)
+
+# To solve the dynamics, we create the time-dependent function for the open quantum system and define the initial state.
+
+function input_output(t, ρ)
+    Ht = H_int_fock(t)
+    J = [J_int_fock(t)]
+    return Ht, J, QuantumOptics.dagger.(J)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">input_output (generic function with 1 method)</code></pre><p>initial state</p><pre><code class="language-julia hljs">ψu2 = fockstate(bu2, n2_fock)
+ψu1 = fockstate(bu1, n1_fock)
+ψs1 = nlevelstate(bs1, 1)
+ψv1 = fockstate(bv1, 0)
+ψv2 = fockstate(bv2, 0)
+ψ0 = tensor(ψu2, ψu1, ψs1, ψv1, ψv2)
+
+T_fock = [0:0.001:1;]*T[end]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1001-element Vector{Float64}:
+  0.0
+  0.024
+  0.048
+  0.07200000000000001
+  0.096
+  0.12
+  0.14400000000000002
+  0.168
+  0.192
+  0.21599999999999997
+  ⋮
+ 23.808
+ 23.832
+ 23.856
+ 23.88
+ 23.904
+ 23.928
+ 23.951999999999998
+ 23.976
+ 24.0</code></pre><p>t<em>fock, ρt</em>fock = timeevolution.master<em>dynamic(T</em>fock, ψ0, input_output; abstol, reltol)</p><pre><code class="language-julia hljs">using Random
+t_fock, ρt_fock = timeevolution.mcwf_dynamic(T_fock, ψ0, input_output; abstol, reltol)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">([0.0, 0.024, 0.048, 0.07200000000000001, 0.096, 0.12, 0.14400000000000002, 0.168, 0.192, 0.21599999999999997  …  23.784, 23.808, 23.832, 23.856, 23.88, 23.904, 23.928, 23.951999999999998, 23.976, 24.0], QuantumOpticsBase.Ket{QuantumInterface.CompositeBasis{Vector{Int64}, Tuple{QuantumInterface.FockBasis{Int64}, QuantumInterface.FockBasis{Int64}, QuantumInterface.NLevelBasis{Int64}, QuantumInterface.FockBasis{Int64}, QuantumInterface.FockBasis{Int64}}}, Vector{ComplexF64}}[Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+     ⋮
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im
+ 0.0 + 0.0im  …  Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.44360145e-9 + 4.5323074e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.44675533e-9 + 4.6040496e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.44474926e-9 + 4.6746111e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.43898544e-9 + 4.7121702e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.43249632e-9 + 4.7019156e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.42844299e-9 + 4.6516737e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.42868256e-9 + 4.5870556e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.43300379e-9 + 4.5384879e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.43934612e-9 + 4.5272153e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im, Ket(dim=504)
+  basis: [Fock(cutoff=8523, offset=8517) ⊗ Fock(cutoff=14881, offset=14873) ⊗ NLevel(N=2) ⊗ Fock(cutoff=1) ⊗ Fock(cutoff=1)]
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+ 4.44486778e-9 + 4.556167e-10im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+               ⋮
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im
+           0.0 + 0.0im])</code></pre><p>Due to the relatively long computation time of timeevolution.master<em>dynamic, we simulate a single trajectory with timeevolution.mcwf</em>dynamic.</p><pre><code class="language-julia hljs"># Expectation values
+s22_fock = real.(expect(s(2, 2), ρt_fock))
+nu1_fock = real.(expect(au1&#39;au1, ρt_fock))
+nu2_fock = real.(expect(au2&#39;au2, ρt_fock))
+nv1_fock = real.(expect(av1&#39;av1, ρt_fock))
+nv2_fock = real.(expect(av2&#39;av2, ρt_fock))
+
+common = (;
+    xlims = (t_fock[1]-0.01, t_fock[end]),
+    tickfontsize = 18,
+    guidefontsize = 18,
+    legendfontsize = 18,
+)
+p3_1 = plot(t_int, s22_int; color = :blue, label = L&quot;\mathrm{coherent state}&quot;)
+plot!(p3_1, t_fock, s22_fock; color = :red, label = L&quot;\mathrm{Fock state}&quot;)
+p3_2 = plot(
+    t_fock,
+    nu1_fock .- nu1_fock[1];
+    color = :green,
+    label = L&quot;\mathrm{Fock: mode~1}&quot;,
+    ylabel = L&quot;\langle\Delta\hat{n}_i\rangle&quot;,
+    xlabel = L&quot;\gamma t&quot;,
+    xlims = (t_fock[1]-0.01, t_fock[end]),
+    yticks = ([-2, -1, 0, 1], latexstring.([-2, -1, 0, 1])),
+    legend = :right,
+    common...,
+)
+plot!(
+    p3_2,
+    t_fock,
+    nu2_fock .- nu2_fock[1];
+    color = :yellow,
+    label = L&quot;\mathrm{Fock: mode~2}&quot;,
+)
+plot!(
+    p3_2,
+    t_int,
+    nu1_int .- nu1_int[1];
+    color = :blue,
+    label = L&quot;\mathrm{Coherent: mode~1}&quot;,
+)
+plot!(
+    p3_2,
+    t_int,
+    nu2_int .- nu2_int[1];
+    color = :red,
+    label = L&quot;\mathrm{Coherent: mode~2}&quot;,
+)
+pl3 = plot(p3_1, p3_2; layout = (2, 1), size = (800, 600))
+display(pl3)</code></pre><p>Due to the vanishing relative phase of the Fock states, the oscillations disappear.</p><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><p>These results were obtained using the following versions:</p><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [
+        &quot;QuantumInputOutput&quot;,
+        &quot;SecondQuantizedAlgebra&quot;,
+        &quot;QuantumCumulants&quot;,
+        &quot;ModelingToolkitBase&quot;,
+        &quot;OrdinaryDiffEq&quot;,
+        &quot;QuantumOptics&quot;,
+        &quot;Plots&quot;,
+        &quot;LaTeXStrings&quot;,
+    ],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.7
+Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver3)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[b964fa9f] </span>LaTeXStrings v1.4.1
+  <span class="sgr90">[7771a370] </span>ModelingToolkitBase v1.68.0
+  <span class="sgr90">[1dea7af3] </span>OrdinaryDiffEq v7.7.0
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.7
+  <span class="sgr90">[35bcea6d] </span>QuantumCumulants v0.7.0
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.5.1 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.8
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.10.0</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 24 August 2026 16:27">Monday 24 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

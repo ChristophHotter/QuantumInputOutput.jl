@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Hong-Ou-Mandel Effect · QuantumInputOutput.jl</title><meta name="title" content="Hong-Ou-Mandel Effect · QuantumInputOutput.jl"/><meta property="og:title" content="Hong-Ou-Mandel Effect · QuantumInputOutput.jl"/><meta property="twitter:title" content="Hong-Ou-Mandel Effect · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/07-2_hong-ou-mandel__quantum-pulse/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/07-2_hong-ou-mandel__quantum-pulse/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/07-2_hong-ou-mandel__quantum-pulse/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li class="is-active"><a class="tocitem" href>Hong-Ou-Mandel Effect</a><ul class="internal"><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Hong-Ou-Mandel Effect</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Hong-Ou-Mandel Effect</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/07-2_hong-ou-mandel__quantum-pulse.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Hong-Ou-Mandel-Effect"><a class="docs-heading-anchor" href="#Hong-Ou-Mandel-Effect">Hong-Ou-Mandel Effect</a><a id="Hong-Ou-Mandel-Effect-1"></a><a class="docs-heading-anchor-permalink" href="#Hong-Ou-Mandel-Effect" title="Permalink"></a></h1><p>In this example, we simulate the Hong-Ou-Mandel effect, where two single photons in identical temporal modes impinge on a 50/50 beam splitter, which leads to bunching of the photons into one output port. We perform Monte-Carlo wave function trajectories which show this behavior.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumOptics
+using QuantumOpticsBase: dagger
+using Plots
+using LaTeXStrings
+using LinearAlgebra</code></pre><pre><code class="language-julia hljs"># symbolic Hilbert space and operators
+hu1 = FockSpace(:u1)
+hu2 = FockSpace(:u2)
+hv1 = FockSpace(:v1)
+hv2 = FockSpace(:v2)
+h = hu1 ⊗ hu2 ⊗ hv1 ⊗ hv2
+
+au1 = Destroy(h, :a_u1, 1)
+au2 = Destroy(h, :a_u2, 2)
+av1 = Destroy(h, :a_v1, 3)
+av2 = Destroy(h, :a_v2, 4)
+
+# symbolic parameters
+@variables gu1::Number gu2::Number gv1::Number gv2::Number t::Real r::Real</code></pre><pre><code class="language-julia hljs"># input cavities, beam splitter, and output cavities
+S_bs = [r t; t -r]
+G_u1 = SLH(1, gu1&#39; * au1, 0)
+G_u2 = SLH(1, gu2&#39; * au2, 0)
+G_in = G_u1 ⊞ G_u2
+G_bs = SLH(S_bs, [0, 0], 0)
+G_v1 = SLH(1, gv1&#39; * av1, 0)
+G_v2 = SLH(1, gv2&#39; * av2, 0)
+G_out = G_v1 ⊞ G_v2
+G = G_in ▷ G_bs ▷ G_out</code></pre><pre><code class="language-julia hljs">H = hamiltonian(G)</code></pre><p class="math-container">\[ - 0.5 ~ \mathrm{conj}\left( \mathtt{gu1} \right) ~ \mathtt{gv1} ~ r ~ \mathit{i} a_{\mathrm{u1}}a_{\mathrm{v1}}^{\dagger} - 0.5 ~ \mathrm{conj}\left( \mathtt{gu1} \right) ~ \mathtt{gv2} ~ t ~ \mathit{i} a_{\mathrm{u1}}a_{\mathrm{v2}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv1} \right) ~ \mathtt{gu1} ~ r ~ \mathit{i} a_{\mathrm{u1}}^{\dagger}a_{\mathrm{v1}} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv2} \right) ~ \mathtt{gu1} ~ t ~ \mathit{i} a_{\mathrm{u1}}^{\dagger}a_{\mathrm{v2}} - 0.5 ~ \mathrm{conj}\left( \mathtt{gu2} \right) ~ \mathtt{gv1} ~ t ~ \mathit{i} a_{\mathrm{u2}}a_{\mathrm{v1}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{gu2} \right) ~ \mathtt{gv2} ~ r ~ \mathit{i} a_{\mathrm{u2}}a_{\mathrm{v2}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv1} \right) ~ \mathtt{gu2} ~ t ~ \mathit{i} a_{\mathrm{u2}}^{\dagger}a_{\mathrm{v1}} - 0.5 ~ \mathrm{conj}\left( \mathtt{gv2} \right) ~ \mathtt{gu2} ~ r ~ \mathit{i} a_{\mathrm{u2}}^{\dagger}a_{\mathrm{v2}}\]</p><pre><code class="language-julia hljs">J = jump_operator(G)
+J[1]</code></pre><p class="math-container">\[\mathrm{conj}\left( \mathtt{gu1} \right) ~ r a_{\mathrm{u1}} + \mathrm{conj}\left( \mathtt{gu2} \right) ~ t a_{\mathrm{u2}} + \mathrm{conj}\left( \mathtt{gv1} \right) a_{\mathrm{v1}}\]</p><pre><code class="language-julia hljs">J[2]</code></pre><p class="math-container">\[\mathrm{conj}\left( \mathtt{gu1} \right) ~ t a_{\mathrm{u1}} - \mathrm{conj}\left( \mathtt{gu2} \right) ~ r a_{\mathrm{u2}} + \mathrm{conj}\left( \mathtt{gv2} \right) a_{\mathrm{v2}}\]</p><pre><code class="language-julia hljs"># Gaussian input mode (two single-photon pulses, u1 = u2)
+γ_ = 1.0
+T_p = 1 / γ_
+T_end = 12T_p
+σ = sqrt(0.5) * T_p
+u(t) = 1/(sqrt(σ)*π^(1/4)) * exp(-(t - 4σ)^2 / (2*σ^2))
+
+T = [0:0.002:1;] * T_end
+ΔT = T[2] - T[1]
+
+# time-dependent couplings for input and output modes
+u1 = u
+u2 = u
+gu1_t = coupling_input(u1, T)
+gu2_t = coupling_input(u2, T)
+
+v1(t) = u(t)
+v2(t) = u(t)
+gv1_t = coupling_output(v1, T)
+gv2_t = coupling_output(v2, T)
+
+dict_p_t = Dict(gu1 =&gt; gu1_t, gu2 =&gt; gu2_t, gv1 =&gt; gv1_t, gv2 =&gt; gv2_t)
+
+# beam splitter parameters (50/50)
+η = 0.5
+r_ = sqrt(η)
+t_ = sqrt(1 - η)
+
+dict_p = Dict([t, r] .=&gt; [t_, r_])</code></pre><pre><code class="language-julia hljs"># numeric basis
+bu1 = FockBasis(1)
+bu2 = FockBasis(1)
+bv1 = FockBasis(2)
+bv2 = FockBasis(2)
+b = bu1 ⊗ bu2 ⊗ bv1 ⊗ bv2
+
+au1_qo = destroy(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ one(bv2)
+au2_qo = one(bu1) ⊗ destroy(bu2) ⊗ one(bv1) ⊗ one(bv2)
+av1_qo = one(bu1) ⊗ one(bu2) ⊗ destroy(bv1) ⊗ one(bv2)
+av2_qo = one(bu1) ⊗ one(bu2) ⊗ one(bv1) ⊗ destroy(bv2)
+
+# translate to numeric operators
+H_QO = to_numeric(H, b; parameter = dict_p, time_parameter = dict_p_t)
+J_QO = [to_numeric(Ji, b; parameter = dict_p, time_parameter = dict_p_t) for Ji in J]
+
+function input_output(t, ρ)
+    Ht = H_QO(t)
+    J = [J_QO[1](t), J_QO[2](t)]
+    return Ht, J, dagger.(J)
+end</code></pre><pre><code class="language-julia hljs"># time evolution
+ψ0 = fockstate(bu1, 1) ⊗ fockstate(bu2, 1) ⊗ fockstate(bv1, 0) ⊗ fockstate(bv2, 0)
+time, ρt = timeevolution.master_dynamic(T, ψ0, input_output)</code></pre><pre><code class="language-julia hljs"># output observables
+n_v1 = real.(expect(av1_qo&#39; * av1_qo, ρt[end]))
+n_v2 = real.(expect(av2_qo&#39; * av2_qo, ρt[end]))
+g2_v1 = round(real.(expect((av1_qo&#39;)^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits = 4)
+g2_v2 = round(real.(expect((av1_qo&#39;)^2 * (av1_qo)^2, ρt[end])) / n_v1^2, digits = 4)
+v1_v2_coinc =
+    round(real.(expect((av1_qo&#39; * av1_qo) * (av2_qo&#39; * av2_qo), ρt[end])), digits = 4)
+
+@show g2_v1
+@show g2_v2
+@show v1_v2_coinc</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">g2_v1 = 1.0
+g2_v2 = 1.0
+v1_v2_coinc = -0.0</code></pre><p>We can see that the two-photon correlation for each port is one and that the correlation between the two ports is zero.</p><p>In the following, we show Monte-Carlo wave function simulations to show the bunching of photons into one of the two output ports in each realization. To this end, we collapse the photon number at the end of the time evolution (<span>$t &gt; 0.9 T_{end}$</span>) with the photon detection operator in each output mode <span>$a^{+}_{v} a_{v}$</span>.</p><pre><code class="language-julia hljs">R = 1 # collapse rate
+n_v1_coll(t) = (t &gt; 0.9*T[end])*R*av1_qo&#39;av1_qo
+n_v2_coll(t) = (t &gt; 0.9*T[end])*R*av2_qo&#39;av2_qo
+
+function input_output_mc(t, ρ)
+    Ht = H_QO(t)
+    J = [J_QO[1](t), J_QO[2](t), n_v1_coll(t), n_v2_coll(t)]
+    return Ht, J, dagger.(J)
+end
+
+Ntraj = 20
+n_v1_mc_ls = [zeros(length(T)) for i = 1:Ntraj]
+n_v2_mc_ls = deepcopy(n_v1_mc_ls)</code></pre><pre><code class="language-julia hljs">for it = 1:Ntraj
+    t_mc, ψt_mc = timeevolution.mcwf_dynamic(T, ψ0, input_output_mc)
+    n_v1_mc = real.(expect(av1_qo&#39; * av1_qo, ψt_mc))
+    n_v2_mc = real.(expect(av2_qo&#39; * av2_qo, ψt_mc))
+
+    n_v1_mc_ls[it] = n_v1_mc
+    n_v2_mc_ls[it] = n_v2_mc
+end</code></pre><pre><code class="language-julia hljs">p1 = plot()
+for it = 1:Ntraj
+    plot!(p1, T, n_v1_mc_ls[it]; label = &quot;&quot;)
+end
+plot!(p1; ylabel = L&quot;\langle a^\dagger_{v_1} a_{v_1} \rangle&quot;, grid = true)
+
+p2 = plot()
+for it = 1:Ntraj
+    plot!(p2, T, n_v2_mc_ls[it]; label = &quot;&quot;)
+end
+plot!(p2; xlabel = &quot;time&quot;, ylabel = L&quot;\langle a^\dagger_{v_2} a_{v_2} \rangle&quot;, grid = true)
+
+plot(p1, p2; layout = (2, 1), size = (650, 450))</code></pre><img src="6e565241.svg" alt="Example block output"/><p>We can see that both photons always go together into one of the two detectors.</p><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><p>These results were obtained using the following versions:</p><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [
+        &quot;QuantumInputOutput&quot;,
+        &quot;SecondQuantizedAlgebra&quot;,
+        &quot;QuantumOptics&quot;,
+        &quot;Plots&quot;,
+        &quot;LaTeXStrings&quot;,
+    ],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.7
+Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver3)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[b964fa9f] </span>LaTeXStrings v1.4.1
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.7
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.5.1 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.8
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.10.0</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../07-1_beamsplitter_loss__quantum-pulse/">« Beam Splitter Loss</a><a class="docs-footer-nextpage" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 24 August 2026 16:27">Monday 24 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

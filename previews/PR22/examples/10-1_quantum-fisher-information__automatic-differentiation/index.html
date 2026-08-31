@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quantum Fisher Information with Automatic Differentiation · QuantumInputOutput.jl</title><meta name="title" content="Quantum Fisher Information with Automatic Differentiation · QuantumInputOutput.jl"/><meta property="og:title" content="Quantum Fisher Information with Automatic Differentiation · QuantumInputOutput.jl"/><meta property="twitter:title" content="Quantum Fisher Information with Automatic Differentiation · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_quantum-fisher-information__automatic-differentiation/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_quantum-fisher-information__automatic-differentiation/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/10-1_quantum-fisher-information__automatic-differentiation/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li><a class="tocitem" href="../06-1_interaction-picture__PRA2023_107-013706_fig2/">Interaction Picture Scattering with a Quantum Pulse</a></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li><li class="is-active"><a class="tocitem" href>Quantum Fisher Information with Automatic Differentiation</a><ul class="internal"><li><a class="tocitem" href="#SLH-Model"><span>SLH Model</span></a></li><li><a class="tocitem" href="#Candidate-Measurements"><span>Candidate Measurements</span></a></li><li><a class="tocitem" href="#Differentiating-the-SLH-Trajectory"><span>Differentiating the SLH Trajectory</span></a></li><li><a class="tocitem" href="#Readout-Comparison"><span>Readout Comparison</span></a></li><li><a class="tocitem" href="#Visualization"><span>Visualization</span></a></li><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Quantum Fisher Information with Automatic Differentiation</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Quantum Fisher Information with Automatic Differentiation</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/10-1_quantum-fisher-information__automatic-differentiation.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Quantum-Fisher-Information-with-Automatic-Differentiation"><a class="docs-heading-anchor" href="#Quantum-Fisher-Information-with-Automatic-Differentiation">Quantum Fisher Information with Automatic Differentiation</a><a id="Quantum-Fisher-Information-with-Automatic-Differentiation-1"></a><a class="docs-heading-anchor-permalink" href="#Quantum-Fisher-Information-with-Automatic-Differentiation" title="Permalink"></a></h1><p>Quantum Fisher information (QFI) answers an optimistic question: if a quantum state <span>$\rho(\theta)$</span> depends on a parameter <span>$\theta$</span>, how much information about <span>$\theta$</span> is available in the state before we commit to a particular measurement? For one copy of the state it gives the quantum Cramér-Rao bound</p><p class="math-container">\[\mathrm{Var}(\hat\theta) \geq \frac{1}{F_Q}.\]</p><p>The bound is useful only if we can also ask a more practical question: how much information is obtained by the measurements we can actually perform? For a POVM or projective measurement with outcomes <span>$M_i$</span>,</p><p class="math-container">\[p_i(\theta) = \mathrm{Tr}[M_i \rho(\theta)],
+\qquad
+F_C = \sum_i \frac{(\partial_\theta p_i)^2}{p_i}.\]</p><p>The classical Fisher information (CFI) satisfies <span>$F_C \leq F_Q$</span>. Comparing the two tells us whether a measurement is close to optimal or whether useful information remains hidden in coherences that the measurement does not access.</p><p>In this example we estimate the detuning of a driven Kerr parametric oscillator. The derivative <span>$\partial_\Delta \rho(t)$</span> is obtained by differentiating the SLH time evolution with <code>ForwardDiff.jl</code>. We then compare the QFI with the CFI of three different projective readouts.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using SecondQuantizedAlgebra
+using QuantumOptics
+using LinearAlgebra
+using Plots</code></pre><h2 id="SLH-Model"><a class="docs-heading-anchor" href="#SLH-Model">SLH Model</a><a id="SLH-Model-1"></a><a class="docs-heading-anchor-permalink" href="#SLH-Model" title="Permalink"></a></h2><p>The Kerr parametric oscillator has Hamiltonian</p><p class="math-container">\[H = -\Delta\,a^\dagger a
+    + K\,a^\dagger a^\dagger a a
+    - G\,(a^\dagger a^\dagger + a a),\]</p><p>and one decay channel <span>$L = \sqrt{\gamma}\,a$</span>. We keep the parameters symbolic in the SLH model and provide numerical values only when we translate and evolve it.</p><pre><code class="language-julia hljs">h = FockSpace(:kpo)
+a = Destroy(h, :a)
+
+@variables Δ::Real K::Real G::Real γ::Real
+
+H = -Δ * a&#39; * a + K * a&#39; * a&#39; * a * a - G * (a&#39; * a&#39; + a * a)
+Gkpo = SLH(1, √(γ) * a, H)</code></pre><pre><code class="language-julia hljs">const K_ = 0.001
+const G_ = 0.002
+const γ_ = 0.01
+const N = 20
+
+b = FockBasis(N - 1)
+ψ0 = fockstate(b, 0)
+ρ0 = dm(ψ0)
+
+params(Δ_) = Dict(Δ =&gt; Δ_, K =&gt; K_, G =&gt; G_, γ =&gt; γ_)</code></pre><h2 id="Candidate-Measurements"><a class="docs-heading-anchor" href="#Candidate-Measurements">Candidate Measurements</a><a id="Candidate-Measurements-1"></a><a class="docs-heading-anchor-permalink" href="#Candidate-Measurements" title="Permalink"></a></h2><p><code>classical_fisher_information</code> works with any list of POVM elements. For projective readout, <a href="../../api/#QuantumInputOutput.projective_measurement"><code>projective_measurement</code></a> builds the projectors from a Hermitian observable. This keeps the package API independent of the physical system: the readout below happens to use a truncated oscillator basis, but the Fisher-information code only sees projectors.</p><p>We compare:</p><ul><li>occupation readout, resolving each basis state;</li><li>parity readout, which intentionally coarse-grains occupation into even and odd outcomes;</li><li>quadrature readout, here represented by the eigenprojectors of <span>$X=a+a^\dagger$</span> in the same truncated basis.</li></ul><pre><code class="language-julia hljs">aqo = destroy(b)
+
+occupation = Operator(b, b, Diagonal(collect(0:(N - 1))))
+parity = Operator(b, b, Diagonal((-1.0) .^ collect(0:(N - 1))))
+quadrature = aqo + aqo&#39;
+
+measurements = (
+    occupation = projective_measurement(occupation),
+    parity = projective_measurement(parity),
+    quadrature = projective_measurement(quadrature),
+)
+
+function cfi_for(measurement, ρ, dρ)
+    return classical_fisher_information(
+        ρ,
+        dρ,
+        measurement;
+        probability_floor = 1e-12,
+        derivative_floor = 1e-6,
+    )
+end</code></pre><h2 id="Differentiating-the-SLH-Trajectory"><a class="docs-heading-anchor" href="#Differentiating-the-SLH-Trajectory">Differentiating the SLH Trajectory</a><a id="Differentiating-the-SLH-Trajectory-1"></a><a class="docs-heading-anchor-permalink" href="#Differentiating-the-SLH-Trajectory" title="Permalink"></a></h2><p><a href="../../api/#QuantumInputOutput.parameter_derivative"><code>parameter_derivative</code></a> evolves the density matrix to a chosen time and returns both <span>$\rho(t)$</span> and <span>$\partial_\Delta\rho(t)$</span>. The <code>estimate</code> keyword names the symbolic parameter to differentiate, while <code>parameter</code> fixes the numerical working point.</p><pre><code class="language-julia hljs">ρ, dρ = parameter_derivative(Gkpo, b, ρ0, 2000; estimate = Δ, parameter = params(0.0))
+
+final_information = (
+    QFI = quantum_fisher_information(ρ, dρ),
+    occupation = cfi_for(measurements.occupation, ρ, dρ),
+    parity = cfi_for(measurements.parity, ρ, dρ),
+    quadrature = cfi_for(measurements.quadrature, ρ, dρ),
+)
+@info &quot;Fisher information at final time&quot; final_information</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">┌ Info: </span></span>Fisher information at final time
+<span class="sgr36"><span class="sgr1">└ </span></span>  final_information = (QFI = 19795.71854320948, occupation = 6819.391036672639, parity = 2011.4243025589474, quadrature = 1247.8731878014087)</code></pre><h2 id="Readout-Comparison"><a class="docs-heading-anchor" href="#Readout-Comparison">Readout Comparison</a><a id="Readout-Comparison-1"></a><a class="docs-heading-anchor-permalink" href="#Readout-Comparison" title="Permalink"></a></h2><p>Repeating the differentiated solve over a grid of readout times gives a direct comparison between the measurement-independent QFI bound and concrete measurement choices. The full occupation measurement keeps more information than parity because it resolves the individual outcomes that parity combines. Quadrature probes a different basis and can reveal parameter sensitivity that is not visible in occupation probabilities alone.</p><pre><code class="language-julia hljs">ts = range(0, 2000; length = 100)
+
+F_t = map(ts) do t
+    ρ, dρ = parameter_derivative(Gkpo, b, ρ0, t; estimate = Δ, parameter = params(0.0))
+    (
+        quantum = quantum_fisher_information(ρ, dρ),
+        occupation = cfi_for(measurements.occupation, ρ, dρ),
+        parity = cfi_for(measurements.parity, ρ, dρ),
+        quadrature = cfi_for(measurements.quadrature, ρ, dρ),
+    )
+end
+
+QFI_t = getproperty.(F_t, :quantum)
+CFI_occupation_t = getproperty.(F_t, :occupation)
+CFI_parity_t = getproperty.(F_t, :parity)
+CFI_quadrature_t = getproperty.(F_t, :quadrature)</code></pre><h2 id="Visualization"><a class="docs-heading-anchor" href="#Visualization">Visualization</a><a id="Visualization-1"></a><a class="docs-heading-anchor-permalink" href="#Visualization" title="Permalink"></a></h2><pre><code class="language-julia hljs">p_info = plot(
+    ts,
+    QFI_t;
+    lw = 2.5,
+    label = &quot;QFI bound&quot;,
+    xlabel = &quot;time&quot;,
+    ylabel = &quot;Fisher information&quot;,
+    grid = true,
+    size = (700, 400),
+)
+plot!(p_info, ts, CFI_occupation_t; lw = 2, ls = :dash, label = &quot;occupation CFI&quot;)
+plot!(p_info, ts, CFI_parity_t; lw = 2, ls = :dot, label = &quot;parity CFI&quot;)
+plot!(p_info, ts, CFI_quadrature_t; lw = 2, ls = :dashdot, label = &quot;quadrature CFI&quot;)
+p_info</code></pre><img src="e959b8e6.svg" alt="Example block output"/><p>At the final time we can also inspect the measurement probabilities. A readout with high CFI is not merely one with a broad distribution: it must have outcome probabilities that change strongly when the estimated parameter changes.</p><pre><code class="language-julia hljs">occupation_probabilities = povm_probabilities(ρ, measurements.occupation)
+
+p_probs = bar(
+    0:(N - 1),
+    occupation_probabilities;
+    xlabel = &quot;occupation outcome&quot;,
+    ylabel = &quot;probability&quot;,
+    label = &quot;&quot;,
+    grid = false,
+    size = (700, 300),
+)
+p_probs</code></pre><img src="61342308.svg" alt="Example block output"/><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [&quot;QuantumInputOutput&quot;, &quot;SecondQuantizedAlgebra&quot;, &quot;QuantumOptics&quot;, &quot;ForwardDiff&quot;, &quot;Plots&quot;],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.6
+Commit 15346901f00 (2026-04-09 19:20 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 9V74 80-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver4)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[f6369f11] </span>ForwardDiff v1.4.1
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.6
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.1.0 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.6
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.8.2</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">« Coherent-Feedback Squeezing with a Beam-Splitter Loop</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Friday 26 June 2026 07:39">Friday 26 June 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

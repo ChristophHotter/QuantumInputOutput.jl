@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Interaction Picture Scattering with a Quantum Pulse · QuantumInputOutput.jl</title><meta name="title" content="Interaction Picture Scattering with a Quantum Pulse · QuantumInputOutput.jl"/><meta property="og:title" content="Interaction Picture Scattering with a Quantum Pulse · QuantumInputOutput.jl"/><meta property="twitter:title" content="Interaction Picture Scattering with a Quantum Pulse · QuantumInputOutput.jl"/><meta name="description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:description" content="Documentation for QuantumInputOutput.jl."/><meta property="twitter:description" content="Documentation for QuantumInputOutput.jl."/><meta property="og:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/06-1_interaction-picture__PRA2023_107-013706_fig2/"/><meta property="twitter:url" content="https://qojulia.github.io/QuantumInputOutput.jl/examples/06-1_interaction-picture__PRA2023_107-013706_fig2/"/><link rel="canonical" href="https://qojulia.github.io/QuantumInputOutput.jl/examples/06-1_interaction-picture__PRA2023_107-013706_fig2/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/favicon.png" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.svg" alt="QuantumInputOutput.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">QuantumInputOutput.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Introduction</a></li><li><a class="tocitem" href="../../theory/">Theory</a></li><li><a class="tocitem" href="../../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../../implementation/">Implementation</a></li><li><a class="tocitem" href="../../api/">API</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../01-1_cavity-scattering__PRL2019_123-123604_fig2-fig3/">Cavity Scattering of a Single Photon</a></li><li><a class="tocitem" href="../01-2_stimulated-emission__PRL2019_123-123604_fig4/">Stimulated Emission</a></li><li><a class="tocitem" href="../02-1_cavity-phase-noise__PRA2020_102- 023717_fig2/">Cavity Scattering with Phase Noise</a></li><li><a class="tocitem" href="../02-3_mode-entanglement__PRA2020_102-023717_fig4/">Photon Number and Mode Entanglement with a Quantum Emitter</a></li><li><a class="tocitem" href="../03-1_beam-combiner__PRA2023_107-023715_fig2-fig3/">Perfect Splitting and Combining of a Two-photon Pulse</a></li><li><a class="tocitem" href="../04-1_two-sided-cavity_with-atom_coh-drive/">Two-sided Cavity with Atoms</a></li><li><a class="tocitem" href="../04-2_two-sided-cavity_with-atom_coh-drive__cumulants/">Mean-field Two-sided Cavity</a></li><li><a class="tocitem" href="../05-1_N-QDs_bidirectional-waveguide_coherent-pulse/">Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-2_N-QDs_bidirectional-waveguide_quantum-pulse_qo/">Quantum Pulse Bi-Directional Waveguide</a></li><li><a class="tocitem" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">Bi-Directional Waveguide via Feedback Reduction</a></li><li class="is-active"><a class="tocitem" href>Interaction Picture Scattering with a Quantum Pulse</a><ul class="internal"><li><a class="tocitem" href="#Package-versions"><span>Package versions</span></a></li></ul></li><li><a class="tocitem" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss</a></li><li><a class="tocitem" href="../07-2_hong-ou-mandel__quantum-pulse/">Hong-Ou-Mandel Effect</a></li><li><a class="tocitem" href="../08-1_pulse-delay__simple/">Simple Pulse Delay with a Virtual Cavity</a></li><li><a class="tocitem" href="../09-1_coherent-feedback-squeezing__Gough-Wildfeuer-2009/">Coherent-Feedback Squeezing with a Beam-Splitter Loop</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Interaction Picture Scattering with a Quantum Pulse</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Interaction Picture Scattering with a Quantum Pulse</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/qojulia/QuantumInputOutput.jl/blob/main/examples/06-1_interaction-picture__PRA2023_107-013706_fig2.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Interaction-Picture-Scattering-with-a-Quantum-Pulse"><a class="docs-heading-anchor" href="#Interaction-Picture-Scattering-with-a-Quantum-Pulse">Interaction Picture Scattering with a Quantum Pulse</a><a id="Interaction-Picture-Scattering-with-a-Quantum-Pulse-1"></a><a class="docs-heading-anchor-permalink" href="#Interaction-Picture-Scattering-with-a-Quantum-Pulse" title="Permalink"></a></h1><p>In this example, we study the scattering of a Fock state <span>$| n = 20 \rangle$</span> on a two-level system, using the interaction picture introduced in <a href="https://doi.org/10.1103/PhysRevA.107.013706">Christiansen et al., Phys. Rev. A 107, 013706 (2023)</a>. We start by loading the packages and specifying the model.</p><pre><code class="language-julia hljs">using QuantumInputOutput
+using QuantumOptics
+using QuantumOpticsBase: dagger
+using SecondQuantizedAlgebra
+using Symbolics: Symbolics
+using SymbolicUtils
+using Plots
+using LaTeXStrings</code></pre><pre><code class="language-julia hljs"># symbolic Hilbert space
+hu = FockSpace(:u)
+hs = NLevelSpace(:s, 2)
+hv = FockSpace(:v)
+h = hu ⊗ hs ⊗ hv
+
+# symbolic operators
+au_sym = Destroy(h, :a_u, 1)
+av_sym = Destroy(h, :a_v, 3)
+σ12_sym = Transition(h, :σ, 1, 2, 2)
+
+# symbolic parameters
+@variables gu::Number γ::Real gv::Number
+
+# cascade the SLH elements
+G_u = SLH(1, gu&#39; * au_sym, 0)
+G_s = SLH(1, sqrt(γ) * σ12_sym, 0)
+G_v = SLH(1, gv&#39; * av_sym, 0)
+G_cas = ▷(G_u, G_s, G_v)</code></pre><pre><code class="language-julia hljs">H = hamiltonian(G_cas)</code></pre><p class="math-container">\[ - 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \sqrt{\gamma} ~ \mathit{i} a_{\mathrm{u}}{\sigma}^{{21}} - 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathtt{gv} ~ \mathit{i} a_{\mathrm{u}}a_{\mathrm{v}}^{\dagger} + 0.5 ~ \mathtt{gu} ~ \sqrt{\gamma} ~ \mathit{i} a_{\mathrm{u}}^{\dagger}{\sigma}^{{12}} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathtt{gu} ~ \mathit{i} a_{\mathrm{u}}^{\dagger}a_{\mathrm{v}} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \sqrt{\gamma} ~ \mathit{i} {\sigma}^{{21}}a_{\mathrm{v}} - 0.5 ~ \mathtt{gv} ~ \sqrt{\gamma} ~ \mathit{i} {\sigma}^{{12}}a_{\mathrm{v}}^{\dagger}\]</p><pre><code class="language-julia hljs">J = jump_operator(G_cas)[1]</code></pre><p class="math-container">\[\mathrm{conj}\left( \mathtt{gu} \right) a_{\mathrm{u}} + \sqrt{\gamma} {\sigma}^{{12}} + \mathrm{conj}\left( \mathtt{gv} \right) a_{\mathrm{v}}\]</p><p>Usually we deal with the above derived Hamiltonian and Lindblad. In this example, however, we transform the system into the interaction picture of the virtual cavity-cavity interaction Hamiltonian <span>$H_{uv}$</span>.</p><pre><code class="language-julia hljs">H_uv = hamiltonian(▷(G_u, G_v))</code></pre><p class="math-container">\[ - 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathtt{gv} ~ \mathit{i} a_{\mathrm{u}}a_{\mathrm{v}}^{\dagger} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathtt{gu} ~ \mathit{i} a_{\mathrm{u}}^{\dagger}a_{\mathrm{v}}\]</p><p>To do so, we first subtract <span>$H_{uv}$</span> from <span>$H$</span> and then replace the virtual cavity operators <span>$a_v$</span> and <span>$a_u$</span> as described in the <a href="../../theory/#Theory">Theory</a> section.</p><pre><code class="language-julia hljs">H_int_sym_ = simplify(H - H_uv)
+
+# symbolic coefficient matrix $M(t)$
+M(i, j) = Symbolics.variable(Symbol(&quot;M_{$(i)$(j)}&quot;); T = Complex{Real})
+a0_ls = [au_sym, av_sym]
+la = length(a0_ls)
+a_int_ls = [sum(M(i, j)*a0_ls[j] for j = 1:la) for i = 1:la]
+
+# substitute interaction picture operators
+int_dict = Dict([a0_ls; adjoint.(a0_ls)] .=&gt; [a_int_ls; adjoint.(a_int_ls)])</code></pre><pre><code class="language-julia hljs">H_int_sym = simplify(substitute(H_int_sym_, int_dict))</code></pre><p class="math-container">\[0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{imag}\left( \mathtt{M_{{11}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) ~ \sqrt{\gamma} + \left( 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{real}\left( \mathtt{M_{{11}}} \right) ~ \sqrt{\gamma} \right) ~ \mathit{i} a_{\mathrm{u}}{\sigma}^{{21}} + 0.5 ~ \mathtt{gu} ~ \mathrm{imag}\left( \mathtt{M_{{11}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathtt{gv} ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) ~ \sqrt{\gamma} + \left( 0.5 ~ \mathtt{gu} ~ \mathrm{real}\left( \mathtt{M_{{11}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathtt{gv} ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) ~ \sqrt{\gamma} \right) ~ \mathit{i} a_{\mathrm{u}}^{\dagger}{\sigma}^{{12}} + 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{imag}\left( \mathtt{M_{{12}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) ~ \sqrt{\gamma} + \left(  - 0.5 ~ \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{real}\left( \mathtt{M_{{12}}} \right) ~ \sqrt{\gamma} + 0.5 ~ \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) ~ \sqrt{\gamma} \right) ~ \mathit{i} {\sigma}^{{21}}a_{\mathrm{v}} + 0.5 ~ \mathtt{gu} ~ \mathrm{imag}\left( \mathtt{M_{{12}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathtt{gv} ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) ~ \sqrt{\gamma} + \left( 0.5 ~ \mathtt{gu} ~ \mathrm{real}\left( \mathtt{M_{{12}}} \right) ~ \sqrt{\gamma} - 0.5 ~ \mathtt{gv} ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) ~ \sqrt{\gamma} \right) ~ \mathit{i} {\sigma}^{{12}}a_{\mathrm{v}}^{\dagger}\]</p><pre><code class="language-julia hljs">J_int_sym = simplify(substitute(J, int_dict))</code></pre><p class="math-container">\[\mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{real}\left( \mathtt{M_{{11}}} \right) + \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{real}\left( \mathtt{M_{{21}}} \right) + \left( \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{imag}\left( \mathtt{M_{{11}}} \right) + \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{imag}\left( \mathtt{M_{{21}}} \right) \right) ~ \mathit{i} a_{\mathrm{u}} + \sqrt{\gamma} {\sigma}^{{12}} + \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{real}\left( \mathtt{M_{{12}}} \right) + \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{real}\left( \mathtt{M_{{22}}} \right) + \left( \mathrm{conj}\left( \mathtt{gu} \right) ~ \mathrm{imag}\left( \mathtt{M_{{12}}} \right) + \mathrm{conj}\left( \mathtt{gv} \right) ~ \mathrm{imag}\left( \mathtt{M_{{22}}} \right) \right) ~ \mathit{i} a_{\mathrm{v}}\]</p><p>The above Hamiltonian and Lindblad operator are the ones in the interaction picture of the virtual cavity interaction. We define the numerical parameters of the system, calculate the solution for the coefficient matrix <span>$M(t)$</span> and solve the time evolution of the system.</p><pre><code class="language-julia hljs"># numerical parameters
+γ_ = 1.0
+n_photons = 20
+
+τ = 1 / γ_
+t_p = 4 / γ_
+u(t) = 1 / (sqrt(τ) * π^(1/4)) * exp(-0.5 * ((t - t_p) / τ)^2)
+
+T_end = 12.0
+T = [0:0.005:1;] * T_end
+
+# virtual-cavity couplings for input/output modes
+gu_t = coupling_input(u, T)
+gv_t = coupling_output(u, T) # identical output mode v(t) = u(t)
+
+# interaction-picture coefficient matrix M(t) for u ↔ v
+A_uv = coupling_matrix((gu_t, gv_t))
+M_t = solve_mode_evolution(A_uv, T)
+
+# constant and time-dependent parameters
+dict_p = Dict(γ =&gt; γ_)
+M_ls = [M(i, j) for i = 1:la for j = 1:la]
+M_t_ls = [t -&gt; M_t(t)[i, j] for i = 1:la for j = 1:la]
+p_t_sym = [gu, gv, M_ls...]
+p_t_num = [gu_t, gv_t, M_t_ls...]
+dict_p_t = Dict(p_t_sym .=&gt; p_t_num)</code></pre><pre><code class="language-julia hljs"># numerical basis
+bu = FockBasis(n_photons, n_photons-5)
+ba = NLevelBasis(2)
+bv = FockBasis(5)
+b = bu ⊗ ba ⊗ bv
+
+H_int_QO = to_numeric(H_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+J_QO = to_numeric(J_int_sym, b; parameter = dict_p, time_parameter = dict_p_t)
+
+function input_output(t, ρ)
+    Ht = H_int_QO(t)
+    J = [J_QO(t)]
+    return Ht, J, dagger.(J)
+end</code></pre><pre><code class="language-julia hljs"># time evolution
+ψ0 = fockstate(bu, n_photons) ⊗ nlevelstate(ba, 1) ⊗ fockstate(bv, 0)
+t, ρt = timeevolution.master_dynamic(T, ψ0, input_output)
+
+# numerical operators
+au = destroy(bu) ⊗ one(ba) ⊗ one(bv)
+av = one(bu) ⊗ one(ba) ⊗ destroy(bv)
+σee = one(bu) ⊗ transition(ba, 2, 2) ⊗ one(bv)
+
+n_u = real.(expect(au&#39; * au, ρt))
+n_v = real.(expect(av&#39; * av, ρt))
+P_e = real.(expect(σee, ρt))</code></pre><p>We can see that the mean photon number of the initial temporal mode <span>$u$</span> is reduced by less than two photons. This allows us to significantly reduce the numerical Hilbert space dimension. If the interaction picture is not used, the input cavity <span>$u$</span> completely empties and the output cavity almost completely fills again.</p><pre><code class="language-julia hljs">p1 = plot(T, n_u; label = L&quot;\langle n_u \rangle&quot;)
+plot!(
+    p1;
+    xlabel = &quot;tγ&quot;,
+    ylabel = &quot;excitations&quot;,
+    ylims = (17.8, 20.2),
+    grid = true,
+    legend = :best,
+)
+
+p2 = plot(T, P_e; label = L&quot;\langle \sigma_{ee} \rangle&quot;)
+plot!(p2, T, n_v; label = L&quot;\langle n_v \rangle&quot;, ls = :dash)
+plot!(
+    p2;
+    xlabel = &quot;tγ&quot;,
+    ylabel = &quot;excitations&quot;,
+    ylims = (0, 1),
+    grid = true,
+    legend = :best,
+)
+
+plot(p1, p2; layout = (2, 1), size = (560, 420))</code></pre><img src="8c052952.svg" alt="Example block output"/><h2 id="Package-versions"><a class="docs-heading-anchor" href="#Package-versions">Package versions</a><a id="Package-versions-1"></a><a class="docs-heading-anchor-permalink" href="#Package-versions" title="Permalink"></a></h2><p>These results were obtained using the following versions:</p><pre><code class="language-julia hljs">using InteractiveUtils
+versioninfo()
+
+using Pkg
+Pkg.status(
+    [
+        &quot;QuantumInputOutput&quot;,
+        &quot;QuantumOptics&quot;,
+        &quot;SecondQuantizedAlgebra&quot;,
+        &quot;SymbolicUtils&quot;,
+        &quot;Plots&quot;,
+        &quot;LaTeXStrings&quot;,
+    ],
+    mode = PKGMODE_MANIFEST,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Julia Version 1.12.7
+Commit 6d172b025e4 (2026-08-15 08:05 UTC)
+Build Info:
+  Official https://julialang.org release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
+  WORD_SIZE: 64
+  LLVM: libLLVM-18.1.7 (ORCJIT, znver3)
+  GC: Built with stock GC
+Threads: 4 default, 1 interactive, 4 GC (on 4 virtual cores)
+Environment:
+  JULIA_PKG_SERVER_REGISTRY_PREFERENCE = eager
+  JULIA_DEBUG = Documenter
+  JULIA_NUM_THREADS = auto
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl/docs/Manifest.toml`
+  <span class="sgr90">[b964fa9f] </span>LaTeXStrings v1.4.1
+  <span class="sgr90">[91a5bcdd] </span>Plots v1.41.7
+  <span class="sgr90">[18f9eda6] </span>QuantumInputOutput v0.5.2 `~/work/QuantumInputOutput.jl/QuantumInputOutput.jl`
+  <span class="sgr90">[6e0679c1] </span>QuantumOptics v1.2.8
+  <span class="sgr90">[f7aa4685] </span>SecondQuantizedAlgebra v0.10.0
+  <span class="sgr90">[d1185830] </span>SymbolicUtils v4.45.0</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../05-3_N-QDs_bidirectional-waveguide_feedback-reduction/">« Bi-Directional Waveguide via Feedback Reduction</a><a class="docs-footer-nextpage" href="../07-1_beamsplitter_loss__quantum-pulse/">Beam Splitter Loss »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Monday 24 August 2026 20:17">Monday 24 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
