@@ -213,6 +213,69 @@ hamiltonian(G::SLH) = G.hamiltonian
 
 
 # ──────────────────────────────────────────────
+# Display
+# ──────────────────────────────────────────────
+
+# `S`, `L` and `H` hold expressions that grow without bound, so they are described
+# rather than printed; the accessors give the operators themselves.
+
+_is_symbolic(x) = x isa SQA.QField || x isa BasicSymbolic || x isa Symbolics.Num
+_is_symbolic(x::Complex) = _is_symbolic(real(x)) || _is_symbolic(imag(x))
+
+function _is_identity(S::AbstractMatrix)
+    for j in axes(S, 2), i in axes(S, 1)
+        x = S[i, j]
+        _is_time_dep(x) && return false
+        (i == j ? _isunit(x) : iszero(x)) || return false
+    end
+    return true
+end
+
+_nterms(x) = x isa SQA.QAdd && hasproperty(x, :arguments) ? length(x.arguments) : 1
+
+_plural(n::Int, noun::AbstractString) = string(n, " ", noun, n == 1 ? "" : "s")
+
+_dims(x) = string(size(x, 1), "×", size(x, 2))
+
+function _describe(x)
+    _is_time_dep(x) && return "time-dependent"
+    iszero(x) && return "0"
+    x isa SQA.QField && return string("symbolic, ", _plural(_nterms(x), "term"))
+    x isa QuantumOpticsBase.AbstractOperator && return string("numeric, ", _dims(x))
+    _is_symbolic(x) && return "symbolic"
+    return sprint(show, x)  # a plain number describes itself
+end
+
+function _describe_scattering(S::AbstractMatrix)
+    _is_identity(S) && return string(_dims(S), " identity")
+    any(_is_time_dep, S) && return string(_dims(S), " time-dependent")
+    return string(_dims(S), " ", _is_symbolic(first(S)) ? "symbolic" : string(eltype(S)))
+end
+
+function _describe_lindblad(L::AbstractVector)
+    n = length(L)
+    any(_is_time_dep, L) && return _plural(n, "time-dependent jump operator")
+    x = first(L)
+    numeric = x isa QuantumOpticsBase.AbstractOperator
+    adjective = numeric ? "numeric " : _is_symbolic(x) ? "symbolic " : ""
+    desc = _plural(n, adjective * "jump operator")
+    notes = numeric ? [_dims(x)] : String[]
+    nzero = count(iszero, L)
+    nzero == 0 || push!(notes, nzero == n ? "all zero" : string(nzero, " zero"))
+    return isempty(notes) ? desc : string(desc, " (", join(notes, ", "), ")")
+end
+
+Base.show(io::IO, ::SLH{N}) where {N} =
+    print(io, "SLH{", N, "} with ", N, N == 1 ? " port" : " ports")
+
+function Base.show(io::IO, ::MIME"text/plain", G::SLH)
+    show(io, G)
+    print(io, "\n  S = ", _describe_scattering(scattering(G)))
+    print(io, "\n  L = ", _describe_lindblad(lindblad(G)))
+    return print(io, "\n  H = ", _describe(hamiltonian(G)))
+end
+
+# ──────────────────────────────────────────────
 # Equality
 # ──────────────────────────────────────────────
 

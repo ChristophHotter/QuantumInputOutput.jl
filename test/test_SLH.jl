@@ -112,6 +112,59 @@ using Test
         @test iszero(simplify(jump_operator(G_cas)[2] - (gv2' * av2)))
     end
 
+    @testset "show" begin
+        @test sprint(show, G_u) == "SLH{1} with 1 port"
+        @test sprint(show, MIME("text/plain"), G_u) ==
+              "SLH{1} with 1 port\n" *
+              "  S = 1×1 identity\n" *
+              "  L = 1 symbolic jump operator\n" *
+              "  H = 0"
+
+        @test sprint(show, MIME("text/plain"), G_u ⊞ G_c) ==
+              "SLH{2} with 2 ports\n" *
+              "  S = 2×2 identity\n" *
+              "  L = 2 symbolic jump operators\n" *
+              "  H = symbolic, 1 term"
+
+        # no equation ever reaches the output, whatever the system size
+        M = 6
+        @variables s[1:M, 1:M]::Complex
+        ops = [gu * au, √(γ) * c, gv * av, gu * au * c' * av, c' * c * av, au * av' * c]
+        G_big = SLH([s[i, j] for i = 1:M, j = 1:M], ops, sum(ops[i]' * ops[i] for i = 1:M))
+        @test sprint(show, MIME("text/plain"), G_big) ==
+              "SLH{6} with 6 ports\n" *
+              "  S = 6×6 symbolic\n" *
+              "  L = 6 symbolic jump operators\n" *
+              "  H = symbolic, 8 terms"
+
+        # passive component: nothing couples to the ports
+        @variables r::Real τ::Real
+        @test sprint(show, MIME("text/plain"), SLH([r τ; τ -r], [0, 0], 0)) ==
+              "SLH{2} with 2 ports\n" *
+              "  S = 2×2 symbolic\n" *
+              "  L = 2 jump operators (all zero)\n" *
+              "  H = 0"
+
+        L_f = FunctionWrapper{typeof(gu' * au),Tuple{Float64}}(t -> gu' * au)
+        @test sprint(show, MIME("text/plain"), SLH(1, L_f, 0 * au)) ==
+              "SLH{1} with 1 port\n" *
+              "  S = 1×1 identity\n" *
+              "  L = 1 time-dependent jump operator\n" *
+              "  H = time-dependent"
+
+        bc = FockBasis(4)
+        a_op = destroy(bc)
+        @test sprint(
+            show,
+            MIME("text/plain"),
+            SLH(1, sparse(a_op), sparse(dagger(a_op) * a_op)),
+        ) ==
+              "SLH{1} with 1 port\n" *
+              "  S = 1×1 identity\n" *
+              "  L = 1 numeric jump operator (5×5)\n" *
+              "  H = numeric, 5×5"
+    end
+
     @testset "numeric type stability" begin
         bc = FockBasis(4)
         a_op = destroy(bc)
